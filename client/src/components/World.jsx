@@ -4,10 +4,10 @@ const PLAYER_SIZE = 20;
 const PLAYER_SPEED = 3;
 const INTERPOLATION_FACTOR = 0.1;
 
-const World = ({ socket }) => {
+const World = ({ socket, users, setUsers }) => {
     const canvasRef = useRef(null);
-    const [users, setUsers] = useState({});
     const [map, setMap] = useState({ dimensions: { width: 0, height: 0 }, walls: [] });
+    const [messages, setMessages] = useState([]);
     const keysPressed = useRef({});
     const localPlayerPos = useRef({ x: 0, y: 0 });
     const targetPos = useRef(null);
@@ -53,7 +53,7 @@ const World = ({ socket }) => {
                     }
                 }
                 
-                context.fillStyle = id === socket.id ? '#1e90ff' : '#a9a9a9';
+                context.fillStyle = user.avatarData?.color || (id === socket.id ? '#1e90ff' : '#a9a9a9');
                 context.beginPath();
                 context.arc(user.x, user.y, PLAYER_SIZE / 2, 0, 2 * Math.PI);
                 context.fill();
@@ -61,37 +61,47 @@ const World = ({ socket }) => {
                 context.fillStyle = '#ffffff';
                 context.fillText(user.username, user.x - context.measureText(user.username).width / 2, user.y - 15);
             }
+
+            messages.forEach((msg, index) => {
+                const user = users[msg.id];
+                if (user) {
+                    const x = user.x;
+                    const y = user.y - 30;
+                    const text = msg.message;
+                    const textWidth = context.measureText(text).width;
+
+                    context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                    context.fillRect(x - textWidth / 2 - 5, y - 15, textWidth + 10, 20);
+
+                    context.fillStyle = '#ffffff';
+                    context.fillText(text, x - textWidth / 2, y);
+                }
+            });
+
             animationFrameId = requestAnimationFrame(draw);
         };
 
         if (socket) {
-            socket.on('initialState', ({ users: initialUsers, map: initialMap }) => {
-                setUsers(initialUsers);
+            socket.on('initialState', ({ map: initialMap }) => {
                 setMap(initialMap);
                 canvasRef.current.width = initialMap.dimensions.width;
                 canvasRef.current.height = initialMap.dimensions.height;
-                if(initialUsers[socket.id]) {
-                    localPlayerPos.current = { x: initialUsers[socket.id].x, y: initialUsers[socket.id].y };
+                if(users[socket.id]) {
+                    localPlayerPos.current = { x: users[socket.id].x, y: users[socket.id].y };
                 }
-            });
-
-            socket.on('userJoined', (user) => {
-                setUsers((prev) => ({ ...prev, [user.id]: user }));
-            });
-
-            socket.on('userLeft', (id) => {
-                setUsers((prev) => {
-                    const newUsers = { ...prev };
-                    delete newUsers[id];
-                    return newUsers;
-                });
-                delete remotePlayerTargets.current[id];
             });
 
             socket.on('userMoved', ({ id, x, y }) => {
                 if (id !== socket.id) {
                     remotePlayerTargets.current[id] = { x, y };
                 }
+            });
+
+            socket.on('newMessage', (message) => {
+                setMessages((prev) => [...prev, message]);
+                setTimeout(() => {
+                    setMessages((prev) => prev.filter((msg) => msg !== message));
+                }, 5000);
             });
 
             draw();

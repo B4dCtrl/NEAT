@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require("socket.io");
 
 const app = express();
+app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -31,10 +32,20 @@ const walls = [
     { x: 200, y: 500, width: 250, height: 10 },
 ];
 
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  if (email === 'test@example.com' && password === 'password') {
+    res.status(200).json({ success: true, message: 'Login successful' });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid credentials' });
+  }
+});
+
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);
 
-  socket.on('joinRoom', ({ username, room }) => {
+  socket.on('joinRoom', ({ username, room, avatarData }) => {
     if (!rooms[room]) {
         return;
     }
@@ -47,6 +58,7 @@ io.on('connection', (socket) => {
       username,
       x: Math.random() * (mapDimensions.width - 100) + 50,
       y: Math.random() * (mapDimensions.height - 100) + 50,
+      avatarData,
     };
     
     socket.emit('initialState', { users: rooms[room].users, messages: rooms[room].messages, map: { dimensions: mapDimensions, walls } });
@@ -61,14 +73,24 @@ io.on('connection', (socket) => {
     }
   });
 
+  const CHAT_RADIUS = 200;
+
   socket.on('sendMessage', (message) => {
     if (socket.room && rooms[socket.room]) {
-        const messageData = { username: socket.username, message };
-        rooms[socket.room].messages.push(messageData);
-        if (rooms[socket.room].messages.length > 50) {
-            rooms[socket.room].messages.shift();
+      const sender = rooms[socket.room].users[socket.id];
+      if (!sender) return;
+
+      const messageData = { username: socket.username, message, id: socket.id };
+
+      Object.values(rooms[socket.room].users).forEach(user => {
+        const distance = Math.sqrt(
+          Math.pow(sender.x - user.x, 2) + Math.pow(sender.y - user.y, 2)
+        );
+
+        if (distance <= CHAT_RADIUS) {
+          io.to(user.id).emit('newMessage', messageData);
         }
-        io.to(socket.room).emit('newMessage', messageData);
+      });
     }
   });
 
