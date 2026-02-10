@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregador de Vagas Inteligente</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Agregador de Vagas Inteligente</h1>
+        <p>Encontre as melhores oportunidades, sem ruído.</p>
+    </header>
+
+    <main>
+        <div class="filters">
+            <input type="text" id="cargo-filter" placeholder="Filtrar por cargo...">
+            <input type="text" id="localidade-filter" placeholder="Filtrar por localidade...">
+            <button id="filter-btn">Filtrar</button>
+            <button id="scrape-btn">Buscar Novas Vagas</button>
+        </div>
+
+        <div id="jobs-list" class="jobs-container">
+            <!-- As vagas serão inseridas aqui via JavaScript -->
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
