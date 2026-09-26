@@ -1,11 +1,10 @@
-# SUMMITEERS — The Infinite Tower
+# STAIRBORN — The Infinite Tower
 
 > **"Your heroes climb while you work."**
 > Idle RPG / auto-battler / loot-hunter em pixel art que vive na barra da sua tela.
 
-Nome provisório: **SUMMITEERS**. Para trocar, edite `application/config/name` em
-`project.godot` — o título da UI é lido de lá (`Summiteers.exe` em `export_presets.cfg`
-também, se quiser).
+Nome: **STAIRBORN**. O título da UI é lido de `application/config/name` em `project.godot`;
+os nomes dos executáveis ficam em `export_presets.cfg`.
 
 - **Engine:** Godot 4.2+ (GDScript), renderer *GL Compatibility* (leve, suporta janela transparente)
 - **Plataformas:** Windows e Linux (presets em `export_presets.cfg`)
@@ -15,7 +14,7 @@ também, se quiser).
 
 ```bash
 godot --path infinite_tower            # joga
-# ou exporte: godot --headless --path infinite_tower --export-release "Windows Desktop" export/windows/Summiteers.exe
+# ou exporte: godot --headless --path infinite_tower --export-release "Windows Desktop" export/windows/Stairborn.exe
 godot --path infinite_tower -e         # abre no editor
 ```
 

@@ -17,7 +17,7 @@ var _currency_labels := {}
 
 
 func _ready() -> void:
-	%Title.text = ProjectSettings.get_setting("application/config/name", "SUMMITEERS")
+	%Title.text = ProjectSettings.get_setting("application/config/name", "STAIRBORN")
 	%CollapseButton.pressed.connect(func(): collapse_requested.emit())
 	for c in [["floor", "Max floor"], ["coin", "Gold"], ["soul", "Souls"], ["crystal", "Crystals"]]:
 		var box := HBoxContainer.new()

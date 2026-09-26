@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="SUMMITEERS"
+config/name="STAIRBORN"
 config/description="The Infinite Tower — your heroes climb while you work."
 config/version="0.1.0"
 run/main_scene="res://scenes/main.tscn"

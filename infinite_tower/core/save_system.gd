@@ -14,7 +14,7 @@ const Progression = preload("res://core/progression.gd")
 const SAVE_PATH := "user://savegame.dat"
 const BACKUP_PATH := "user://savegame.bak"
 const TEMP_PATH := "user://savegame.tmp"
-const SAVE_KEY := "summit-tower::v1::a7c3f19e5d"
+const SAVE_KEY := "stairborn::v1::a7c3f19e5d"
 
 
 static func save_game(state: Dictionary, path: String = SAVE_PATH) -> bool:
