@@ -14,6 +14,8 @@ const PlatformServices = preload("res://core/platform_services.gd")
 const Heroes = preload("res://core/heroes.gd")
 const Market = preload("res://core/market.gd")
 const Forge = preload("res://core/forge.gd")
+const UiNum = preload("res://scenes/ui/ui_util.gd")
+const Danger = preload("res://core/danger.gd")
 
 ## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
 signal notified(kind: String, text: String)
@@ -57,12 +59,34 @@ func _ready() -> void:
 			offline_report = SaveSystem.simulate_offline(state, away)
 			GameState.add_history(state, "offline", "Climbed while away: floor %d -> %d" % [offline_report["floor_start"], offline_report["floor_end"]])
 	expedition = Expedition.new(state)
+	party_changed.connect(func(): _danger_dirty = true)
+	inventory_changed.connect(func(): _danger_dirty = true)
 	PlatformServices.init()
 	if not offline_report.is_empty():
 		call_deferred("emit_signal", "offline_report_ready", offline_report)
 
 
+## Danger of the next floor and of the next Guardian (see core/danger.gd).
+var danger_next := {}
+var danger_boss := {}
+var _danger_dirty := true
+var _danger_wait := 0.0
+
+
+func _update_danger(delta: float) -> void:
+	_danger_wait -= delta
+	if not _danger_dirty or _danger_wait > 0.0:
+		return
+	_danger_dirty = false
+	_danger_wait = 2.0
+	var f := int(state["floor"])
+	danger_next = Danger.assess(state, f + 1)
+	var g := Danger.next_guardian(f)
+	danger_boss = danger_next if g == f + 1 else Danger.assess(state, g)
+
+
 func _process(delta: float) -> void:
+	_update_danger(delta)
 	var dt := delta * time_scale
 	# The climb begins once the Stairborn has been introduced.
 	if not state.get("intro_seen", false):
@@ -104,16 +128,21 @@ func _drain_events() -> void:
 	for ev in evs:
 		match ev["type"]:
 			"floor":
+				_danger_dirty = true
 				floor_changed.emit(int(ev["floor"]))
 			"combat_start":
 				combat_started.emit()
 			"combat_end":
+				_danger_dirty = true
 				combat_ended.emit(ev["victory"])
 			"boss":
 				var tier_name: String = DataDB.enemy_scaling()["boss_tiers"][ev["tier"]]["name"]
 				notified.emit("boss", "%s: %s" % [tier_name, ev["name"]])
 			"fall_back":
-				notified.emit("fall", "Fell back to floor %d" % ev["to"])
+				var lost := float(ev.get("gold_lost", 0.0))
+				notified.emit("fall", "Fell back to floor %d%s" % [ev["to"], ("  (-%s gold)" % UiNum.num(lost)) if lost >= 1.0 else ""])
+			"retreat":
+				notified.emit("info", "Retreating to rest at the bonfire (floor %d)" % ev["to"])
 			"loot":
 				var item: Dictionary = ev["item"]
 				inventory_changed.emit()
@@ -262,6 +291,16 @@ func use_consumable(id: String) -> bool:
 			else:
 				for hero in state["heroes"]:
 					hero["hp_ratio"] = minf(1.0, float(hero["hp_ratio"]) + float(def["value"]))
+		"mana":
+			if in_fight:
+				expedition.combat.supplies["mana"] = int(expedition.combat.supplies.get("mana", 0)) + 1
+				if not expedition.combat.use_mana_potion(float(def["value"])):
+					expedition.combat.supplies["mana"] -= 1
+					return false
+				expedition.combat.consumed.erase("mana")
+			else:
+				for hero in state["heroes"]:
+					hero["mp_ratio"] = minf(1.0, float(hero.get("mp_ratio", 1.0)) + float(def["value"]))
 		"bomb":
 			if not in_fight:
 				notified.emit("info", "Bombs can only be thrown in a fight")
@@ -336,6 +375,20 @@ func market_buy(index: int) -> void:
 func market_reroll() -> void:
 	if Market.reroll(state, int(Time.get_unix_time_from_system())):
 		state_changed.emit()
+
+
+## "Rest at the bonfire": walk back to the checkpoint now (or right after the
+## current fight) to refill HP and mana without losing gold.
+func request_retreat() -> void:
+	if int(state["floor"]) <= int(state.get("checkpoint", 1)):
+		notified.emit("info", "Already at the bonfire")
+		return
+	if expedition.phase == "combat":
+		expedition.retreat_requested = true
+		notified.emit("info", "The party will rest at the bonfire after this fight")
+	else:
+		expedition.retreat_to_bonfire()
+	state_changed.emit()
 
 
 func camp_at_next_bonfire(on: bool) -> void:

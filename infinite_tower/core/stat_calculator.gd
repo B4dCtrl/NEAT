@@ -156,6 +156,9 @@ static func hero_stats(state: Dictionary, hero: Dictionary, mods: Dictionary = {
 		"specials": specials,
 		"damage_type": cdef["damage_type"],
 		"element": "fire" if "fire_imbue" in specials else cdef["element"],
+		# Mana pays for skills; it only refills in fights (slowly) and at bonfires.
+		"mana": float(cdef.get("mana", {}).get("max", 100.0)) + float(cdef.get("mana", {}).get("per_level", 0.0)) * (lvl - 1),
+		"mana_regen": float(cdef.get("mana", {}).get("regen", 2.5)) * (1.0 + pct.get("mana_regen_pct", 0.0)),
 	}
 	return out
 

@@ -10,6 +10,8 @@ const HISTORY_CAP := 150
 
 const DEFAULT_SETTINGS := {
 	"always_on_top": true,
+	"auto_bonfire": true,      # retreat to the bonfire when the party is badly hurt
+	"retreat_hp": 0.35,        # ... below this average HP
 	"dock": "bottom",          # "bottom" | "top"
 	"bar_width": 640,          # 0 = full usable screen width
 	"bar_height": 150,

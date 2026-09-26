@@ -207,6 +207,7 @@
 		"event_pause": 1.2,
 		"chest_pause": 1.6,
 		"fallback_pause": 3.2,
+		"fall_gold_loss": 0.25,
 		"bonfire_rest": 4.0,
 		"combat_time_limit": 45.0,
 		"boss_time_limit": 75.0,

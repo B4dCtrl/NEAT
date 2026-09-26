@@ -9,14 +9,16 @@ signal close_requested()
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const Glyphs = preload("res://scenes/ui/menu/glyphs.gd")
 
-const BUTTON := 21.0
+const BUTTON := 20.0
 const GAP := 2.0
 ## [id, glyph, tooltip]
 const BUTTONS := [
 	["status", "helm", "Status"],
+	["heroes", "banner", "Heroes: party, reserve and minting"],
 	["talents", "tree", "Talent tree"],
 	["skills", "book", "Skills"],
 	["inventory", "bag", "Inventory"],
+	["souls", "skull", "Souls: Ascension and the permanent tree"],
 	["settings", "gear", "Settings"],
 	["expedition", "expand", "Expedition (market, ascension, bestiary...)"],
 	["close", "close", "Close (the climb goes on in the system tray)"],

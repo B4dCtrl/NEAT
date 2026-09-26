@@ -287,9 +287,11 @@ func _place_heroes(exp) -> void:
 		var u = exp.combat.heroes[i] if exp.combat != null and exp.phase == "combat" and i < exp.combat.heroes.size() else null
 		if u != null:
 			sp.hp_ratio = u.hp_ratio()
+			sp.mp_ratio = u.mp_ratio()
 			sp.set_dead(not u.alive)
 		else:
 			sp.hp_ratio = float(Game.state["heroes"][i]["hp_ratio"])
+			sp.mp_ratio = float(Game.state["heroes"][i].get("mp_ratio", 1.0))
 			sp.set_dead(false)
 
 
@@ -416,6 +418,11 @@ func _consume_combat_events() -> void:
 				if src != null:
 					_fx.burst_particles(_center(src), Color("#6a5a8a"), 14, 30.0 * px, 1.4, -10.0 * px, 0.7)
 				Game.sfx_requested.emit("summon")
+			"mana":
+				if src != null:
+					_fx.spawn("aura", _center(src), _center(src), Color("#5a9cff"), 1.0, 0.8)
+					_float_text(src, "+MP", Color("#8fc0ff"), false, true)
+				Game.sfx_requested.emit("potion")
 			"potion":
 				if src != null:
 					_fx.spawn("heal", _center(src), _center(src), Color.WHITE, 1.0, 0.8)

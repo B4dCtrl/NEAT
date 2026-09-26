@@ -636,6 +636,15 @@
 			"weight": 10,
 			"text": "Heals the most wounded hero for 45% HP. Drunk automatically below 30% HP."
 		},
+		"mana_potion": {
+			"name": "Mana Potion",
+			"icon": "cons_mana",
+			"kind": "mana",
+			"value": 0.5,
+			"price": 20,
+			"weight": 7,
+			"text": "Restores 50% mana to every hero. Drunk automatically when a hero is out of mana in a boss fight."
+		},
 		"fire_bomb": {
 			"name": "Fire Bomb",
 			"icon": "cons_bomb",

@@ -23,7 +23,7 @@ const NOTIFY_COLORS := {
 const DRAG_THRESHOLD := 6.0
 const HUD_H := 40.0
 ## Width of the left HUD column (hero icons + floor).
-const HUD_W := 160.0
+const HUD_W := 200.0
 ## Room on the right for big bosses standing on the landing.
 const RIGHT_MARGIN := 40.0
 ## Row of round menu buttons above the hero icons.
@@ -56,6 +56,7 @@ var panels: Control
 func _ready() -> void:
 	%FloorIcon.visible = false
 	notify_label.label_settings = notify_label.label_settings.duplicate()
+	floor_label.label_settings = floor_label.label_settings.duplicate()
 	Game.notified.connect(_on_notified)
 	notify_box.visible = false
 	hud.modulate.a = 0.0
@@ -183,6 +184,9 @@ func _process(delta: float) -> void:
 
 func _refresh() -> void:
 	floor_label.text = "FLOOR %d" % Game.state["floor"]
+	# The floor number takes the colour of the danger ahead (green -> red).
+	var d: Dictionary = Game.danger_next
+	floor_label.label_settings.font_color = Color(d.get("color", "#fff8e0"))
 
 
 func _on_notified(kind: String, text: String) -> void:

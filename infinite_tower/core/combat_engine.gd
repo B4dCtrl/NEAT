@@ -46,6 +46,9 @@ class Unit:
 	var summoned := false
 	var scale := 1.0
 	var cdr := 0.0
+	var mana := 0.0
+	var max_mana := 0.0
+	var mana_regen := 0.0
 	var specials: Array = []
 	var atk_timer := 0.0
 	var burn_dps := 0.0
@@ -66,6 +69,9 @@ class Unit:
 
 	func hp_ratio() -> float:
 		return clampf(hp / max_hp, 0.0, 1.0)
+
+	func mp_ratio() -> float:
+		return clampf(mana / max_mana, 0.0, 1.0) if max_mana > 0.0 else 1.0
 
 
 var rng: RandomNumberGenerator
@@ -147,6 +153,9 @@ func _make_hero(entry: Dictionary) -> Unit:
 	u.aggro = float(cdef["aggro"])
 	u.row = entry.get("row", "front")
 	u.skills = entry.get("skills", [cdef["skill"]] if cdef.has("skill") else [])
+	u.max_mana = float(st.get("mana", 0.0))
+	u.mana = u.max_mana * float(entry.get("mp_ratio", 1.0))
+	u.mana_regen = float(st.get("mana_regen", 0.0))
 	return u
 
 
@@ -249,9 +258,18 @@ func _tick_unit(u: Unit) -> void:
 			u.attack_speed /= u.haste_mult
 			u.haste_mult = 1.0
 
+	if u.max_mana > 0.0:
+		u.mana = minf(u.max_mana, u.mana + u.mana_regen * TICK)
 	for i in u.skills.size():
-		u.skill_cds[i] -= TICK
+		u.skill_cds[i] = maxf(0.0, u.skill_cds[i] - TICK)
 		if u.skill_cds[i] <= 0.0:
+			# Heroes pay mana: a ready skill waits until there is enough.
+			var cost := float(u.skills[i].get("mana", 0.0)) if u.side == SIDE_HEROES else 0.0
+			if cost > u.mana:
+				continue
+			if not _skill_useful(u, u.skills[i]):
+				continue
+			u.mana -= cost
 			_use_skill(u, u.skills[i])
 			u.skill_cds[i] += float(u.skills[i]["cooldown"]) * (1.0 - u.cdr)
 			if finished:
@@ -298,6 +316,34 @@ func _enemy_target() -> Unit:
 		if roll <= 0.0:
 			return h
 	return candidates[-1]
+
+
+## Heroes do not waste mana: heals wait for a wound, attacks for a target.
+func _skill_useful(u: Unit, sk: Dictionary) -> bool:
+	if u.side != SIDE_HEROES:
+		return true
+	match sk.get("type", ""):
+		"self_heal":
+			return u.hp_ratio() < 0.6
+		"party_heal":
+			for h in alive_units(SIDE_HEROES):
+				if h.hp_ratio() < 0.6:
+					return true
+			return false
+		_:
+			return not alive_units(SIDE_ENEMIES).is_empty()
+
+
+## Mana potion: every hero gets `share` of their mana back.
+func use_mana_potion(share: float = 0.5) -> bool:
+	if int(supplies.get("mana", 0)) <= 0 or finished:
+		return false
+	supplies["mana"] = int(supplies["mana"]) - 1
+	consumed["mana"] = int(consumed.get("mana", 0)) + 1
+	for h in alive_units(SIDE_HEROES):
+		h.mana = minf(h.max_mana, h.mana + h.max_mana * share)
+		_emit({"t": "mana", "src": h.uid})
+	return true
 
 
 func _use_skill(u: Unit, sk: Dictionary) -> void:
@@ -441,6 +487,16 @@ func _auto_supplies() -> void:
 		for h in alive_units(SIDE_HEROES):
 			if h.hp_ratio() < 0.3 and use_potion():
 				_potion_cd = 2.0
+				break
+	if _potion_cd <= 0.0:
+		for e in alive_units(SIDE_ENEMIES):
+			if e.is_boss:
+				var dry := 0
+				for h in alive_units(SIDE_HEROES):
+					if h.max_mana > 0.0 and h.mp_ratio() < 0.15:
+						dry += 1
+				if dry > 0 and use_mana_potion():
+					_potion_cd = 2.0
 				break
 	if not _bomb_used and time > 1.0:
 		for e in alive_units(SIDE_ENEMIES):

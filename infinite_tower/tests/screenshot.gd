@@ -67,16 +67,16 @@ func _run() -> void:
 		h["level"] = maxi(int(h["level"]), 27)
 	game.state["heroes"][0]["hp_ratio"] = 0.6
 	var tv = main.get_node("TaskbarView")
-	for id in ["status", "talents", "skills"]:
+	for id in ["status", "heroes", "skills"]:
 		tv.panels.open(id)
 	await _wait(40)
 	await _shot_desktop("04_taskbar_menu_a", tv)
 	tv.panels.close_all()
-	for id in ["inventory", "settings"]:
+	for id in ["souls", "talents"]:
 		tv.panels.open(id)
 	await _wait(40)
 	# Drag one panel somewhere else, like a player would.
-	var inv: Window = tv.panels.window_of("inventory")
+	var inv: Window = tv.panels.window_of("souls")
 	inv.position -= Vector2i(80, 30)
 	await _wait(10)
 	await _shot_desktop("05_taskbar_menu_b", tv)

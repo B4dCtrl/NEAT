@@ -12,6 +12,8 @@ var textures: Array = []
 var walking := false
 var dead := false
 var hp_ratio := 1.0
+## Heroes also show a blue mana bar (-1 = no mana bar).
+var mp_ratio := -1.0
 var unit_uid := ""
 var _anim_t := 0.0
 var _lunge := 0.0
@@ -104,7 +106,13 @@ func _draw() -> void:
 	if _flash > 0.0:
 		mod = mod.lerp(Color(3, 3, 3, _fade), _flash * 0.6)
 	draw_texture_rect(tex, rect, false, mod)
-	if show_hp_bar and not dead and hp_ratio < 0.999:
+	if show_hp_bar and not dead and mp_ratio >= 0.0 and (hp_ratio < 0.999 or mp_ratio < 0.999):
+		var mw := absf(sz.x) * 0.8
+		var mh := maxf(1.0, px_scale * 0.75)
+		var mp := Vector2(-mw * 0.5, -sz.y - maxf(1.0, px_scale)) + offset
+		draw_rect(Rect2(mp, Vector2(mw, mh)), Color(0, 0, 0, 0.7 * _fade))
+		draw_rect(Rect2(mp, Vector2(mw * mp_ratio, mh)), Color(0.35, 0.6, 1.0, _fade))
+	if show_hp_bar and not dead and (hp_ratio < 0.999 or (mp_ratio >= 0.0 and mp_ratio < 0.999)):
 		var bw := absf(sz.x) * 0.8
 		var bh := maxf(1.0, px_scale)
 		var bp := Vector2(-bw * 0.5, -sz.y - bh * 2.0) + offset

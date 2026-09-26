@@ -87,6 +87,7 @@ static func ascend(state: Dictionary) -> int:
 		hero["level"] = 1
 		hero["xp"] = 0.0
 		hero["hp_ratio"] = 1.0
+		hero["mp_ratio"] = 1.0
 		hero["skills"] = {}
 		for slot in hero["equipment"]:
 			hero["equipment"][slot] = null

@@ -40,7 +40,7 @@ func _ready() -> void:
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_list)
-	add_child(Ornate.small_label("Skills fire on their own in every fight.\nSwitch one off to save it for later.", Ornate.TEXT_DIM, 11))
+	add_child(Ornate.small_label("Skills fire on their own when there is mana.\nMana refills slowly in fights, fully at bonfires.\nSwitch a skill off to save mana for the others.", Ornate.TEXT_DIM, 11))
 	Game.state_changed.connect(func(): _dirty = true)
 	Game.party_changed.connect(func(): _picker.rebuild(); _built_for = ""; _dirty = true)
 
@@ -111,7 +111,7 @@ func _refresh() -> void:
 		c["tile"].locked = not learned
 		c["tile"].dim = learned and not on
 		c["tile"].queue_redraw()
-		c["meta"].text = ("Cooldown %ss" % String.num(float(sk["cooldown"]), 1)) if learned else "Unlocks at level %d" % int(sk.get("level", 1))
+		c["meta"].text = ("%d mana · cooldown %ss" % [int(sk.get("mana", 0)), String.num(float(sk["cooldown"]), 1)]) if learned else "Unlocks at level %d" % int(sk.get("level", 1))
 		c["toggle"].disabled = not learned
 		c["toggle"].text = "ON" if on and learned else ("OFF" if learned else "—")
 		c["toggle"].add_theme_color_override("font_color", Ornate.GOOD if on and learned else Ornate.TEXT_DIM)
@@ -129,6 +129,10 @@ func _update_cooldowns() -> void:
 			for i in unit.skills.size():
 				if unit.skills[i].get("id", "") == c["skill"]["id"]:
 					cd = clampf(unit.skill_cds[i] / maxf(0.1, float(c["skill"]["cooldown"])), 0.0, 1.0)
+		var dry: bool = unit != null and unit.alive and unit.mana < float(c["skill"].get("mana", 0))
+		if dry != c["tile"].dim and Heroes.active_skill_enabled(_hero(), c["skill"]):
+			c["tile"].dim = dry
+			c["tile"].queue_redraw()
 		if absf(cd - c["tile"].cooldown) > 0.001:
 			c["tile"].cooldown = cd
 			c["tile"].queue_redraw()

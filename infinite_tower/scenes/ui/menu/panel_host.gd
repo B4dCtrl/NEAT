@@ -11,14 +11,16 @@ const StatusPage = preload("res://scenes/ui/menu/pages/status_page.gd")
 const TalentsPage = preload("res://scenes/ui/menu/pages/talents_page.gd")
 const SkillsPage = preload("res://scenes/ui/menu/pages/skills_page.gd")
 const InventoryPage = preload("res://scenes/ui/menu/pages/inventory_page.gd")
+const HeroesPage = preload("res://scenes/ui/menu/pages/heroes_page.gd")
+const SoulsPage = preload("res://scenes/ui/menu/pages/souls_page.gd")
 const SettingsTab = preload("res://scenes/ui/tabs/settings_tab.gd")
 
 const MAX_OPEN := 3
 const GAP := 6.0
 const PANEL_H := 420.0
-const ORDER := ["status", "talents", "skills", "inventory", "settings"]
-const TITLES := {"status": "STATUS", "talents": "TALENTS", "skills": "SKILLS", "inventory": "INVENTORY", "settings": "SETTINGS"}
-const WIDTHS := {"status": 300.0, "talents": 300.0, "skills": 300.0, "inventory": 360.0, "settings": 320.0}
+const ORDER := ["status", "heroes", "talents", "skills", "inventory", "souls", "settings"]
+const TITLES := {"status": "STATUS", "heroes": "HEROES", "talents": "TALENTS", "skills": "SKILLS", "inventory": "INVENTORY", "souls": "SOULS", "settings": "SETTINGS"}
+const WIDTHS := {"status": 300.0, "heroes": 320.0, "talents": 300.0, "skills": 300.0, "inventory": 360.0, "souls": 320.0, "settings": 320.0}
 
 ## Hero shown by the hero-centric pages; shared so switching tabs keeps it.
 var hero_idx := 0
@@ -107,6 +109,10 @@ func _make_page(id: String) -> Control:
 			page = SkillsPage.new()
 		"inventory":
 			page = InventoryPage.new()
+		"heroes":
+			page = HeroesPage.new()
+		"souls":
+			page = SoulsPage.new()
 		_:
 			page = SettingsTab.new()
 			page.compact = true
@@ -126,12 +132,32 @@ func _start_position(id: String) -> Vector2i:
 				return r.position
 	var main := get_window()
 	var screen := DisplayServer.screen_get_usable_rect(main.current_screen)
-	# First panel: right edge on the tower's right edge; each next one opens
-	# just left of the panels already on screen.
+	# First panel: right edge on the tower's right edge. Later ones open next
+	# to the panels already on screen, keeping the menu order left to right.
 	var x: float = float(main.position.x + main.size.x) - float(WIDTHS[id])
+	var mine := ORDER.find(id)
+	var left_edge := INF
+	var right_edge := -INF
 	for other in _windows:
-		if other != id:
-			x = minf(x, float(_windows[other].position.x) - GAP - float(WIDTHS[id]))
+		if other == id:
+			continue
+		var w: Window = _windows[other]
+		if ORDER.find(other) < mine:
+			right_edge = maxf(right_edge, float(w.position.x + w.size.x))
+		else:
+			left_edge = minf(left_edge, float(w.position.x))
+	if right_edge > -INF:
+		x = right_edge + GAP
+	elif left_edge < INF:
+		x = left_edge - GAP - float(WIDTHS[id])
+	# No room on the right: open left of everything instead of overlapping.
+	var screen_r := DisplayServer.screen_get_usable_rect(main.current_screen)
+	if x + float(WIDTHS[id]) > float(screen_r.end.x):
+		var leftmost := float(main.position.x + main.size.x)
+		for other in _windows:
+			if other != id:
+				leftmost = minf(leftmost, float(_windows[other].position.x))
+		x = leftmost - GAP - float(WIDTHS[id])
 	var y := main.position.y - int(PANEL_H) - int(GAP)
 	for other in _windows:
 		if other != id:

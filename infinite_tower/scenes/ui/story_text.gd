@@ -29,20 +29,20 @@ const COMIC := {
 
 const TUTORIAL := {
 	"en": [
-		["The tower climbs by itself", "Your Stairborn climbs while you work. The little tower lives in the corner of your taskbar: hover it to see the party and the floor, click it to open the Expedition."],
-		["Fights and bonfires", "Fights are automatic. Every 10 floors there is a bonfire: the party rests, equips its best gear and saves a checkpoint. If everyone falls, they tumble back to the last bonfire and try again."],
-		["Heroes", "You start alone. Mint new heroes with gold (random class and rarity) in the Party tab, or buy them in the Market. Up to 3 heroes climb together, the rest wait on the bench."],
-		["Gear and skills", "Loot drops on the stairs. Drag items onto your heroes in the Equipment tab. Every level gives a skill point to spend in the Skills tab."],
-		["Market and Ascension", "The Market restocks every 15 minutes. When the climb stalls, Ascend: start over and earn Souls for permanent upgrades."],
-		["Closing the game", "Closing hides Stairborn in the system tray and the climb goes on. Right-click the tray icon to show it again or quit. Even with the game off, progress is calculated when you come back."],
+		["The tower climbs by itself", "Your Stairborn climbs while you work. The little tower floats wherever you drop it (drag it, even to another monitor). Hover it to see the party; click it or the round buttons to open the menu."],
+		["Wounds, mana and bonfires", "HP and mana do NOT come back between floors. Skills cost mana. Every 10 floors a bonfire heals everything and saves a checkpoint. With Auto-rest on, a hurt party walks back to the bonfire by itself."],
+		["Falling hurts", "If everyone falls, the party tumbles back to the bonfire and drops a quarter of its gold. The floor number turns green, yellow, orange or red to show how dangerous the next floor is."],
+		["Heroes", "You start alone. In the HEROES panel, Mint a hero for gold: random class, name and rarity. Up to 3 heroes fight; the others wait in the reserve, and you choose who swaps in."],
+		["Gear, talents and skills", "Loot drops on the stairs. Drag items onto heroes in INVENTORY, and burn spare items in the Forge to make a better one. Each level gives a talent point (TALENTS); new skills unlock at levels 10 and 25 (SKILLS)."],
+		["Souls", "When the climb stalls (floor 50+), Ascend in the SOULS panel: start over and earn Souls for permanent bonuses. Closing the game hides it in the tray; the climb goes on."],
 	],
 	"pt": [
-		["A torre sobe sozinha", "Seu Stairborn sobe enquanto você trabalha. A torrezinha fica no canto da barra de tarefas: passe o mouse para ver o grupo e o andar, clique para abrir a Expedição."],
-		["Lutas e fogueiras", "As lutas são automáticas. A cada 10 andares há uma fogueira: o grupo descansa, equipa o melhor que tem e salva um checkpoint. Se todos caírem, rolam de volta até a última fogueira e tentam de novo."],
-		["Heróis", "Você começa sozinho. Faça mint de novos heróis com ouro (classe e raridade aleatórias) na aba Party, ou compre no Mercado. Até 3 heróis sobem juntos, o resto espera no banco."],
-		["Equipamentos e habilidades", "Os itens caem nos degraus. Arraste itens para os heróis na aba Equipment. Cada nível dá um ponto para gastar na aba Skills."],
-		["Mercado e Ascensão", "O Mercado renova o estoque a cada 15 minutos. Quando a subida travar, faça a Ascensão: recomece e ganhe Souls para melhorias permanentes."],
-		["Fechando o jogo", "Fechar o jogo esconde o Stairborn na bandeja do sistema e a subida continua. Clique com o botão direito no ícone da bandeja para mostrar ou sair. Mesmo com o jogo desligado, o progresso é calculado quando você volta."],
+		["A torre sobe sozinha", "Seu Stairborn sobe enquanto você trabalha. A torrezinha flutua onde você a deixar (arraste, até para outro monitor). Passe o mouse para ver o grupo; clique nela ou nos botões redondos para abrir o menu."],
+		["Ferimentos, mana e fogueiras", "Vida e mana NÃO voltam entre os andares. As skills gastam mana. A cada 10 andares uma fogueira cura tudo e salva o checkpoint. Com o Auto-descanso ligado, o grupo ferido volta sozinho para a fogueira."],
+		["Cair dói", "Se todos caírem, o grupo rola de volta até a fogueira e perde um quarto do ouro. O número do andar fica verde, amarelo, laranja ou vermelho para mostrar o perigo do próximo andar."],
+		["Heróis", "Você começa sozinho. No painel HEROES, faça Mint de um herói com ouro: classe, nome e raridade aleatórios. Até 3 heróis lutam; os outros esperam na reserva, e você escolhe quem entra."],
+		["Itens, talentos e skills", "Os itens caem nos degraus. Arraste itens para os heróis no INVENTORY e queime os que sobram na Forja para criar um melhor. Cada nível dá um ponto de talento (TALENTS); skills novas liberam nos níveis 10 e 25 (SKILLS)."],
+		["Souls", "Quando a subida travar (andar 50+), faça a Ascensão no painel SOULS: recomece e ganhe Souls para bônus permanentes. Fechar o jogo esconde ele na bandeja e a subida continua."],
 	],
 }
 

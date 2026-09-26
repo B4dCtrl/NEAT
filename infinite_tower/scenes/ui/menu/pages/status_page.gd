@@ -19,10 +19,14 @@ var _name: Label
 var _sub: Label
 var _xp: ProgressBar
 var _row_btn: Button
-var _bench_btn: Button
 var _stats: GridContainer
 var _train_box: VBoxContainer
 var _extra: VBoxContainer
+var _danger: RichTextLabel
+var _rest_btn: Button
+var _auto_bonfire: CheckBox
+var _retreat_label: Label
+var _retreat_slider: HSlider
 var _dirty := true
 var _extra_sig := ""
 
@@ -41,8 +45,15 @@ func _ready() -> void:
 	_money = Label.new()
 	_money.add_theme_color_override("font_color", Ornate.ACCENT)
 	v.add_child(_money)
+	_danger = RichTextLabel.new()
+	_danger.bbcode_enabled = true
+	_danger.fit_content = true
+	_danger.scroll_active = false
+	_danger.add_theme_font_size_override("normal_font_size", 12)
+	_danger.tooltip_text = "How the party (as it is now) would fare. Easy / Fair / Hard / Deadly."
+	v.add_child(_danger)
+	_build_bonfire(v)
 	_picker = HeroPicker.new()
-	_picker.show_mint = true
 	_picker.picked.connect(func(i):
 		hero_idx = i
 		if host != null:
@@ -100,11 +111,6 @@ func _ready() -> void:
 	v.add_child(auto)
 	_extra = VBoxContainer.new()
 	v.add_child(_extra)
-	_bench_btn = Button.new()
-	_bench_btn.focus_mode = Control.FOCUS_NONE
-	_bench_btn.text = "Send this hero to the bench"
-	_bench_btn.pressed.connect(func(): Game.bench_hero(hero_idx); hero_idx = 0)
-	v.add_child(_bench_btn)
 
 	Game.state_changed.connect(func(): _dirty = true)
 	Game.party_changed.connect(func(): _picker.rebuild(); _dirty = true)
@@ -150,7 +156,8 @@ func _refresh() -> void:
 		["Crit damage", "x%.2f" % st["crit_damage"]],
 		["Dodge", UiUtil.pct(st["dodge"], 1)],
 		["Lifesteal", UiUtil.pct(st.get("lifesteal", 0.0), 1)],
-		["Current HP", UiUtil.pct(float(hero["hp_ratio"]))],
+		["Mana", "%s (+%s/s in fights)" % [UiUtil.num(st["mana"]), String.num(st["mana_regen"], 1)]],
+		["Current HP / Mana", "%s / %s" % [UiUtil.pct(float(hero["hp_ratio"])), UiUtil.pct(float(hero.get("mp_ratio", 1.0)))]],
 	]
 	for c in _stats.get_children():
 		c.queue_free()
@@ -166,36 +173,19 @@ func _refresh() -> void:
 		var cost := Progression.training_cost(s, key)
 		b.text = "%s  Lv %d   (%s gold)" % [t["name"], s["training"][key], UiUtil.num(cost)]
 		b.disabled = float(s["gold"]) < cost
-	_bench_btn.visible = heroes.size() > 1
+	_refresh_bonfire()
 	_rebuild_extra()
 
 
 func _rebuild_extra() -> void:
 	var s: Dictionary = Game.state
 	# Rebuilt only when something it shows changes, so buttons do not flicker.
-	var sig := str([s["bench"].size(), s["heroes"].size(), hero_idx, s["relics_owned"], s["relics_equipped"]])
+	var sig := str([s["relics_owned"], s["relics_equipped"]])
 	if sig == _extra_sig:
 		return
 	_extra_sig = sig
 	for c in _extra.get_children():
 		c.queue_free()
-	if not s["bench"].is_empty():
-		_extra.add_child(Ornate.header_label("Bench"))
-		for b in s["bench"].size():
-			var h: Dictionary = s["bench"][b]
-			var row := HBoxContainer.new()
-			var l := Ornate.small_label("%s · %s · Lv %d" % [h["name"], DataDB.classes()[h["class"]]["name"], h["level"]], UiUtil.rarity_color(h.get("rarity", "common")), 12)
-			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			row.add_child(l)
-			var sw := Button.new()
-			sw.focus_mode = Control.FOCUS_NONE
-			var full: bool = s["heroes"].size() >= Heroes.party_slots()
-			sw.text = "Swap in" if full else "Join"
-			sw.tooltip_text = "Swaps with the hero selected above" if full else "Joins the party"
-			var target: int = hero_idx if full else s["heroes"].size()
-			sw.pressed.connect(func(): Game.swap_hero(target, b))
-			row.add_child(sw)
-			_extra.add_child(row)
 	var slots := StatCalc.relic_slots(s)
 	_extra.add_child(Ornate.header_label("Relics %d/%d" % [s["relics_equipped"].size(), slots]))
 	var flow := HFlowContainer.new()
@@ -219,3 +209,65 @@ func _rebuild_extra() -> void:
 		flow.add_child(b)
 	if not any:
 		flow.add_child(Ornate.small_label("None found yet: bosses and vaults may drop them."))
+
+
+# ------------------------------------------------------------------ bonfire
+
+func _build_bonfire(v: VBoxContainer) -> void:
+	var box := PanelContainer.new()
+	v.add_child(box)
+	var bv := VBoxContainer.new()
+	box.add_child(bv)
+	var top := HBoxContainer.new()
+	bv.add_child(top)
+	var t := Ornate.header_label("Bonfire")
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_child(t)
+	_rest_btn = Button.new()
+	_rest_btn.focus_mode = Control.FOCUS_NONE
+	_rest_btn.text = "Rest now"
+	_rest_btn.tooltip_text = "Walk back to the last bonfire: full HP and mana, no gold lost.\nThe floors since that bonfire must be climbed again."
+	_rest_btn.pressed.connect(func(): Game.request_retreat())
+	top.add_child(_rest_btn)
+	_auto_bonfire = CheckBox.new()
+	_auto_bonfire.focus_mode = Control.FOCUS_NONE
+	_auto_bonfire.text = "Auto-rest when the party is hurt"
+	_auto_bonfire.toggled.connect(func(on): Game.set_setting("auto_bonfire", on))
+	bv.add_child(_auto_bonfire)
+	var row := HBoxContainer.new()
+	bv.add_child(row)
+	_retreat_label = Ornate.small_label("", Ornate.TEXT_DIM, 11)
+	_retreat_label.custom_minimum_size = Vector2(118, 0)
+	row.add_child(_retreat_label)
+	_retreat_slider = HSlider.new()
+	_retreat_slider.min_value = 0.1
+	_retreat_slider.max_value = 0.7
+	_retreat_slider.step = 0.05
+	_retreat_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_retreat_slider.focus_mode = Control.FOCUS_NONE
+	_retreat_slider.value_changed.connect(func(val): _retreat_label.text = "Rest below %d%% HP" % roundi(val * 100.0))
+	_retreat_slider.drag_ended.connect(func(_c): Game.set_setting("retreat_hp", _retreat_slider.value))
+	row.add_child(_retreat_slider)
+	var loss := roundi(100.0 * float(DataDB.balance().get("fall_gold_loss", 0.0)))
+	var note := Ornate.small_label("If the party falls, it drops %d%% of its gold. Resting in time keeps it." % loss, Ornate.TEXT_DIM, 11)
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	bv.add_child(note)
+
+
+func _refresh_bonfire() -> void:
+	var s: Dictionary = Game.state
+	_auto_bonfire.set_pressed_no_signal(s["settings"].get("auto_bonfire", true))
+	var th := float(s["settings"].get("retreat_hp", 0.35))
+	if not _retreat_slider.has_focus():
+		_retreat_slider.set_value_no_signal(th)
+	_retreat_label.text = "Rest below %d%% HP" % roundi(_retreat_slider.value * 100.0)
+	var at_fire := int(s["floor"]) <= int(s.get("checkpoint", 1))
+	_rest_btn.disabled = at_fire or Game.expedition.retreat_requested
+	_rest_btn.text = "Resting after fight" if Game.expedition.retreat_requested else "Rest now"
+	var n: Dictionary = Game.danger_next
+	var b: Dictionary = Game.danger_boss
+	if n.is_empty():
+		_danger.text = ""
+		return
+	_danger.text = "Next floor %d: [color=%s][b]%s[/b][/color]     Guardian %d: [color=%s][b]%s[/b][/color]" % [
+		n["floor"], n["color"], n["name"], b.get("floor", 0), b.get("color", "#ffffff"), b.get("name", "?")]

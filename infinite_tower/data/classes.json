@@ -38,7 +38,8 @@
 			"value": 0.35,
 			"description": "Recovers 35% of max HP. Born on the stairs, hard to put down.",
 			"level": 1,
-			"icon": "heal"
+			"icon": "heal",
+			"mana": 30
 		},
 		"skill_branch": "guard",
 		"skills": [
@@ -50,7 +51,8 @@
 				"value": 0.35,
 				"description": "Recovers 35% of max HP. Born on the stairs, hard to put down.",
 				"level": 1,
-				"icon": "heal"
+				"icon": "heal",
+				"mana": 30
 			},
 			{
 				"id": "stair_cleaver",
@@ -60,7 +62,8 @@
 				"mult": 2.8,
 				"level": 10,
 				"icon": "axe",
-				"description": "A leaping overhead blow: 280% damage to the first enemy."
+				"description": "A leaping overhead blow: 280% damage to the first enemy.",
+				"mana": 20
 			},
 			{
 				"id": "rallying_cry",
@@ -71,9 +74,15 @@
 				"duration": 5.0,
 				"level": 25,
 				"icon": "horn",
-				"description": "The whole party attacks 30% faster for 5s."
+				"description": "The whole party attacks 30% faster for 5s.",
+				"mana": 45
 			}
-		]
+		],
+		"mana": {
+			"max": 80,
+			"per_level": 1.0,
+			"regen": 2.5
+		}
 	},
 	"knight": {
 		"name": "Knight",
@@ -110,7 +119,8 @@
 			"value": 0.35,
 			"description": "Taunts all enemies and reduces party damage taken by 35% for 4s.",
 			"level": 1,
-			"icon": "shield"
+			"icon": "shield",
+			"mana": 30
 		},
 		"skill_branch": "guard",
 		"skills": [
@@ -123,7 +133,8 @@
 				"value": 0.35,
 				"description": "Taunts all enemies and reduces party damage taken by 35% for 4s.",
 				"level": 1,
-				"icon": "shield"
+				"icon": "shield",
+				"mana": 30
 			},
 			{
 				"id": "shield_bash",
@@ -133,7 +144,8 @@
 				"mult": 2.2,
 				"level": 10,
 				"icon": "bash",
-				"description": "Slams the shield into the first enemy for 220% damage."
+				"description": "Slams the shield into the first enemy for 220% damage.",
+				"mana": 15
 			},
 			{
 				"id": "last_stand",
@@ -143,9 +155,15 @@
 				"value": 0.2,
 				"level": 25,
 				"icon": "banner",
-				"description": "Heals every hero for 20% of their max HP."
+				"description": "Heals every hero for 20% of their max HP.",
+				"mana": 50
 			}
-		]
+		],
+		"mana": {
+			"max": 60,
+			"per_level": 0.8,
+			"regen": 2.0
+		}
 	},
 	"ranger": {
 		"name": "Ranger",
@@ -182,7 +200,8 @@
 			"mult": 0.9,
 			"description": "Fires 4 arrows at random enemies for 90% damage each.",
 			"level": 1,
-			"icon": "volley"
+			"icon": "volley",
+			"mana": 25
 		},
 		"skill_branch": "cunning",
 		"skills": [
@@ -195,7 +214,8 @@
 				"mult": 0.9,
 				"description": "Fires 4 arrows at random enemies for 90% damage each.",
 				"level": 1,
-				"icon": "volley"
+				"icon": "volley",
+				"mana": 25
 			},
 			{
 				"id": "piercing_shot",
@@ -205,7 +225,8 @@
 				"mult": 3.2,
 				"level": 10,
 				"icon": "pierce",
-				"description": "A heavy arrow: 320% damage to the first enemy."
+				"description": "A heavy arrow: 320% damage to the first enemy.",
+				"mana": 20
 			},
 			{
 				"id": "wind_step",
@@ -216,9 +237,15 @@
 				"duration": 4.0,
 				"level": 25,
 				"icon": "wind",
-				"description": "The whole party attacks 40% faster for 4s."
+				"description": "The whole party attacks 40% faster for 4s.",
+				"mana": 40
 			}
-		]
+		],
+		"mana": {
+			"max": 80,
+			"per_level": 1.0,
+			"regen": 2.5
+		}
 	},
 	"arcanist": {
 		"name": "Arcanist",
@@ -256,7 +283,8 @@
 			"duration": 3.0,
 			"description": "Hits all enemies for 220% magic damage and ignites them.",
 			"level": 1,
-			"icon": "meteor"
+			"icon": "meteor",
+			"mana": 50
 		},
 		"skill_branch": "might",
 		"skills": [
@@ -270,7 +298,8 @@
 				"duration": 3.0,
 				"description": "Hits all enemies for 220% magic damage and ignites them.",
 				"level": 1,
-				"icon": "meteor"
+				"icon": "meteor",
+				"mana": 50
 			},
 			{
 				"id": "firebolt",
@@ -280,7 +309,8 @@
 				"mult": 2.5,
 				"level": 10,
 				"icon": "firebolt",
-				"description": "Hurls a firebolt: 250% fire damage to the first enemy."
+				"description": "Hurls a firebolt: 250% fire damage to the first enemy.",
+				"mana": 18
 			},
 			{
 				"id": "mending_flames",
@@ -290,8 +320,14 @@
 				"value": 0.18,
 				"level": 25,
 				"icon": "mend",
-				"description": "Warm embers heal every hero for 18% of their max HP."
+				"description": "Warm embers heal every hero for 18% of their max HP.",
+				"mana": 55
 			}
-		]
+		],
+		"mana": {
+			"max": 140,
+			"per_level": 1.6,
+			"regen": 3.5
+		}
 	}
 }

@@ -16,6 +16,7 @@ const SaveSystem = preload("res://core/save_system.gd")
 const Heroes = preload("res://core/heroes.gd")
 const Market = preload("res://core/market.gd")
 const Forge = preload("res://core/forge.gd")
+const Danger = preload("res://core/danger.gd")
 
 var failures := 0
 var passes := 0
@@ -36,6 +37,7 @@ func _init() -> void:
 	test_bonfire_and_market()
 	test_variety_and_supplies()
 	test_forge()
+	test_mana_bonfire_danger()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -321,6 +323,38 @@ func test_forge() -> void:
 	check(float(state["gold"]) < gold_before, "forging costs gold (economy sink)")
 	check(Loot.can_equip(made, "stairborn"), "forged item fits the chosen hero")
 
+
+func test_mana_bonfire_danger() -> void:
+	var state := GameState.new_game(31)
+	state["heroes"][0]["level"] = 12
+	var sim := Expedition.new(state)
+	sim.floor_info = TowerGen.generate(31, 6)
+	state["floor"] = 6
+	sim._start_combat()
+	var u = sim.combat.heroes[0]
+	check(u.max_mana > 0.0, "heroes have mana")
+	u.mana = 0.0
+	u.hp = u.max_hp * 0.3
+	for i in 5:
+		sim.combat.step()
+	check(u.mana < 20.0, "no mana, no Second Wind (needs 30)")
+	sim.combat.run_to_end()
+	sim._end_combat()
+	check(float(state["heroes"][0]["mp_ratio"]) < 1.0, "mana carries over after a fight")
+	# Retreat: back to the checkpoint, fully rested, gold kept.
+	state["checkpoint"] = 1
+	state["floor"] = 7
+	state["gold"] = 1000.0
+	state["heroes"][0]["hp_ratio"] = 0.2
+	sim.retreat_to_bonfire()
+	check(int(state["floor"]) == 1 and float(state["heroes"][0]["hp_ratio"]) == 1.0 and float(state["heroes"][0]["mp_ratio"]) == 1.0, "retreat rests at the bonfire")
+	check(float(state["gold"]) == 1000.0, "retreating keeps the gold")
+	state["floor"] = 7
+	sim._fall_back()
+	check(float(state["gold"]) < 1000.0, "falling drops gold")
+	var fresh := GameState.new_game(31)
+	check(int(Danger.assess(fresh, 150)["level"]) == 3, "floor 150 is Deadly for a new party")
+	check(int(Danger.assess(fresh, 2)["level"]) <= 1, "floor 2 is Easy or Fair for a new party")
 
 ## Long run with no player input: how far does the idle loop get?
 func balance_report() -> void:

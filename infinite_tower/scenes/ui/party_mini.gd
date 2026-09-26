@@ -28,19 +28,21 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	var exp = Game.expedition
 	var bar_h := 3.0
-	var scale := floorf(clampf((size.y - bar_h - 8.0) / 12.0, 1.0, 3.0))
+	var scale := floorf(clampf((size.y - bar_h - 10.0) / 12.0, 1.0, 3.0))
 	var cell := 12.0 * scale + 4.0
 	var x := 4.0
 	for i in _textures.size():
 		var tex: Texture2D = _textures[i]
-		var ratio := float(Game.state["heroes"][i]["hp_ratio"])
-		var alive := true
 		if i >= Game.state["heroes"].size():
 			break
+		var ratio := float(Game.state["heroes"][i]["hp_ratio"])
+		var mana := float(Game.state["heroes"][i].get("mp_ratio", 1.0))
+		var alive := true
 		if exp != null and exp.combat != null and exp.phase == "combat" and i < exp.combat.heroes.size():
 			ratio = exp.combat.heroes[i].hp_ratio()
+			mana = exp.combat.heroes[i].mp_ratio()
 			alive = exp.combat.heroes[i].alive
-		var y := (size.y - 12.0 * scale - bar_h - 2.0) * 0.5
+		var y := (size.y - 12.0 * scale - bar_h - 4.0) * 0.5
 		if tex != null:
 			var h := 12.0 * scale
 			var w := minf(cell - 2.0, tex.get_width() * h / tex.get_height())
@@ -49,5 +51,7 @@ func _draw() -> void:
 		draw_rect(Rect2(x + 2.0, by, cell - 4.0, bar_h), Color(0, 0, 0, 0.6))
 		var col := Color("#5fd35f") if ratio > 0.5 else (Color("#ffd23f") if ratio > 0.25 else Color("#ff4f4f"))
 		draw_rect(Rect2(x + 2.0, by, (cell - 4.0) * ratio, bar_h), col)
+		draw_rect(Rect2(x + 2.0, by + bar_h, cell - 4.0, 2.0), Color(0, 0, 0, 0.6))
+		draw_rect(Rect2(x + 2.0, by + bar_h, (cell - 4.0) * mana, 2.0), Color("#5a9cff"))
 		x += cell
 	custom_minimum_size.x = x + 4.0

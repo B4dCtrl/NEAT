@@ -32,6 +32,7 @@ static func make_hero(state: Dictionary, class_id: String, hero_name: String, ra
 		"xp": 0.0,
 		"row": cdef["default_row"],
 		"hp_ratio": 1.0,
+		"mp_ratio": 1.0,
 		"equipment": equipment,
 		"skills": {},
 	}

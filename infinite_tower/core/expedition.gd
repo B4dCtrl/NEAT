@@ -30,6 +30,8 @@ var events: Array = []
 var last_fall := {}
 ## Damage per hero over the last finished fight, for the DPS panel.
 var last_fight := {"time": 0.0, "damage": {}}
+## The player pressed "Rest at bonfire": retreat after the current fight.
+var retreat_requested := false
 
 
 func _init(state_: Dictionary) -> void:
@@ -139,6 +141,7 @@ func _start_combat() -> void:
 			"name": hero["name"],
 			"stats": StatCalc.hero_stats(state, hero, mods),
 			"hp_ratio": maxf(float(hero["hp_ratio"]), 0.05),
+			"mp_ratio": float(hero.get("mp_ratio", 1.0)),
 			"row": hero["row"],
 			"skills": Heroes.active_skills(hero),
 		})
@@ -164,7 +167,7 @@ func _start_combat() -> void:
 		"party_specials": mods.get("specials", []),
 		"summon_factory": func(unit_id: String) -> Dictionary:
 			return {"id": unit_id, "def": DataDB.unit_def(unit_id), "stats": TowerGen.enemy_stats(unit_id, floor_num), "is_boss": false},
-		"supplies": {"potion": int(supplies.get("health_potion", 0)), "bomb": int(supplies.get("fire_bomb", 0))},
+		"supplies": {"potion": int(supplies.get("health_potion", 0)), "bomb": int(supplies.get("fire_bomb", 0)), "mana": int(supplies.get("mana_potion", 0))},
 		"auto_supplies": state["settings"].get("auto_supplies", true),
 	})
 	tick_acc = 0.0
@@ -181,13 +184,14 @@ func _end_combat() -> void:
 			continue
 		var hero: Dictionary = state["heroes"][u.index]
 		hero["hp_ratio"] = u.hp_ratio() if u.alive else 0.0
+		hero["mp_ratio"] = u.mp_ratio()
 		fight_damage[hero["id"]] = u.damage_dealt
 		stats["damage_by_hero"][hero["id"]] = float(stats["damage_by_hero"].get(hero["id"], 0.0)) + u.damage_dealt
 	last_fight = {"time": combat.time, "damage": fight_damage}
 	# Potions and bombs used during the fight come out of the bag.
 	var used: Dictionary = combat.consumed
 	for key in used:
-		var id: String = {"potion": "health_potion", "bomb": "fire_bomb"}.get(key, key)
+		var id: String = {"potion": "health_potion", "bomb": "fire_bomb", "mana": "mana_potion"}.get(key, key)
 		var bag: Dictionary = state["consumables"]
 		bag[id] = maxi(0, int(bag.get(id, 0)) - int(used[key]))
 	combat.consumed = {}
@@ -240,6 +244,10 @@ func _end_combat() -> void:
 		_set_phase("pause", 0.4)
 	for d in drops:
 		_grant_drop(d)
+	# Auto-bonfire: too hurt to go on (and no bonfire right ahead) -> go rest.
+	if _should_retreat() and not TowerGen.is_bonfire(int(state["floor"]) + 1):
+		retreat_requested = false
+		retreat_to_bonfire()
 
 
 ## Wiped out: the party wakes up at the last bonfire, fully healed.
@@ -256,11 +264,14 @@ func _fall_back() -> void:
 		state["wall_floor"] = from
 		state["wall_attempts"] = 1
 	state["stats"]["fall_backs"] += 1
-	for hero in state["heroes"]:
-		hero["hp_ratio"] = 1.0
-	last_fall = {"from": from, "to": to}
-	GameState.add_history(state, "fall", "Fell from floor %d back to the bonfire on %d" % [from, to])
-	events.append({"type": "fall_back", "from": from, "to": to})
+	restore_party()
+	# Dying hurts: the party drops part of its gold on the stairs. Retreating
+	# to the bonfire in time (auto-bonfire) keeps it.
+	var lost := floorf(float(state["gold"]) * float(bal.get("fall_gold_loss", 0.0)))
+	state["gold"] = float(state["gold"]) - lost
+	last_fall = {"from": from, "to": to, "gold_lost": lost}
+	GameState.add_history(state, "fall", "Fell from floor %d back to the bonfire on %d (lost %d gold)" % [from, to, int(lost)])
+	events.append({"type": "fall_back", "from": from, "to": to, "gold_lost": lost})
 	after_pause = "walk"
 	_set_phase("pause", float(bal["fallback_pause"]))
 
@@ -270,8 +281,7 @@ func _rest_at_bonfire() -> void:
 	var bal := DataDB.balance()
 	var f := int(state["floor"])
 	state["checkpoint"] = f
-	for hero in state["heroes"]:
-		hero["hp_ratio"] = 1.0
+	restore_party()
 	if state["settings"].get("auto_equip", true):
 		for item in state["inventory"].duplicate():
 			var idx := Inventory.best_hero_for(state, item)
@@ -289,6 +299,51 @@ func _rest_at_bonfire() -> void:
 		phase_total = 1.0
 	else:
 		_set_phase("pause", float(bal["bonfire_rest"]))
+
+
+## Bonfire rest: HP and mana back to full.
+func restore_party() -> void:
+	for hero in state["heroes"]:
+		hero["hp_ratio"] = 1.0
+		hero["mp_ratio"] = 1.0
+
+
+## Average HP share of the party (fallen heroes count as 0).
+func party_hp() -> float:
+	if state["heroes"].is_empty():
+		return 1.0
+	var total := 0.0
+	for hero in state["heroes"]:
+		total += float(hero["hp_ratio"])
+	return total / state["heroes"].size()
+
+
+## Walks back to the last bonfire to rest: full HP and mana, no gold lost,
+## but the floors since the bonfire must be climbed again.
+func retreat_to_bonfire() -> void:
+	retreat_requested = false
+	var to := int(state.get("checkpoint", 1))
+	var from := int(state["floor"])
+	state["floor"] = to
+	restore_party()
+	state["stats"]["retreats"] = int(state["stats"].get("retreats", 0)) + 1
+	last_fall = {"from": from, "to": to, "retreat": true}
+	GameState.add_history(state, "info", "Retreated from floor %d to rest at the bonfire on %d" % [from, to])
+	events.append({"type": "retreat", "from": from, "to": to})
+	combat = null
+	after_pause = "next_floor"
+	_set_phase("pause", float(DataDB.balance()["fallback_pause"]))
+
+
+## Auto-bonfire: after a won fight, retreat when the party is too hurt to go on.
+func _should_retreat() -> bool:
+	if retreat_requested:
+		return true
+	if not state["settings"].get("auto_bonfire", true):
+		return false
+	if int(state["floor"]) <= int(state.get("checkpoint", 1)):
+		return false
+	return party_hp() < float(state["settings"].get("retreat_hp", 0.35))
 
 
 func is_camping() -> bool:

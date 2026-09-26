@@ -122,9 +122,16 @@ classe, liberadas nos níveis 1/10/25, com cooldown ao vivo e liga/desliga), **I
 lado; a janela cresce para cima e para a esquerda sem mover a torre. O botão ⤢ abre a
 Expedição completa e o X manda o jogo para a bandeja.
 
-### Bonfires e cura
-Os ferimentos se acumulam entre os andares: a vida só volta na **bonfire** (a cada 10
-andares), com poções ou com skills de cura. Shrines não curam mais.
+### Bonfires, mana e perigo
+Vida e **mana** não voltam entre os andares. As skills gastam mana (que regenera devagar
+nas lutas); a **bonfire** (a cada 10 andares) recupera tudo. Com o **auto-descanso**
+ligado, o grupo ferido (abaixo do limite escolhido) volta sozinho à bonfire; cair custa
+25% do ouro. O número do andar muda de cor (Easy/Fair/Hard/Deadly) conforme uma
+simulação da próxima luta (`core/danger.gd`).
+
+### Heróis e Souls
+O painel **HEROES** concentra a party (3 vagas), a reserva e o **mint** (com as chances
+de raridade à vista). O painel **SOULS** traz a Ascensão e a árvore permanente.
 
 ### Forja (queimar itens)
 `core/forge.gd` queima 3–5 itens de uma raridade e cria 1 da raridade seguinte para o
