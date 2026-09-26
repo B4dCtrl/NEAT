@@ -7,7 +7,8 @@ const DataDB = preload("res://core/data_db.gd")
 
 const CORE_STATS := ["hp", "attack", "defense", "magic_power", "attack_speed", "crit_chance", "crit_damage", "dodge"]
 ## Party-wide keys: summed over the whole party instead of per hero.
-const PARTY_KEYS := ["gold_pct", "drop_pct", "move_speed_pct", "xp_pct", "soul_pct", "cdr", "start_floor", "relic_slots"]
+const PARTY_KEYS := ["gold_pct", "drop_pct", "move_speed_pct", "xp_pct", "soul_pct", "cdr", "start_floor", "relic_slots",
+	"founder_pct", "founder_level", "recruit_level", "mint_discount", "rarity_luck", "start_gold"]
 const CRIT_CAP := 0.75
 const DODGE_CAP := 0.5
 const CDR_CAP := 0.5
@@ -88,6 +89,8 @@ static func hero_stats(state: Dictionary, hero: Dictionary, mods: Dictionary = {
 		flat[key] = float(cdef["base"].get(key, 0.0)) + float(cdef["growth"].get(key, 0.0)) * (lvl - 1)
 	# Rarer heroes have a higher potential on their innate stats.
 	var potential := float(hero.get("potential", 1.0))
+	if DataDB.classes()[hero["class"]].get("founder", false):
+		potential *= 1.0 + float(mods.get("founder_pct", 0.0))
 	for key in POTENTIAL_STATS:
 		flat[key] *= potential
 	var pct := {}
@@ -107,7 +110,11 @@ static func hero_stats(state: Dictionary, hero: Dictionary, mods: Dictionary = {
 		if item == null:
 			continue
 		for key in item["stats"]:
-			if key in CORE_STATS:
+			if key == "power":
+				# Power feeds both Attack and Magic, so armour suits every class.
+				flat["attack"] += float(item["stats"][key])
+				flat["magic_power"] += float(item["stats"][key])
+			elif key in CORE_STATS:
 				flat[key] += float(item["stats"][key])
 			elif not key in PARTY_KEYS:
 				pct[key] = pct.get(key, 0.0) + float(item["stats"][key])

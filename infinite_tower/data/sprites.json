@@ -771,6 +771,120 @@
 					"....oooo...."
 				]
 			]
+		},
+		"cons_potion": {
+			"palette": {"o": "#14121c", "b": "#8a5a33", "a": "#d9362b", "c": "#ffb3a8"},
+			"frames": [
+				[
+					"....oooo....",
+					"....obbo....",
+					"....oooo....",
+					"...o....o...",
+					"..o......o..",
+					".o.aaaaaa.o.",
+					".oaaacaaaao.",
+					".oaaaaaaaao.",
+					".oaaaaaaaao.",
+					"..oaaaaaao..",
+					"...oooooo...",
+					"............"
+				]
+			]
+		},
+		"cons_elixir": {
+			"palette": {"o": "#14121c", "b": "#8a5a33", "a": "#3d8fd9", "c": "#b8e2ff"},
+			"frames": [
+				[
+					"....oooo....",
+					"....obbo....",
+					"....oooo....",
+					"...o....o...",
+					"..o......o..",
+					".o.aaaaaa.o.",
+					".oaaacaaaao.",
+					".oaaaaaaaao.",
+					".oaaaaaaaao.",
+					"..oaaaaaao..",
+					"...oooooo...",
+					"............"
+				]
+			]
+		},
+		"cons_tonic": {
+			"palette": {"o": "#14121c", "b": "#8a5a33", "a": "#e8862a", "c": "#ffe0a8"},
+			"frames": [
+				[
+					"....oooo....",
+					"....obbo....",
+					"....oooo....",
+					"...o....o...",
+					"..o......o..",
+					".o.aaaaaa.o.",
+					".oaaacaaaao.",
+					".oaaaaaaaao.",
+					".oaaaaaaaao.",
+					"..oaaaaaao..",
+					"...oooooo...",
+					"............"
+				]
+			]
+		},
+		"cons_iron": {
+			"palette": {"o": "#14121c", "b": "#8a5a33", "a": "#8a93a3", "c": "#e0e6ee"},
+			"frames": [
+				[
+					"....oooo....",
+					"....obbo....",
+					"....oooo....",
+					"...o....o...",
+					"..o......o..",
+					".o.aaaaaa.o.",
+					".oaaacaaaao.",
+					".oaaaaaaaao.",
+					".oaaaaaaaao.",
+					"..oaaaaaao..",
+					"...oooooo...",
+					"............"
+				]
+			]
+		},
+		"cons_bomb": {
+			"palette": {"o": "#14121c", "a": "#3a3a44", "c": "#8a8a9a", "f": "#ffb13d", "r": "#ff4f2a"},
+			"frames": [
+				[
+					"........f...",
+					".......frf..",
+					"......o.f...",
+					".....o......",
+					"...oooooo...",
+					"..oaaaaaao..",
+					".oacaaaaaao.",
+					".oacaaaaaao.",
+					".oaaaaaaaao.",
+					".oaaaaaaaao.",
+					"..oaaaaaao..",
+					"...oooooo..."
+				]
+			]
+		},
+		"cons_scroll": {
+			"palette": {"o": "#14121c", "a": "#efe3c2", "b": "#c9a36b", "k": "#6a5a4a"},
+			"frames": [
+				[
+					"............",
+					".oooooooooo.",
+					"obbbbbbbbbbo",
+					".oaaaaaaaao.",
+					".oakkkkkkao.",
+					".oaaaaaaaao.",
+					".oakkkkkao..",
+					".oaaaaaaaao.",
+					".oakkkkkkao.",
+					"obbbbbbbbbbo",
+					".oooooooooo.",
+					"............"
+				]
+			]
 		}
 	}
 }

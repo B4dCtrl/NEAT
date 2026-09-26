@@ -59,6 +59,7 @@ infinite_tower/
 │   ├── data_db.gd            # Acesso somente-leitura às tabelas JSON
 │   ├── platform_services.gd  # Costura para Steamworks (GodotSteam); no-op sem backend
 │   ├── game.gd               # [autoload Game] dirige a Expedition, sinais p/ UI, autosave, ações
+│   ├── audio.gd              # [autoload Audio] SFX e música chiptune sintetizados em código
 │   └── window_manager.gd     # [autoload WindowManager] Taskbar ↔ Expedition, dock, foco
 ├── data/
 │   ├── items.json            # Slots, raridades, bases, afixos, sets e relics
@@ -73,6 +74,7 @@ infinite_tower/
 │   │   ├── taskbar_view.tscn    # Visão reduzida (Desktop Companion)
 │   │   ├── expedition_view.tscn # Visão expandida (RPG completo)
 │   │   ├── tower_stage.gd       # O palco da escada infinita (usado nas duas views)
+│   │   ├── combat_fx.gd         # Cortes, flechas, bolas de fogo, crítico, esquiva, efeito por skill
 │   │   └── tabs/                # Party, Inventory, Ascension, Bestiary, History, Stats, Settings
 │   └── entities/
 │       ├── hero_sprite.tscn
@@ -103,10 +105,30 @@ legendas digitadas. Clique/Espaço avança e "Skip" pula. Depois vem um tutorial
 jogar". Os dois podem ser revistos em Settings, e o botão **?** abre o tutorial. O texto
 segue o idioma do sistema (português ou inglês). A subida só começa depois da intro.
 
-### Bandeja do sistema
-Fechar a janela não encerra o jogo: ele é minimizado, o ícone fica na **bandeja**
-(Windows/macOS) e a subida continua a 5 FPS. Clique no ícone para mostrar a torre; o menu
-tem "Abrir Expedição" e "Sair". Onde não há bandeja (Linux), fechar salva e sai.
+### Bandeja do sistema e minimizar
+Fechar (X) não encerra o jogo: ele vai para a **bandeja** (Windows/macOS) e a subida
+continua a 5 FPS. Clique no ícone para mostrar a torre; o menu tem "Abrir Expedição" e
+"Sair". Onde não há bandeja (Linux), fechar salva e sai. **Minimizar** a janela da
+Expedição volta para o modo Taskbar (a torre no cantinho da barra de tarefas).
+
+### Monstros, afixos e chefes
+28 monstros (variantes de cor com traços próprios: roubo de vida, espinhos, regeneração)
+e 15 chefes, cada um com habilidades (Slam, Summon, Heal, Shield, Drain, Frenzy). O chefe
+de cada Guardian gira pela lista do bioma; o Tower Lord é sempre o primeiro. A partir do
+andar 5 monstros podem vir **Elite** com afixos (Armored, Swift, Giant, Vampiric, Thorny,
+Regenerating, Shielded, Berserk) — mais fortes, maiores e com 60% mais gold/XP.
+
+### Itens utilizáveis
+Poções de vida, bombas de fogo, elixires (velocidade, fúria, ferro), pergaminho da fortuna
+e pergaminho de subida. Caem dos monstros e são vendidos no Mercado. Com "auto-usar"
+ligado a party bebe poção abaixo de 30% de vida e joga bomba em chefes.
+
+### Efeitos, música e sons
+Todos os efeitos são gerados em código: corte, garra, flecha, bola de fogo, faíscas,
+estrela de **CRIT**, esquiva com **MISS**, domo do Shield Wall, chuva do Volley, meteoro,
+cura, onda de choque, dreno, escudo hexagonal, raios e bombas, com tremor de tela nos
+golpes fortes. O áudio é sintetizado na hora (sem arquivos): SFX para cada evento e duas
+músicas chiptune em loop (subida e chefe). Volumes em Configurações.
 
 ### Torre helicoidal flutuando sobre a taskbar
 Inspirado em *A Fool's Errand* (Playdate) e *TBH: Task Bar Hero*. A janela da barra é
@@ -170,8 +192,11 @@ MD5: arquivo adulterado não abre e o loader cai para o `.bak`. A escrita é at�
 
 ### Balance (data-driven)
 Todos os números estão nos JSONs. Curva atual (sem Ascension, `--balance`):
-com um jogador que só minta heróis quando tem ouro: ~25 andares em 30 min,
-~50 em 1h (primeira Ascension) e ~100 em 5h, com Fall Backs frequentes depois disso. Inimigos crescem ~5.6%/andar (HP) e itens ~4.2%/ilvl; a
+com um jogador que só minta heróis quando tem ouro: ~30 andares em 30 min,
+~50 em 1h (primeira Ascension) e uma parede por volta do 75 — é a hora de ascender.
+A árvore de Ascension tem 4 colunas (Fundador, Guilda, Subida, Fortuna) pensadas para o
+começo solo: fundador mais forte e com níveis iniciais, recrutas mais baratos/raros e
+com níveis, ouro e andar inicial. Inimigos crescem ~5.6%/andar (HP) e itens ~4.2%/ilvl; a
 diferença é coberta por níveis, treino, raridade, sets, relics e Souls.
 
 ## Conteúdo do MVP
@@ -197,5 +222,5 @@ diferença é coberta por níveis, treino, raridade, sets, relics e Souls.
   teclas com a janela focada.
 - Integração GodotSteam: preencher `core/platform_services.gd` (achievements já disparam em
   `REACH_50`, `REACH_100`...).
-- Áudio (o volume master já existe), mais classes, skills ativas por item, cosméticos com
+- Música composta/gravada no lugar da sintetizada, mais classes, skills ativas por item, cosméticos com
   Crystals.

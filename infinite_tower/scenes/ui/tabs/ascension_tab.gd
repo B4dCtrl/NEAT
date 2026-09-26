@@ -32,18 +32,22 @@ func _ready() -> void:
 	add_child(_confirm)
 
 	var grid := GridContainer.new()
-	grid.columns = 3
+	grid.columns = 4
 	grid.add_theme_constant_override("h_separation", 10)
 	grid.add_theme_constant_override("v_separation", 10)
-	grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	v.add_child(grid)
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	v.add_child(scroll)
+	scroll.add_child(grid)
 	var nodes := DataDB.ascension_nodes()
 	var max_row := 0
 	for id in nodes:
 		max_row = maxi(max_row, int(nodes[id]["row"]))
 	# Lay nodes out on their (col,row) grid position; gaps are empty spacers.
 	for r in max_row + 1:
-		for c in 3:
+		for c in 4:
 			var found := ""
 			for id in nodes:
 				if int(nodes[id]["row"]) == r and int(nodes[id]["col"]) == c:
@@ -53,7 +57,9 @@ func _ready() -> void:
 				continue
 			var b := Button.new()
 			b.focus_mode = Control.FOCUS_NONE
-			b.custom_minimum_size = Vector2(250, 64)
+			b.custom_minimum_size = Vector2(150, 72)
+			b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			b.add_theme_font_size_override("font_size", 12)
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			var node_id := found
 			b.pressed.connect(func(): Game.buy_ascension_node(node_id); _refresh())

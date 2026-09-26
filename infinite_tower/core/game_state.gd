@@ -18,12 +18,15 @@ const DEFAULT_SETTINGS := {
 	"art_style": "mono",       # "mono" (1-bit) | "color" (biome palettes)
 	"fps_taskbar": 30,
 	"master_volume": 0.8,
+	"music_volume": 0.35,
+	"sfx_volume": 0.5,
 	"notify_glow": true,
 	"auto_equip": true,
 	"auto_train": true,
 	"auto_salvage_below": "uncommon",  # items below this rarity are salvaged on drop
 	"show_damage_numbers": true,
 	"auto_skills": true,
+	"auto_supplies": true,       # potions below 30% HP, bombs on bosses
 	"camp_at_bonfire": false,   # stop at the next bonfire to manage gear
 }
 
@@ -60,6 +63,7 @@ static func new_game(run_seed: int = 0) -> Dictionary:
 		"milestones": [],
 		"floors_cleared_total": 0,
 		"market": {},
+		"consumables": {"health_potion": 3},
 		"intro_seen": false,
 		"tutorial_seen": false,
 		"stats": {

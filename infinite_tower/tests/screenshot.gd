@@ -34,7 +34,9 @@ func _shot(name: String) -> void:
 func _run() -> void:
 	var game = root.get_node("Game")
 	var wm = root.get_node("WindowManager")
-	# Skip the story for these shots (story_shots.gd covers it).
+	# Skip the story for these shots (story_shots.gd covers it). Wait for the
+	# Game autoload to finish loading its state first.
+	await _wait(2)
 	game.state["intro_seen"] = true
 	game.state["tutorial_seen"] = true
 	await _wait(5)

@@ -16,6 +16,7 @@ const HeroSprite = preload("res://scenes/entities/hero_sprite.tscn")
 const EnemySprite = preload("res://scenes/entities/enemy_sprite.tscn")
 const UiNum = preload("res://scenes/ui/ui_util.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
+const CombatFx = preload("res://scenes/ui/combat_fx.gd")
 
 ## Size of one art pixel on screen.
 @export var px := 2.0
@@ -55,6 +56,8 @@ var _cam_h := 0.0          # camera height
 var _fall := 0.0
 var _floaters: Array = []
 var _drops: Array = []     # {tex, color, age, t, rank}
+var _fx := CombatFx.new()
+var _fx_layer: Node2D
 var _pal := {}
 var _pal_key := ""
 var _time := 0.0
@@ -67,6 +70,11 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	_rebuild_heroes()
 	_snap_camera()
+	# Effects and floating text are drawn on a layer above every sprite.
+	_fx_layer = Node2D.new()
+	_fx_layer.z_index = 10
+	_fx_layer.draw.connect(_draw_fx_layer)
+	add_child(_fx_layer)
 	Game.settings_changed.connect(_on_style_changed)
 	Game.loot_dropped.connect(_on_loot)
 	Game.party_changed.connect(_rebuild_heroes)
@@ -128,7 +136,8 @@ func project(t: float, r: float, h: float) -> Vector3:
 	var a := (t - _cam_t) * TAU
 	var z := cos(a)
 	var base := feet_y * size.y - R_WALK * TILT * px
-	return Vector3(axis_x() + r * sin(a) * px, base - (h - _cam_h) * px + z * r * TILT * px, z)
+	var sh := _fx.shake_offset()
+	return Vector3(axis_x() + r * sin(a) * px + sh.x, base - (h - _cam_h) * px + z * r * TILT * px + sh.y, z)
 
 
 func party_t() -> float:
@@ -188,6 +197,8 @@ func _process(delta: float) -> void:
 	for d in _drops:
 		d["age"] += delta
 	_drops = _drops.filter(func(d): return d["age"] < DROP_LIFE)
+	_fx.update(delta)
+	_fx_layer.queue_redraw()
 	for f in _floaters:
 		f["t"] += delta
 	_floaters = _floaters.filter(func(f): return f["t"] < 1.1)
@@ -285,19 +296,23 @@ func _place_heroes(exp) -> void:
 func _sync_enemies(exp) -> void:
 	var c = exp.combat
 	var cid: int = c.get_instance_id() if c != null else 0
-	if cid == _combat_id:
-		return
-	_combat_id = cid
-	for sp in enemy_sprites:
-		sp.queue_free()
-	enemy_sprites.clear()
+	if cid != _combat_id:
+		_combat_id = cid
+		for sp in enemy_sprites:
+			sp.queue_free()
+		enemy_sprites.clear()
 	if c == null:
 		return
-	for u in c.enemies:
+	# Also picks up minions summoned mid-fight.
+	while enemy_sprites.size() < c.enemies.size():
+		var u = c.enemies[enemy_sprites.size()]
 		var def := DataDB.unit_def(u.def_id)
 		var sp = EnemySprite.instantiate()
-		sp.configure(def["sprite"], def.get("palette", {}), px * (BOSS_SCALE if u.is_boss else 1.0), true, is_mono(), u.def_id)
+		var scale: float = (BOSS_SCALE if u.is_boss else 1.0) * u.scale
+		sp.configure(def["sprite"], def.get("palette", {}), px * scale, true, is_mono(), def.get("art", u.def_id), float(def.get("hue", -1.0)))
 		sp.unit_uid = u.uid
+		if u.affix_name != "":
+			sp.set_meta("elite", true)
 		add_child(sp)
 		enemy_sprites.append(sp)
 
@@ -308,17 +323,24 @@ func _place_enemies(exp) -> void:
 		return
 	var land := rest_t(int(Game.state["floor"]))
 	var extra := 0.0
+	var slot := 0
 	for i in enemy_sprites.size():
 		var sp = enemy_sprites[i]
 		var u = c.enemies[i]
 		var t: float
-		if u.is_boss:
+		if not u.alive and sp.has_meta("t"):
+			t = sp.get_meta("t")    # the fallen stay where they fell
+		elif u.is_boss:
 			t = land + ENEMY_START + ENEMY_SLOT * 0.8
 			extra = ENEMY_SLOT * 1.2
 		else:
-			t = land + ENEMY_START + extra + i * ENEMY_SLOT
-		# Enemies come round the tower when the fight starts.
-		var intro := clampf(c.time * 3.0, 0.0, 1.0) if exp.phase == "combat" else 1.0
+			t = land + ENEMY_START + extra + slot * ENEMY_SLOT
+			slot += 1
+		sp.set_meta("t", t)
+		if not sp.has_meta("born"):
+			sp.set_meta("born", c.time)
+		# Enemies (and summoned minions) come round the tower as they appear.
+		var intro := clampf((c.time - float(sp.get_meta("born"))) * 3.0, 0.0, 1.0) if exp.phase == "combat" else 1.0
 		t += (1.0 - intro) * 0.12
 		var p := project(t, R_WALK, ground_h(t))
 		sp.position = Vector2(p.x, p.y).round()
@@ -335,32 +357,166 @@ func _sprite_for(uid: String):
 	return enemy_sprites[i] if i < enemy_sprites.size() else null
 
 
+func _center(sp) -> Vector2:
+	return sp.position - Vector2(0, sp.size_px().y * 0.5)
+
+
 func _consume_combat_events() -> void:
+	# Two stages exist (taskbar + expedition); only the visible one reacts.
+	if not is_visible_in_tree():
+		return
 	var numbers: bool = show_numbers and Game.state["settings"].get("show_damage_numbers", true)
+	var c = Game.expedition.combat
 	for ev in Game.combat_events:
 		var src = _sprite_for(ev.get("src", "")) if ev.get("src", "") != "" else null
+		var su = c.unit_by_uid(ev["src"]) if c != null and ev.get("src", "") != "" else null
 		match ev["t"]:
 			"hit":
 				var dst = _sprite_for(ev["dst"])
-				if dst != null:
-					dst.hurt()
-					if numbers:
-						_float_at(dst, UiNum.num(ev["dmg"]), Color("#ffd23f") if ev["crit"] else Color.WHITE, ev["crit"])
-				if src != null and ev["tag"] == "":
+				if dst == null:
+					continue
+				var b := _center(dst)
+				var a := _center(src) if src != null else b
+				dst.hurt()
+				var tag: String = ev["tag"]
+				if tag == "" and src != null and su != null:
 					src.lunge()
+					_attack_fx(su, a, b)
+				elif tag == "splash":
+					_fx.spawn("burst", a, b, Color("#ff9d4a"), 0.6, 0.25)
+				elif tag == "chain":
+					_fx.spawn("lightning", a, b, Color.WHITE, 1.0, 0.25)
+				elif tag == "thorns":
+					_fx.spawn("claw", a, b, Color("#5fd35f"), 0.7, 0.25)
+				elif tag == "bomb":
+					_fx.spawn("burst", a, b, Color("#ff6a1a"), 1.6, 0.45, 0.3)
+					_fx.burst_particles(b, Color("#ffb13d"), 10, 60.0 * px, 1.0, 40.0 * px)
+				elif tag == "burn" and randf() < 0.25:
+					_fx.burst_particles(b, Color("#ff6a1a"), 2, 12.0 * px, 0.8, -20.0 * px, 0.4)
+				_fx.spawn("spark", b, b, Color("#fff1a8") if ev["crit"] else Color.WHITE, 0.8, 0.18)
+				if ev["crit"]:
+					_fx.spawn("crit", b, b, Color("#ffd23f"), 1.0, 0.35)
+					_fx.add_shake(0.35)
+					_float_text(dst, "CRIT!", Color("#ffd23f"), true, true)
+				if numbers:
+					_float_at(dst, UiNum.num(ev["dmg"]), Color("#ffd23f") if ev["crit"] else Color.WHITE, ev["crit"])
+				Game.sfx_requested.emit("crit" if ev["crit"] else ("hit" if tag == "" else ""))
 			"miss":
 				var dst = _sprite_for(ev["dst"])
-				if dst != null and numbers:
-					_float_at(dst, "miss", Color("#9aa4b2"), false)
+				if dst != null:
+					dst.dodge()
+					_fx.spawn("whoosh", _center(dst), _center(dst), Color("#c9d1d9"), 1.0, 0.3)
+					_float_text(dst, "MISS", Color("#9aa4b2"), false, true)
+				Game.sfx_requested.emit("miss")
 			"skill":
 				if src != null:
+					_skill_fx(ev, src, su)
 					_float_at(src, ev["name"], Color("#7fe0ff"), true)
+			"summon":
+				if src != null:
+					_fx.burst_particles(_center(src), Color("#6a5a8a"), 14, 30.0 * px, 1.4, -10.0 * px, 0.7)
+				Game.sfx_requested.emit("summon")
+			"potion":
+				if src != null:
+					_fx.spawn("heal", _center(src), _center(src), Color.WHITE, 1.0, 0.8)
+					_float_text(src, "+HP", Color("#5fd35f"), true, true)
+				Game.sfx_requested.emit("potion")
+			"bomb":
+				var target := _enemy_center()
+				if src != null:
+					_fx.spawn("bomb", _center(src), target, Color.WHITE, 1.0, 0.35)
+				_fx.add_shake(0.5)
+				Game.sfx_requested.emit("bomb")
+			"death":
+				if src != null:
+					_fx.burst_particles(_center(src), Color("#d8d2c4"), 12, 35.0 * px, 1.2, 30.0 * px, 0.6)
+				Game.sfx_requested.emit("death")
 			"revive":
 				if src != null:
+					_fx.spawn("burst", _center(src), _center(src), Color("#ff9d2a"), 2.0, 0.6)
 					_float_at(src, "REVIVE", Color("#ff9d2a"), true)
 			"enrage":
 				if src != null:
+					_fx.spawn("aura", _center(src), _center(src), Color("#ff3030"), 1.4, 0.9)
 					_float_at(src, "ENRAGE", Color("#ff4f4f"), true)
+				Game.sfx_requested.emit("enrage")
+
+
+## Basic attack visuals depend on who swings: arrows, fireballs, orbs or blades.
+func _attack_fx(u, a: Vector2, b: Vector2) -> void:
+	if u.side == 0:
+		match u.def_id:
+			"ranger":
+				_fx.spawn("arrow", a, b, Color.WHITE, 1.0, 0.16)
+			"arcanist":
+				_fx.spawn("bolt", a, b, Color("#ff7a1a"), 1.0, 0.22)
+				_fx.spawn("burst", b, b, Color("#ff9d4a"), 0.8, 0.25, 0.2)
+			_:
+				_fx.spawn("slash", a, b, Color("#f2f5ff"), 1.0, 0.2)
+	elif u.damage_type == "magic":
+		_fx.spawn("bolt", a, b, Color("#b35cff"), 0.9, 0.24)
+	else:
+		_fx.spawn("claw", a, b, Color("#ff6b6b"), 1.0, 0.22)
+
+
+func _enemy_center() -> Vector2:
+	var pts := []
+	for sp in enemy_sprites:
+		if sp.visible and not sp.dead:
+			pts.append(_center(sp))
+	if pts.is_empty():
+		return size * 0.5
+	var sum := Vector2.ZERO
+	for p in pts:
+		sum += p
+	return sum / pts.size()
+
+
+func _party_center() -> Vector2:
+	var sum := Vector2.ZERO
+	for sp in hero_sprites:
+		sum += _center(sp)
+	return sum / maxf(1.0, hero_sprites.size())
+
+
+func _skill_fx(ev: Dictionary, src, su) -> void:
+	var at := _center(src)
+	match ev.get("kind", ""):
+		"party_shield":
+			_fx.spawn("dome", at, _party_center(), Color("#7fe0ff"), 1.3, 1.4)
+			Game.sfx_requested.emit("shield")
+		"multi_shot":
+			_fx.spawn("rain", at, _enemy_center(), Color.WHITE, 1.0, 0.7)
+			Game.sfx_requested.emit("volley")
+		"meteor":
+			_fx.spawn("meteor", at, _enemy_center(), Color.WHITE, 1.2, 0.5)
+			_fx.spawn("burst", at, _enemy_center(), Color("#ff6a1a"), 2.2, 0.5, 0.35)
+			_fx.burst_particles(_enemy_center(), Color("#ffb13d"), 16, 70.0 * px, 1.2, 60.0 * px, 0.8)
+			_fx.add_shake(0.6)
+			Game.sfx_requested.emit("meteor")
+		"self_heal", "heal":
+			_fx.spawn("heal", at, at, Color.WHITE, 1.2, 1.0)
+			Game.sfx_requested.emit("heal")
+		"slam":
+			_fx.spawn("shockwave", at, at, Color("#e8d7b0"), 1.0, 0.6)
+			_fx.add_shake(0.7)
+			Game.sfx_requested.emit("slam")
+		"drain":
+			for h in hero_sprites:
+				_fx.spawn("drain", _center(h), at, Color("#b35cff"), 1.0, 0.7)
+			Game.sfx_requested.emit("drain")
+		"shield":
+			_fx.spawn("hexshield", at, at, Color("#8fd6ff"), 1.3, 1.2)
+			Game.sfx_requested.emit("shield")
+		"frenzy":
+			_fx.spawn("aura", at, at, Color("#ff5a2a"), 1.4, 1.0)
+			Game.sfx_requested.emit("enrage")
+
+
+## Short floating word ("MISS", "CRIT!") shown even in the small taskbar tower.
+func _float_text(sp, text: String, color: Color, big: bool, always: bool) -> void:
+	var top: Vector2 = sp.position - Vector2(0, sp.size_px().y)
+	_floaters.append({"pos": top + Vector2(randf_range(-4, 4), -4), "text": text, "color": color, "t": 0.0, "big": big, "always": always})
 
 
 ## Flickering pixel campfire on every bonfire landing in view.
@@ -413,6 +569,11 @@ func _on_loot(drop: Dictionary) -> void:
 		tex = PixelArt.icon("relic")
 		color = UiNum.rarity_color("relic")
 		rank = 6
+	elif drop.has("consumable"):
+		var cdef: Dictionary = DataDB.items()["consumables"].get(drop["consumable"], {})
+		tex = PixelArt.frames(cdef.get("icon", "cons_potion"))[0]
+		color = Color("#5fd35f")
+		rank = 1
 	else:
 		tex = PixelArt.item_icon(drop, is_mono())
 		color = UiNum.rarity_color(drop["rarity"])
@@ -459,7 +620,7 @@ func _draw_drops() -> void:
 
 
 func _float_at(sp, text: String, color: Color, big: bool) -> void:
-	# The tiny taskbar tower stays clean: floating text only in the big view.
+	# The tiny taskbar tower stays clean: numbers and names only in the big view.
 	if not show_numbers:
 		return
 	var top: Vector2 = sp.position - Vector2(0, sp.size_px().y)
@@ -488,7 +649,6 @@ func _draw() -> void:
 		_draw_segment(s, true)
 	_draw_bonfires()
 	_draw_drops()
-	_draw_floaters()
 
 
 func _draw_stars() -> void:
@@ -604,7 +764,12 @@ func _draw_tower() -> void:
 				draw_rect(Rect2(p.x - w * 0.5, p.y - 5.0 * px - px * 0.8, w, px * 0.8), slit)
 
 
-func _draw_floaters() -> void:
+func _draw_fx_layer() -> void:
+	_fx.draw(_fx_layer, px)
+	_draw_floaters(_fx_layer)
+
+
+func _draw_floaters(ci: CanvasItem) -> void:
 	var font := get_theme_default_font()
 	for f in _floaters:
 		var t: float = f["t"]
@@ -612,5 +777,5 @@ func _draw_floaters() -> void:
 		c.a = 1.0 - t / 1.1
 		var fs := int(maxf(9.0, px * (5.0 if f["big"] else 4.0)))
 		var p: Vector2 = f["pos"] - Vector2(0, t * 10.0 * px)
-		draw_string_outline(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, 3, Color(0, 0, 0, c.a))
-		draw_string(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, c)
+		ci.draw_string_outline(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, 3, Color(0, 0, 0, c.a))
+		ci.draw_string(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, c)

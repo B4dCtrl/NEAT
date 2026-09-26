@@ -40,6 +40,7 @@ static func duration(seconds: float) -> String:
 ## Human-readable stat line for item tooltips ("+12.5% Attack").
 static func stat_line(key: String, value: float) -> String:
 	var names := {
+		"power": "Power (Attack & Magic)",
 		"hp": "HP", "attack": "Attack", "defense": "Defense", "magic_power": "Magic Power",
 		"attack_speed_pct": "Attack Speed", "crit_chance": "Crit Chance", "crit_damage": "Crit Damage",
 		"dodge": "Dodge", "hp_pct": "HP", "attack_pct": "Attack", "defense_pct": "Defense",
@@ -48,6 +49,6 @@ static func stat_line(key: String, value: float) -> String:
 		"xp_pct": "XP", "soul_pct": "Souls", "cdr": "Cooldown Reduction",
 	}
 	var label: String = names.get(key, key.capitalize())
-	if key in ["hp", "attack", "defense", "magic_power"]:
+	if key in ["hp", "attack", "defense", "magic_power", "power"]:
 		return "+%s %s" % [num(value), label]
 	return "+%s %s" % [pct(value, 1), label]

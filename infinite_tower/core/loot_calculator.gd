@@ -50,7 +50,8 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 		stats[key] = float(base["fixed"][key])
 
 	var suffix := ""
-	var affixes: Array = data["affixes"].duplicate()
+	# Only bonuses that make sense for this kind of piece (boots: speed, rings: luck...).
+	var affixes: Array = data["affixes"].filter(func(a): return a.get("slots", []).is_empty() or base["slot"] in a["slots"])
 	var quality := 0.8 + 0.1 * int(rdef["order"])
 	for i in int(rdef["affixes"]):
 		if affixes.is_empty():
@@ -113,10 +114,27 @@ static func roll_drop(rng: RandomNumberGenerator, state: Dictionary, floor_num: 
 static func enemy_drops(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, enemy_count: int, drop_bonus: float) -> Array:
 	var out := []
 	var chance := float(DataDB.balance()["base_drop_chance"]) * (1.0 + drop_bonus)
+	var cons_chance := float(DataDB.items().get("consumable_drop_chance", 0.0)) * (1.0 + drop_bonus)
 	for i in enemy_count:
 		if rng.randf() < chance:
 			out.append(roll_drop(rng, state, floor_num, "common", drop_bonus))
+		if rng.randf() < cons_chance:
+			out.append({"consumable": roll_consumable(rng)})
 	return out
+
+
+## Random consumable id, weighted.
+static func roll_consumable(rng: RandomNumberGenerator) -> String:
+	var table: Dictionary = DataDB.items().get("consumables", {})
+	var total := 0.0
+	for id in table:
+		total += float(table[id]["weight"])
+	var roll := rng.randf() * total
+	for id in table:
+		roll -= float(table[id]["weight"])
+		if roll <= 0.0:
+			return id
+	return "health_potion"
 
 
 static func boss_chest(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, tier: String, drop_bonus: float, set_bias: String) -> Array:

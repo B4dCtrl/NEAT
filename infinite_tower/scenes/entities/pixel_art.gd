@@ -55,10 +55,34 @@ static func frames(sprite_id: String, palette_override: Dictionary = {}, mono: b
 
 
 ## Frames for a unit: its own PNG (by unit id) wins over the shared shape.
-static func unit_frames(unit_id: String, sprite_id: String, palette: Dictionary, mono: bool) -> Array:
+## hue >= 0 recolours the art (monster variants reuse one drawing).
+static func unit_frames(unit_id: String, sprite_id: String, palette: Dictionary, mono: bool, hue: float = -1.0) -> Array:
+	var base: Array
 	if unit_id != "" and ResourceLoader.exists(ASSET_DIR + unit_id + ".png"):
-		return frames(unit_id, {}, mono)
-	return frames(sprite_id, palette, mono)
+		base = frames(unit_id, {}, mono)
+	else:
+		base = frames(sprite_id, palette, mono)
+	if hue < 0.0 or base.is_empty():
+		return base
+	var key := "%s|%s|hue%.3f" % [unit_id, sprite_id, hue]
+	if not _cache.has(key):
+		_cache[key] = _recolor(base, hue)
+	return _cache[key]
+
+
+## Rotates every coloured pixel to `hue`, keeping its shading (outlines and greys stay).
+static func _recolor(base: Array, hue: float) -> Array:
+	var out := []
+	for tex in base:
+		var img: Image = tex.get_image()
+		img.convert(Image.FORMAT_RGBA8)
+		for y in img.get_height():
+			for x in img.get_width():
+				var c := img.get_pixel(x, y)
+				if c.a > 0.05 and c.s > 0.18:
+					img.set_pixel(x, y, Color.from_hsv(hue, clampf(c.s * 1.05, 0.0, 1.0), c.v, c.a))
+		out.append(ImageTexture.create_from_image(img))
+	return out
 
 
 const ASSET_DIR := "res://assets/sprites/"

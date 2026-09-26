@@ -137,6 +137,13 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 		sub = "%s %s · iLvl %d" % [DataDB.rarities()[offer["item"]["rarity"]]["name"], offer["item"]["slot"].capitalize(), offer["item"]["ilvl"]]
 		color = UiUtil.rarity_color(offer["item"]["rarity"])
 		panel.tooltip_text = PartyTab.item_tooltip(offer["item"])
+	elif offer.has("consumable"):
+		var cdef: Dictionary = DataDB.items()["consumables"][offer["consumable"]]
+		h.add_child(_icon(PixelArt.frames(cdef["icon"])[0]))
+		title = "%s x%d" % [cdef["name"], int(offer.get("qty", 1))]
+		sub = cdef["text"]
+		color = Color("#e6e2d3")
+		panel.tooltip_text = cdef["text"]
 	elif offer.has("hero"):
 		var hero: Dictionary = offer["hero"]
 		var cdef: Dictionary = DataDB.classes()[hero["class"]]

@@ -57,9 +57,16 @@ func hide_to_tray() -> void:
 
 
 func _process(_delta: float) -> void:
+	if is_headless():
+		return
+	var win_mode := get_window().mode
 	# Restored from the OS taskbar instead of the tray icon: resume normally.
-	if hidden and not is_headless() and get_window().mode != Window.MODE_MINIMIZED:
+	if hidden and win_mode != Window.MODE_MINIMIZED:
 		show_from_tray(mode)
+	# Minimising the Expedition window shrinks back to the taskbar tower.
+	elif not hidden and mode == "expedition" and win_mode == Window.MODE_MINIMIZED:
+		get_window().mode = Window.MODE_WINDOWED
+		apply_mode("taskbar", false)
 
 
 func show_from_tray(new_mode: String) -> void:

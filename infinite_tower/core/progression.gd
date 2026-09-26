@@ -99,6 +99,11 @@ static func ascend(state: Dictionary) -> int:
 	state["wall_attempts"] = 0
 	var mods := StatCalc.party_mods(state)
 	var start := 1 + int(mods.get("start_floor", 0))
+	# Founder / Guild talents: heroes come back stronger, with a purse.
+	for hero in state["heroes"] + state["bench"]:
+		var founder: bool = DataDB.classes()[hero["class"]].get("founder", false)
+		hero["level"] = 1 + int(mods.get("founder_level" if founder else "recruit_level", 0))
+	state["gold"] = float(mods.get("start_gold", 0.0))
 	state["floor"] = start
 	state["max_floor"] = start
 	state["checkpoint"] = start

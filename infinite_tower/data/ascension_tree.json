@@ -1,14 +1,253 @@
 {
 	"nodes": {
-		"might":        {"name": "Might",        "col": 0, "row": 0, "max": 50, "cost": 1,  "cost_growth": 1.3, "stats": {"attack_pct": 0.08, "magic_power_pct": 0.08}, "text": "+8% Attack & Magic Power", "requires": {}},
-		"vitality":     {"name": "Vitality",     "col": 1, "row": 0, "max": 50, "cost": 1,  "cost_growth": 1.3, "stats": {"hp_pct": 0.10}, "text": "+10% HP", "requires": {}},
-		"greed":        {"name": "Greed",        "col": 2, "row": 0, "max": 30, "cost": 1,  "cost_growth": 1.35, "stats": {"gold_pct": 0.15}, "text": "+15% Gold", "requires": {}},
-		"bulwark":      {"name": "Bulwark",      "col": 0, "row": 1, "max": 50, "cost": 2,  "cost_growth": 1.3, "stats": {"defense_pct": 0.08}, "text": "+8% Defense", "requires": {"might": 3}},
-		"wisdom":       {"name": "Wisdom",       "col": 1, "row": 1, "max": 30, "cost": 2,  "cost_growth": 1.35, "stats": {"xp_pct": 0.15}, "text": "+15% Hero XP", "requires": {"vitality": 3}},
-		"fortune":      {"name": "Fortune",      "col": 2, "row": 1, "max": 20, "cost": 2,  "cost_growth": 1.4, "stats": {"drop_pct": 0.08}, "text": "+8% Drop Chance", "requires": {"greed": 3}},
-		"swiftness":    {"name": "Swiftness",    "col": 0, "row": 2, "max": 15, "cost": 3,  "cost_growth": 1.4, "stats": {"move_speed_pct": 0.06}, "text": "+6% Movement Speed", "requires": {"bulwark": 3}},
-		"head_start":   {"name": "Head Start",   "col": 1, "row": 2, "max": 20, "cost": 4,  "cost_growth": 1.45, "stats": {"start_floor": 5}, "text": "Start each Ascension 5 floors higher", "requires": {"wisdom": 3}},
-		"soul_harvest": {"name": "Soul Harvest", "col": 2, "row": 2, "max": 15, "cost": 4,  "cost_growth": 1.45, "stats": {"soul_pct": 0.10}, "text": "+10% Souls on Ascension", "requires": {"fortune": 3}},
-		"relic_vault":  {"name": "Relic Vault",  "col": 1, "row": 3, "max": 2,  "cost": 25, "cost_growth": 3.0, "stats": {"relic_slots": 1}, "text": "+1 Relic slot", "requires": {"head_start": 5, "soul_harvest": 3}}
+		"founders_might": {
+			"name": "Founder's Might",
+			"col": 0,
+			"row": 0,
+			"max": 30,
+			"cost": 1,
+			"cost_growth": 1.3,
+			"stats": {
+				"founder_pct": 0.12
+			},
+			"text": "The Stairborn gets +12% HP, Attack & Defense",
+			"requires": {}
+		},
+		"born_again": {
+			"name": "Born Again",
+			"col": 0,
+			"row": 1,
+			"max": 10,
+			"cost": 2,
+			"cost_growth": 1.45,
+			"stats": {
+				"founder_level": 3
+			},
+			"text": "The Stairborn starts each Ascension 3 levels higher",
+			"requires": {
+				"founders_might": 2
+			}
+		},
+		"founders_will": {
+			"name": "Founder's Will",
+			"col": 0,
+			"row": 2,
+			"max": 20,
+			"cost": 3,
+			"cost_growth": 1.35,
+			"stats": {
+				"founder_pct": 0.2
+			},
+			"text": "The Stairborn gets +20% more HP, Attack & Defense",
+			"requires": {
+				"born_again": 2
+			}
+		},
+		"guild_discount": {
+			"name": "Guild Contracts",
+			"col": 1,
+			"row": 0,
+			"max": 8,
+			"cost": 1,
+			"cost_growth": 1.4,
+			"stats": {
+				"mint_discount": 0.07
+			},
+			"text": "Minting and hiring heroes costs 7% less",
+			"requires": {}
+		},
+		"veterans": {
+			"name": "Veteran Recruits",
+			"col": 1,
+			"row": 1,
+			"max": 10,
+			"cost": 2,
+			"cost_growth": 1.45,
+			"stats": {
+				"recruit_level": 3
+			},
+			"text": "New heroes join 3 levels higher",
+			"requires": {
+				"guild_discount": 2
+			}
+		},
+		"noble_blood": {
+			"name": "Noble Blood",
+			"col": 1,
+			"row": 2,
+			"max": 10,
+			"cost": 3,
+			"cost_growth": 1.45,
+			"stats": {
+				"rarity_luck": 0.2
+			},
+			"text": "+20% chance of rarer minted heroes",
+			"requires": {
+				"veterans": 2
+			}
+		},
+		"might": {
+			"name": "Might",
+			"col": 2,
+			"row": 0,
+			"max": 50,
+			"cost": 1,
+			"cost_growth": 1.3,
+			"stats": {
+				"attack_pct": 0.08,
+				"magic_power_pct": 0.08
+			},
+			"text": "+8% Attack & Magic for everyone",
+			"requires": {}
+		},
+		"vitality": {
+			"name": "Vitality",
+			"col": 2,
+			"row": 1,
+			"max": 50,
+			"cost": 1,
+			"cost_growth": 1.3,
+			"stats": {
+				"hp_pct": 0.1
+			},
+			"text": "+10% HP for everyone",
+			"requires": {
+				"might": 2
+			}
+		},
+		"bulwark": {
+			"name": "Bulwark",
+			"col": 2,
+			"row": 2,
+			"max": 50,
+			"cost": 2,
+			"cost_growth": 1.3,
+			"stats": {
+				"defense_pct": 0.08
+			},
+			"text": "+8% Defense for everyone",
+			"requires": {
+				"vitality": 2
+			}
+		},
+		"swiftness": {
+			"name": "Swiftness",
+			"col": 2,
+			"row": 3,
+			"max": 15,
+			"cost": 3,
+			"cost_growth": 1.4,
+			"stats": {
+				"move_speed_pct": 0.08
+			},
+			"text": "+8% climbing speed",
+			"requires": {
+				"bulwark": 2
+			}
+		},
+		"head_start": {
+			"name": "Head Start",
+			"col": 1,
+			"row": 3,
+			"max": 20,
+			"cost": 4,
+			"cost_growth": 1.45,
+			"stats": {
+				"start_floor": 5
+			},
+			"text": "Start each Ascension 5 floors higher",
+			"requires": {
+				"swiftness": 1
+			}
+		},
+		"greed": {
+			"name": "Greed",
+			"col": 3,
+			"row": 0,
+			"max": 30,
+			"cost": 1,
+			"cost_growth": 1.35,
+			"stats": {
+				"gold_pct": 0.15
+			},
+			"text": "+15% Gold",
+			"requires": {}
+		},
+		"starting_purse": {
+			"name": "Starting Purse",
+			"col": 3,
+			"row": 1,
+			"max": 10,
+			"cost": 2,
+			"cost_growth": 1.5,
+			"stats": {
+				"start_gold": 250
+			},
+			"text": "Start each Ascension with 250 more gold",
+			"requires": {
+				"greed": 2
+			}
+		},
+		"fortune": {
+			"name": "Fortune",
+			"col": 3,
+			"row": 2,
+			"max": 20,
+			"cost": 2,
+			"cost_growth": 1.4,
+			"stats": {
+				"drop_pct": 0.08
+			},
+			"text": "+8% Drop Chance",
+			"requires": {
+				"greed": 3
+			}
+		},
+		"wisdom": {
+			"name": "Wisdom",
+			"col": 3,
+			"row": 3,
+			"max": 30,
+			"cost": 2,
+			"cost_growth": 1.35,
+			"stats": {
+				"xp_pct": 0.15
+			},
+			"text": "+15% Hero XP",
+			"requires": {
+				"fortune": 2
+			}
+		},
+		"soul_harvest": {
+			"name": "Soul Harvest",
+			"col": 0,
+			"row": 3,
+			"max": 15,
+			"cost": 4,
+			"cost_growth": 1.45,
+			"stats": {
+				"soul_pct": 0.1
+			},
+			"text": "+10% Souls on Ascension",
+			"requires": {
+				"founders_will": 1
+			}
+		},
+		"relic_vault": {
+			"name": "Relic Vault",
+			"col": 1,
+			"row": 4,
+			"max": 2,
+			"cost": 25,
+			"cost_growth": 3.0,
+			"stats": {
+				"relic_slots": 1
+			},
+			"text": "+1 Relic slot",
+			"requires": {
+				"head_start": 3,
+				"soul_harvest": 3
+			}
+		}
 	}
 }

@@ -15,6 +15,7 @@ var hp_ratio := 1.0
 var unit_uid := ""
 var _anim_t := 0.0
 var _lunge := 0.0
+var _dodge := 0.0
 var _flash := 0.0
 var _fade := 1.0
 var _bob_phase := 0.0
@@ -29,8 +30,8 @@ const EXTERNAL_MIN_HEIGHT := 17
 var _norm := 1.0
 
 
-func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false, unit_id: String = "") -> void:
-	textures = PixelArt.unit_frames(unit_id, sprite_id, palette, mono)
+func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false, unit_id: String = "", hue: float = -1.0) -> void:
+	textures = PixelArt.unit_frames(unit_id, sprite_id, palette, mono, hue)
 	_norm = 0.5 if not textures.is_empty() and textures[0].get_height() >= EXTERNAL_MIN_HEIGHT else 1.0
 	px_scale = scale_px
 	face_left = left
@@ -51,6 +52,11 @@ func lunge() -> void:
 	_lunge = 1.0
 
 
+## Quick hop backwards when an attack misses.
+func dodge() -> void:
+	_dodge = 1.0
+
+
 func hurt() -> void:
 	_flash = 1.0
 
@@ -69,6 +75,7 @@ func set_tint(c: Color) -> void:
 func _process(delta: float) -> void:
 	_anim_t += delta
 	_lunge = maxf(0.0, _lunge - delta * 5.0)
+	_dodge = maxf(0.0, _dodge - delta * 4.0)
 	_flash = maxf(0.0, _flash - delta * 6.0)
 	if dead:
 		_fade = maxf(0.0, _fade - delta * 2.5)
@@ -86,7 +93,7 @@ func _draw() -> void:
 	var sz := Vector2(tex.get_width(), tex.get_height()) * px_scale * _norm
 	var bob: float = 0.0 if walking else round(sin(_anim_t * 3.0 + _bob_phase)) * 0.5 * px_scale
 	var dir := -1.0 if face_left else 1.0
-	var offset := Vector2(dir * sin(_lunge * PI) * 4.0 * px_scale, bob)
+	var offset := Vector2(dir * (sin(_lunge * PI) * 4.0 - sin(_dodge * PI) * 5.0) * px_scale, bob - sin(_dodge * PI) * 2.0 * px_scale)
 	# Origin is the feet (bottom-center) so sprites stand on the steps.
 	var rect := Rect2(Vector2(-sz.x * 0.5, -sz.y) + offset, sz)
 	if face_left:

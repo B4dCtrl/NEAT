@@ -1,16 +1,134 @@
 {
 	"biome_span": 50,
 	"biomes": [
-		{"id": "mossy_ruins",     "name": "Mossy Ruins",     "enemies": ["slime", "mushroom", "bat"],            "boss": "moss_colossus",
-		 "colors": {"sky": "#1d2b24", "wall": "#2c3d33", "wall_dark": "#223029", "step": "#5d6e55", "step_edge": "#8fa37f", "accent": "#9be36b"}},
-		{"id": "crystal_caverns", "name": "Crystal Caverns", "enemies": ["crystal_golem", "gem_eye", "bat"],     "boss": "crystal_queen",
-		 "colors": {"sky": "#161a33", "wall": "#252b52", "wall_dark": "#1c2142", "step": "#4d5a8c", "step_edge": "#8fa8e8", "accent": "#7fd6e8"}},
-		{"id": "ashen_forge",     "name": "Ashen Forge",     "enemies": ["ember_imp", "forge_hound", "skeleton"], "boss": "ashen_king",
-		 "colors": {"sky": "#2b1512", "wall": "#3d211b", "wall_dark": "#2e1814", "step": "#6e4a3c", "step_edge": "#c2764a", "accent": "#ff8a2a"}},
-		{"id": "frozen_spire",    "name": "Frozen Spire",    "enemies": ["frost_wisp", "ice_troll", "skeleton"],  "boss": "frost_titan",
-		 "colors": {"sky": "#1b2633", "wall": "#2e4052", "wall_dark": "#243342", "step": "#6f8fa8", "step_edge": "#d4ecff", "accent": "#a8e6ff"}},
-		{"id": "void_sanctum",    "name": "Void Sanctum",    "enemies": ["void_wraith", "void_eye", "gem_eye"],   "boss": "void_herald",
-		 "colors": {"sky": "#120c1f", "wall": "#22183a", "wall_dark": "#1a122c", "step": "#4a3a6e", "step_edge": "#a07fe8", "accent": "#d24dff"}}
+		{
+			"id": "mossy_ruins",
+			"name": "Mossy Ruins",
+			"enemies": [
+				"slime",
+				"mushroom",
+				"bat",
+				"moss_slime",
+				"thorn_sprout",
+				"rot_bat"
+			],
+			"boss": "moss_colossus",
+			"colors": {
+				"sky": "#1d2b24",
+				"wall": "#2c3d33",
+				"wall_dark": "#223029",
+				"step": "#5d6e55",
+				"step_edge": "#8fa37f",
+				"accent": "#9be36b"
+			},
+			"bosses": [
+				"moss_colossus",
+				"slime_king",
+				"bat_matriarch"
+			]
+		},
+		{
+			"id": "crystal_caverns",
+			"name": "Crystal Caverns",
+			"enemies": [
+				"crystal_golem",
+				"gem_eye",
+				"shard_bat",
+				"prism_slime",
+				"geode_crawler"
+			],
+			"boss": "crystal_queen",
+			"colors": {
+				"sky": "#161a33",
+				"wall": "#252b52",
+				"wall_dark": "#1c2142",
+				"step": "#4d5a8c",
+				"step_edge": "#8fa8e8",
+				"accent": "#7fd6e8"
+			},
+			"bosses": [
+				"crystal_queen",
+				"prism_golem",
+				"eye_of_ages"
+			]
+		},
+		{
+			"id": "ashen_forge",
+			"name": "Ashen Forge",
+			"enemies": [
+				"ember_imp",
+				"forge_hound",
+				"skeleton",
+				"cinder_skeleton",
+				"magma_slime",
+				"slag_golem"
+			],
+			"boss": "ashen_king",
+			"colors": {
+				"sky": "#2b1512",
+				"wall": "#3d211b",
+				"wall_dark": "#2e1814",
+				"step": "#6e4a3c",
+				"step_edge": "#c2764a",
+				"accent": "#ff8a2a"
+			},
+			"bosses": [
+				"ashen_king",
+				"forge_behemoth",
+				"imp_warlord"
+			]
+		},
+		{
+			"id": "frozen_spire",
+			"name": "Frozen Spire",
+			"enemies": [
+				"frost_wisp",
+				"ice_troll",
+				"frost_skeleton",
+				"snow_bat",
+				"ice_imp"
+			],
+			"boss": "frost_titan",
+			"colors": {
+				"sky": "#1b2633",
+				"wall": "#2e4052",
+				"wall_dark": "#243342",
+				"step": "#6f8fa8",
+				"step_edge": "#d4ecff",
+				"accent": "#a8e6ff"
+			},
+			"bosses": [
+				"frost_titan",
+				"troll_chieftain",
+				"wisp_matron"
+			]
+		},
+		{
+			"id": "void_sanctum",
+			"name": "Void Sanctum",
+			"enemies": [
+				"void_wraith",
+				"void_eye",
+				"void_hound",
+				"abyss_slime",
+				"null_imp",
+				"shade_troll"
+			],
+			"boss": "void_herald",
+			"colors": {
+				"sky": "#120c1f",
+				"wall": "#22183a",
+				"wall_dark": "#1a122c",
+				"step": "#4a3a6e",
+				"step_edge": "#a07fe8",
+				"accent": "#d24dff"
+			},
+			"bosses": [
+				"void_herald",
+				"wraith_lord",
+				"watcher_prime"
+			]
+		}
 	],
 	"archetypes": {
 		"shrine_chance": 0.06,
@@ -21,13 +139,66 @@
 		"lord_every": 100,
 		"bonfire_every": 10
 	},
-	"enemy_count": {"base_min": 1, "base_max": 2, "extra_every": 20, "cap": 4},
+	"enemy_count": {
+		"base_min": 1,
+		"base_max": 2,
+		"extra_every": 20,
+		"cap": 4
+	},
 	"shrines": [
-		{"id": "altar_of_war",   "name": "Altar of War",    "weight": 3, "floors": 5, "stats": {"attack_pct": 0.25, "magic_power_pct": 0.25}, "text": "+25% Attack for 5 floors"},
-		{"id": "altar_of_stone", "name": "Altar of Stone",  "weight": 3, "floors": 5, "stats": {"defense_pct": 0.35, "hp_pct": 0.15}, "text": "+35% Defense, +15% HP for 5 floors"},
-		{"id": "altar_of_wind",  "name": "Altar of Wind",   "weight": 2, "floors": 8, "stats": {"move_speed_pct": 0.5, "attack_speed_pct": 0.15}, "text": "+50% climb speed, +15% Attack Speed for 8 floors"},
-		{"id": "altar_of_greed", "name": "Altar of Greed",  "weight": 2, "floors": 10, "stats": {"gold_pct": 0.5, "drop_pct": 0.3}, "text": "+50% Gold, +30% Drop Chance for 10 floors"},
-		{"id": "gilded_altar",   "name": "Gilded Altar",    "weight": 2, "floors": 0, "trade_gold_pct": 0.3, "trade_min_rarity": "rare", "text": "Trades 30% of your Gold for a Rare+ item"}
+		{
+			"id": "altar_of_war",
+			"name": "Altar of War",
+			"weight": 3,
+			"floors": 5,
+			"stats": {
+				"attack_pct": 0.25,
+				"magic_power_pct": 0.25
+			},
+			"text": "+25% Attack for 5 floors"
+		},
+		{
+			"id": "altar_of_stone",
+			"name": "Altar of Stone",
+			"weight": 3,
+			"floors": 5,
+			"stats": {
+				"defense_pct": 0.35,
+				"hp_pct": 0.15
+			},
+			"text": "+35% Defense, +15% HP for 5 floors"
+		},
+		{
+			"id": "altar_of_wind",
+			"name": "Altar of Wind",
+			"weight": 2,
+			"floors": 8,
+			"stats": {
+				"move_speed_pct": 0.5,
+				"attack_speed_pct": 0.15
+			},
+			"text": "+50% climb speed, +15% Attack Speed for 8 floors"
+		},
+		{
+			"id": "altar_of_greed",
+			"name": "Altar of Greed",
+			"weight": 2,
+			"floors": 10,
+			"stats": {
+				"gold_pct": 0.5,
+				"drop_pct": 0.3
+			},
+			"text": "+50% Gold, +30% Drop Chance for 10 floors"
+		},
+		{
+			"id": "gilded_altar",
+			"name": "Gilded Altar",
+			"weight": 2,
+			"floors": 0,
+			"trade_gold_pct": 0.3,
+			"trade_min_rarity": "rare",
+			"text": "Trades 30% of your Gold for a Rare+ item"
+		}
 	],
 	"balance": {
 		"tick": 0.1,
@@ -49,32 +220,111 @@
 		"vault_items": 2,
 		"vault_gold_mult": 12,
 		"chest": {
-			"guardian": {"items": 2, "min_rarity": "uncommon", "relic_chance": 0.02,  "crystals": 0},
-			"elite":    {"items": 3, "min_rarity": "rare",     "relic_chance": 0.05, "crystals": 1},
-			"lord":     {"items": 4, "min_rarity": "epic",     "relic_chance": 0.15, "crystals": 5}
+			"guardian": {
+				"items": 2,
+				"min_rarity": "uncommon",
+				"relic_chance": 0.02,
+				"crystals": 0
+			},
+			"elite": {
+				"items": 3,
+				"min_rarity": "rare",
+				"relic_chance": 0.05,
+				"crystals": 1
+			},
+			"lord": {
+				"items": 4,
+				"min_rarity": "epic",
+				"relic_chance": 0.15,
+				"crystals": 5
+			}
 		},
 		"relic_min_floor": 25,
 		"merchants_eye_interval": 100,
 		"inventory_cap": 60,
 		"base_relic_slots": 2,
 		"training": {
-			"attack":  {"name": "Weapon Drills", "stats": {"attack_pct": 0.05, "magic_power_pct": 0.05}, "base_cost": 30, "cost_growth": 1.17},
-			"hp":      {"name": "Endurance",     "stats": {"hp_pct": 0.06},                             "base_cost": 30, "cost_growth": 1.17},
-			"defense": {"name": "Shield Drills", "stats": {"defense_pct": 0.05},                        "base_cost": 30, "cost_growth": 1.17}
+			"attack": {
+				"name": "Weapon Drills",
+				"stats": {
+					"attack_pct": 0.05,
+					"magic_power_pct": 0.05
+				},
+				"base_cost": 30,
+				"cost_growth": 1.17
+			},
+			"hp": {
+				"name": "Endurance",
+				"stats": {
+					"hp_pct": 0.06
+				},
+				"base_cost": 30,
+				"cost_growth": 1.17
+			},
+			"defense": {
+				"name": "Shield Drills",
+				"stats": {
+					"defense_pct": 0.05
+				},
+				"base_cost": 30,
+				"cost_growth": 1.17
+			}
 		},
 		"ascension_min_floor": 50,
 		"soul_divisor": 10.0,
 		"soul_exponent": 1.6,
 		"party_slots": 3,
-		"hire": {"gold_base": 150, "gold_growth": 3.0, "mint_gold_base": 120, "mint_gold_growth": 2.6, "mint_crystals": 0},
-		"hero_rarities": {
-			"common":    {"potential": 1.0,  "weight": 55},
-			"uncommon":  {"potential": 1.08, "weight": 28},
-			"rare":      {"potential": 1.17, "weight": 12},
-			"epic":      {"potential": 1.28, "weight": 4},
-			"legendary": {"potential": 1.42, "weight": 1}
+		"hire": {
+			"gold_base": 150,
+			"gold_growth": 3.0,
+			"mint_gold_base": 120,
+			"mint_gold_growth": 2.6,
+			"mint_crystals": 0
 		},
-		"hero_names": ["Aldric", "Wren", "Mira", "Tobin", "Sable", "Kestrel", "Iona", "Bram", "Lark", "Oswin", "Nyx", "Corin", "Elsa", "Juno", "Rook", "Tamsin", "Vale", "Hale", "Pip", "Quill"],
+		"hero_rarities": {
+			"common": {
+				"potential": 1.0,
+				"weight": 55
+			},
+			"uncommon": {
+				"potential": 1.08,
+				"weight": 28
+			},
+			"rare": {
+				"potential": 1.17,
+				"weight": 12
+			},
+			"epic": {
+				"potential": 1.28,
+				"weight": 4
+			},
+			"legendary": {
+				"potential": 1.42,
+				"weight": 1
+			}
+		},
+		"hero_names": [
+			"Aldric",
+			"Wren",
+			"Mira",
+			"Tobin",
+			"Sable",
+			"Kestrel",
+			"Iona",
+			"Bram",
+			"Lark",
+			"Oswin",
+			"Nyx",
+			"Corin",
+			"Elsa",
+			"Juno",
+			"Rook",
+			"Tamsin",
+			"Vale",
+			"Hale",
+			"Pip",
+			"Quill"
+		],
 		"market": {
 			"rotation_minutes": 15,
 			"stock": 8,
@@ -91,10 +341,35 @@
 		"offline_sim_cap_seconds": 7200.0
 	},
 	"milestones": [
-		{"floor": 50,   "crystals": 5,  "achievement": "REACH_50",   "name": "Base Camp"},
-		{"floor": 100,  "crystals": 10, "achievement": "REACH_100",  "name": "Centurion Climber"},
-		{"floor": 250,  "crystals": 20, "achievement": "REACH_250",  "name": "Cloud Piercer"},
-		{"floor": 500,  "crystals": 40, "achievement": "REACH_500",  "name": "Summiteer"},
-		{"floor": 1000, "crystals": 80, "achievement": "REACH_1000", "name": "Infinite"}
+		{
+			"floor": 50,
+			"crystals": 5,
+			"achievement": "REACH_50",
+			"name": "Base Camp"
+		},
+		{
+			"floor": 100,
+			"crystals": 10,
+			"achievement": "REACH_100",
+			"name": "Centurion Climber"
+		},
+		{
+			"floor": 250,
+			"crystals": 20,
+			"achievement": "REACH_250",
+			"name": "Cloud Piercer"
+		},
+		{
+			"floor": 500,
+			"crystals": 40,
+			"achievement": "REACH_500",
+			"name": "Summiteer"
+		},
+		{
+			"floor": 1000,
+			"crystals": 80,
+			"achievement": "REACH_1000",
+			"name": "Infinite"
+		}
 	]
 }

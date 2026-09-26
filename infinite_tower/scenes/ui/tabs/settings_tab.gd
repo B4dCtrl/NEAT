@@ -31,6 +31,8 @@ func _ready() -> void:
 
 	_section(grid, "Audio")
 	_slider(grid, "master_volume", "Master volume", 0.0, 1.0, 0.05)
+	_slider(grid, "music_volume", "Music", 0.0, 1.0, 0.05)
+	_slider(grid, "sfx_volume", "Sound effects", 0.0, 1.0, 0.05)
 
 	_section(grid, "Loot")
 	_check(grid, "auto_equip", "Auto-equip upgrades")

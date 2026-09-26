@@ -29,6 +29,8 @@ signal loot_dropped(drop: Dictionary)
 signal party_changed()
 ## Asks the root to show the story window: "intro" or "tutorial".
 signal story_requested(what: String)
+## Sound cue name for the audio manager (hit, crit, loot, level...).
+signal sfx_requested(cue: String)
 
 const AUTOSAVE_INTERVAL := 30.0
 
@@ -124,6 +126,9 @@ func _drain_events() -> void:
 				loot_dropped.emit({"relic": ev["id"]})
 				if ev["new"]:
 					notified.emit("relic", "+1 Relic: " + DataDB.relics()[ev["id"]]["name"])
+			"consumable":
+				loot_dropped.emit({"consumable": ev["id"]})
+				inventory_changed.emit()
 			"milestone":
 				PlatformServices.unlock_achievement(ev["achievement"])
 				notified.emit("milestone", "%s  +%d Crystals" % [ev["name"], ev["crystals"]])
@@ -136,7 +141,8 @@ func _drain_events() -> void:
 			"wall_broken":
 				notified.emit("info", "Broke through floor %d!" % ev["floor"])
 			"level_up":
-				pass
+				sfx_requested.emit("level")
+				notified.emit("info", "%s reached a new level!" % ev["name"])
 
 
 # ---------------------------------------------------------------- queries
@@ -221,6 +227,48 @@ func ascend() -> void:
 		party_changed.emit()
 		state_changed.emit()
 		save()
+
+
+## Uses a consumable now. Potions/bombs act on the current fight (potions heal
+## the whole party outside combat); elixirs and scrolls become floor buffs.
+func use_consumable(id: String) -> bool:
+	var bag: Dictionary = state["consumables"]
+	var def: Dictionary = DataDB.items()["consumables"].get(id, {})
+	if int(bag.get(id, 0)) <= 0 or def.is_empty():
+		return false
+	var in_fight: bool = expedition.phase == "combat" and expedition.combat != null
+	match def["kind"]:
+		"potion":
+			if in_fight:
+				expedition.combat.supplies["potion"] = int(expedition.combat.supplies.get("potion", 0)) + 1
+				if not expedition.combat.use_potion(float(def["value"])):
+					expedition.combat.supplies["potion"] -= 1
+					return false
+				expedition.combat.consumed.erase("potion")
+			else:
+				for hero in state["heroes"]:
+					hero["hp_ratio"] = minf(1.0, float(hero["hp_ratio"]) + float(def["value"]))
+		"bomb":
+			if not in_fight:
+				notified.emit("info", "Bombs can only be thrown in a fight")
+				return false
+			expedition.combat.supplies["bomb"] = int(expedition.combat.supplies.get("bomb", 0)) + 1
+			expedition.combat.use_bomb(float(def["value"]))
+			expedition.combat.consumed.erase("bomb")
+		"buff":
+			var buffs: Array = state["buffs"]
+			for b in buffs:
+				if b["id"] == id:
+					b["floors_left"] = int(def["floors"])
+					bag[id] = int(bag[id]) - 1
+					state_changed.emit()
+					return true
+			buffs.append({"id": id, "name": def["name"], "stats": def["stats"], "floors_left": int(def["floors"])})
+	bag[id] = int(bag[id]) - 1
+	sfx_requested.emit("use")
+	state_changed.emit()
+	inventory_changed.emit()
+	return true
 
 
 func mint_hero() -> void:

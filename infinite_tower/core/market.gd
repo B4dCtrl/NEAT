@@ -51,6 +51,15 @@ static func _generate(state: Dictionary, rot: int, rerolls: int) -> void:
 		var hero := Heroes.generate(state, rng)
 		var price := ceilf(Heroes.hire_price(state) * float(HERO_RARITY_PRICE.get(hero["rarity"], 1.0)))
 		offers.append({"hero": hero, "price": price, "currency": "gold", "sold": false})
+	# Supplies: a couple of consumables, priced with the tower's gold curve.
+	var cons: Dictionary = DataDB.items().get("consumables", {})
+	var growth := pow(float(DataDB.enemy_scaling()["gold_growth"]), floor_num - 1)
+	var picked := ["health_potion"]
+	for i in 2:
+		picked.append(Loot.roll_consumable(rng))
+	for cid in picked:
+		offers.append({"consumable": cid, "qty": 3 if cid == "health_potion" else 1,
+			"price": ceilf(float(cons[cid]["price"]) * growth * (3.0 if cid == "health_potion" else 1.0)), "currency": "gold", "sold": false})
 	var relic := Loot.roll_relic(rng, state)
 	if relic != "":
 		offers.append({"relic": relic, "price": int(r["relic_crystals"]), "currency": "crystals", "sold": false})
@@ -75,7 +84,10 @@ static func buy(state: Dictionary, index: int) -> bool:
 	else:
 		state["crystals"] = int(state["crystals"]) - int(offer["price"])
 	offer["sold"] = true
-	if offer.has("hero"):
+	if offer.has("consumable"):
+		var cid: String = offer["consumable"]
+		state["consumables"][cid] = int(state["consumables"].get(cid, 0)) + int(offer.get("qty", 1))
+	elif offer.has("hero"):
 		var hero: Dictionary = offer["hero"]
 		var where := Heroes.add_hero(state, hero)
 		GameState.add_history(state, "info", "%s the %s joined the %s" % [hero["name"], DataDB.classes()[hero["class"]]["name"], where])

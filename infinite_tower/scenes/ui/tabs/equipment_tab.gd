@@ -38,6 +38,7 @@ var _salvage_btn: Button
 var _auto_equip: CheckBox
 var _auto_salvage: OptionButton
 var _dirty := true
+var _supplies: HFlowContainer
 
 
 func _ready() -> void:
@@ -96,6 +97,11 @@ func _ready() -> void:
 		fb.add_theme_font_size_override("font_size", 12)
 		fb.pressed.connect(func(): _filter = f; _dirty = true)
 		top.add_child(fb)
+	# Usable items: click to use (potions also fire automatically in fights).
+	var sup_panel := PanelContainer.new()
+	right.add_child(sup_panel)
+	_supplies = HFlowContainer.new()
+	sup_panel.add_child(_supplies)
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.custom_minimum_size = Vector2(0, 150)
@@ -144,6 +150,7 @@ func _ready() -> void:
 	rules.add_child(_auto_salvage)
 
 	Game.inventory_changed.connect(func(): _dirty = true)
+	Game.state_changed.connect(_rebuild_supplies)
 	Game.party_changed.connect(func(): _dirty = true)
 	Game.settings_changed.connect(func(): _dirty = true)
 	visibility_changed.connect(func(): _dirty = true)
@@ -223,6 +230,43 @@ func _rebuild() -> void:
 		if _auto_salvage.get_item_metadata(i) == rule:
 			_auto_salvage.select(i)
 	_show_detail()
+	_rebuild_supplies()
+
+
+func _rebuild_supplies() -> void:
+	if not is_visible_in_tree():
+		return
+	for c in _supplies.get_children():
+		c.queue_free()
+	var l := Label.new()
+	l.text = "Supplies:"
+	_supplies.add_child(l)
+	var table: Dictionary = DataDB.items().get("consumables", {})
+	var bag: Dictionary = Game.state.get("consumables", {})
+	var any := false
+	for id in table:
+		var n := int(bag.get(id, 0))
+		if n <= 0:
+			continue
+		any = true
+		var b := Button.new()
+		b.focus_mode = Control.FOCUS_NONE
+		b.icon = PixelArt.frames(table[id]["icon"])[0]
+		b.text = "x%d" % n
+		b.tooltip_text = "%s\n%s\n\n(click to use)" % [table[id]["name"], table[id]["text"]]
+		b.pressed.connect(func(): Game.use_consumable(id))
+		_supplies.add_child(b)
+	if not any:
+		var e := Label.new()
+		e.text = "none (they drop from monsters and are sold in the Market)"
+		e.add_theme_color_override("font_color", Color("#5a566a"))
+		_supplies.add_child(e)
+	var auto := CheckBox.new()
+	auto.text = "Auto-use in fights"
+	auto.focus_mode = Control.FOCUS_NONE
+	auto.button_pressed = Game.state["settings"].get("auto_supplies", true)
+	auto.toggled.connect(func(on): Game.set_setting("auto_supplies", on))
+	_supplies.add_child(auto)
 
 
 func _on_cell_selected(cell) -> void:
@@ -265,7 +309,12 @@ func _show_detail() -> void:
 			var mods := StatCalc.party_mods(Game.state)
 			var now := StatCalc.power_rating(StatCalc.hero_stats(Game.state, hero, mods))
 			var delta := Inventory.power_with(Game.state, hero, item["slot"], item, mods) / maxf(now, 0.001) - 1.0
-			lines.append("[color=%s]%s%s power for %s[/color]" % ["#5fd35f" if delta >= 0.0 else "#ff6b6b", "+" if delta >= 0.0 else "", UiUtil.pct(delta, 1), hero["name"]])
+			var worn = hero["equipment"][item["slot"]]
+			lines.append("")
+			lines.append("[b]vs %s[/b]" % (worn["name"] if worn != null else "empty slot"))
+			for c in PartyTab.compare_lines(item, worn):
+				lines.append("[color=%s]%s[/color]" % ["#5fd35f" if c[1] else "#ff6b6b", c[0]])
+			lines.append("[color=%s][b]%s%s overall power for %s[/b][/color]" % ["#5fd35f" if delta >= 0.0 else "#ff6b6b", "+" if delta >= 0.0 else "", UiUtil.pct(delta, 1), hero["name"]])
 		else:
 			_equip_btn.disabled = true
 			lines.append("[color=#ff6b6b]%s cannot use this.[/color]" % hero["name"])

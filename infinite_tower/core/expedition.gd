@@ -142,20 +142,29 @@ func _start_combat() -> void:
 			"row": hero["row"],
 		})
 	var enemy_entries := []
-	for enemy_id in floor_info["enemies"]:
+	var affixes: Array = floor_info.get("affixes", [])
+	for i in floor_info["enemies"].size():
+		var enemy_id: String = floor_info["enemies"][i]
 		var is_boss := DataDB.bosses().has(enemy_id)
+		var affix: String = affixes[i] if i < affixes.size() else ""
 		enemy_entries.append({
 			"id": enemy_id,
 			"def": DataDB.unit_def(enemy_id),
-			"stats": TowerGen.enemy_stats(enemy_id, int(state["floor"]), floor_info["tier"] if is_boss else ""),
+			"stats": TowerGen.enemy_stats(enemy_id, int(state["floor"]), floor_info["tier"] if is_boss else "", affix),
 			"is_boss": is_boss,
 		})
 	combat = CombatEngine.new()
 	var limit: float = float(bal["boss_time_limit"]) if floor_info["type"] == "guardian" else float(bal["combat_time_limit"])
+	var floor_num := int(state["floor"])
+	var supplies: Dictionary = state.get("consumables", {})
 	combat.setup(hero_entries, enemy_entries, rng, {
 		"time_limit": limit,
 		"record_events": record_combat_events,
 		"party_specials": mods.get("specials", []),
+		"summon_factory": func(unit_id: String) -> Dictionary:
+			return {"id": unit_id, "def": DataDB.unit_def(unit_id), "stats": TowerGen.enemy_stats(unit_id, floor_num), "is_boss": false},
+		"supplies": {"potion": int(supplies.get("health_potion", 0)), "bomb": int(supplies.get("fire_bomb", 0))},
+		"auto_supplies": state["settings"].get("auto_supplies", true),
 	})
 	tick_acc = 0.0
 	phase = "combat"
@@ -174,6 +183,13 @@ func _end_combat() -> void:
 		fight_damage[hero["id"]] = u.damage_dealt
 		stats["damage_by_hero"][hero["id"]] = float(stats["damage_by_hero"].get(hero["id"], 0.0)) + u.damage_dealt
 	last_fight = {"time": combat.time, "damage": fight_damage}
+	# Potions and bombs used during the fight come out of the bag.
+	var used: Dictionary = combat.consumed
+	for key in used:
+		var id: String = {"potion": "health_potion", "bomb": "fire_bomb"}.get(key, key)
+		var bag: Dictionary = state["consumables"]
+		bag[id] = maxi(0, int(bag.get(id, 0)) - int(used[key]))
+	combat.consumed = {}
 	events.append({"type": "combat_end", "victory": combat.victory, "floor": state["floor"]})
 
 	if not combat.victory:
@@ -363,6 +379,10 @@ func _grant_drop(drop: Dictionary) -> void:
 			var relic_name: String = DataDB.relics()[relic_id]["name"]
 			GameState.add_history(state, "relic", "RELIC found: %s" % relic_name)
 		events.append({"type": "relic", "id": relic_id, "new": is_new})
+	elif drop.has("consumable"):
+		var cid: String = drop["consumable"]
+		state["consumables"][cid] = int(state["consumables"].get(cid, 0)) + 1
+		events.append({"type": "consumable", "id": cid})
 	elif drop.has("crystals"):
 		state["crystals"] = int(state["crystals"]) + int(drop["crystals"])
 		events.append({"type": "crystals", "amount": int(drop["crystals"])})

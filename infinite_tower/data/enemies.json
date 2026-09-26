@@ -1,24 +1,991 @@
 {
 	"enemies": {
-		"slime":        {"name": "Slime",         "sprite": "slime",    "palette": {"a": "#5ec45e", "b": "#2f7d3a", "c": "#b6f2a0"}, "hp": 238,  "attack": 12,  "defense": 3,  "attack_speed": 0.8, "crit_chance": 0.0,  "dodge": 0.0,  "damage_type": "physical", "gold": 3, "xp": 4},
-		"mushroom":     {"name": "Sporeling",     "sprite": "mushroom", "palette": {"a": "#d9574a", "b": "#f2e6c9", "c": "#ffffff"}, "hp": 272,  "attack": 11,  "defense": 5,  "attack_speed": 0.7, "crit_chance": 0.0,  "dodge": 0.0,  "damage_type": "magic",    "gold": 3, "xp": 4},
-		"bat":          {"name": "Cave Bat",      "sprite": "bat",      "palette": {"a": "#6b4f8c", "b": "#3b2a52", "c": "#ff6b6b"}, "hp": 158,  "attack": 11,  "defense": 1,  "attack_speed": 1.3, "crit_chance": 0.05, "dodge": 0.15, "damage_type": "physical", "gold": 3, "xp": 4},
-		"skeleton":     {"name": "Skeleton",      "sprite": "skeleton", "palette": {"a": "#e8e4d4", "b": "#9e9784", "c": "#ff4040"}, "hp": 306,  "attack": 16,  "defense": 6,  "attack_speed": 0.9, "crit_chance": 0.05, "dodge": 0.03, "damage_type": "physical", "gold": 4, "xp": 5},
-		"crystal_golem":{"name": "Crystal Golem", "sprite": "golem",    "palette": {"a": "#7fd6e8", "b": "#3e7fa3", "c": "#e8fbff"}, "hp": 568, "attack": 19, "defense": 14, "attack_speed": 0.5, "crit_chance": 0.0,  "dodge": 0.0,  "damage_type": "physical", "gold": 6, "xp": 7},
-		"gem_eye":      {"name": "Gazer",         "sprite": "eye",      "palette": {"a": "#b77fe8", "b": "#5a3a8c", "c": "#ffffff"}, "hp": 272,  "attack": 24, "defense": 5,  "attack_speed": 1.0, "crit_chance": 0.1,  "dodge": 0.08, "damage_type": "magic",    "gold": 5, "xp": 6},
-		"ember_imp":    {"name": "Ember Imp",     "sprite": "imp",      "palette": {"a": "#e8663e", "b": "#8c2a1c", "c": "#ffd23f"}, "hp": 238,  "attack": 22, "defense": 4,  "attack_speed": 1.1, "crit_chance": 0.08, "dodge": 0.1,  "damage_type": "magic",    "gold": 5, "xp": 6},
-		"forge_hound":  {"name": "Forge Hound",   "sprite": "beast",    "palette": {"a": "#5c4a42", "b": "#2e2420", "c": "#ff8a2a"}, "hp": 355,  "attack": 20, "defense": 7,  "attack_speed": 1.2, "crit_chance": 0.08, "dodge": 0.05, "damage_type": "physical", "gold": 5, "xp": 6},
-		"frost_wisp":   {"name": "Frost Wisp",    "sprite": "wisp",     "palette": {"a": "#a8e6ff", "b": "#4a90c2", "c": "#ffffff"}, "hp": 207,  "attack": 24, "defense": 3,  "attack_speed": 0.9, "crit_chance": 0.05, "dodge": 0.2,  "damage_type": "magic",    "gold": 5, "xp": 6},
-		"ice_troll":    {"name": "Ice Troll",     "sprite": "beast",    "palette": {"a": "#cfe9f2", "b": "#6c8fa3", "c": "#3d6bff"}, "hp": 692, "attack": 22, "defense": 10, "attack_speed": 0.6, "crit_chance": 0.05, "dodge": 0.0,  "damage_type": "physical", "gold": 7, "xp": 8},
-		"void_wraith":  {"name": "Void Wraith",   "sprite": "wraith",   "palette": {"a": "#40306b", "b": "#1a1230", "c": "#d24dff"}, "hp": 370,  "attack": 27, "defense": 6,  "attack_speed": 1.0, "crit_chance": 0.1,  "dodge": 0.15, "damage_type": "magic",    "gold": 6, "xp": 7},
-		"void_eye":     {"name": "Void Watcher",  "sprite": "eye",      "palette": {"a": "#2a2a3a", "b": "#101018", "c": "#ff3df0"}, "hp": 296,  "attack": 30, "defense": 5,  "attack_speed": 1.1, "crit_chance": 0.12, "dodge": 0.1,  "damage_type": "magic",    "gold": 6, "xp": 7}
+		"slime": {
+			"name": "Slime",
+			"sprite": "slime",
+			"palette": {
+				"a": "#5ec45e",
+				"b": "#2f7d3a",
+				"c": "#b6f2a0"
+			},
+			"hp": 238,
+			"attack": 12,
+			"defense": 3,
+			"attack_speed": 0.8,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4
+		},
+		"mushroom": {
+			"name": "Sporeling",
+			"sprite": "mushroom",
+			"palette": {
+				"a": "#d9574a",
+				"b": "#f2e6c9",
+				"c": "#ffffff"
+			},
+			"hp": 272,
+			"attack": 11,
+			"defense": 5,
+			"attack_speed": 0.7,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "magic",
+			"gold": 3,
+			"xp": 4
+		},
+		"bat": {
+			"name": "Cave Bat",
+			"sprite": "bat",
+			"palette": {
+				"a": "#6b4f8c",
+				"b": "#3b2a52",
+				"c": "#ff6b6b"
+			},
+			"hp": 158,
+			"attack": 11,
+			"defense": 1,
+			"attack_speed": 1.3,
+			"crit_chance": 0.05,
+			"dodge": 0.15,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4
+		},
+		"skeleton": {
+			"name": "Skeleton",
+			"sprite": "skeleton",
+			"palette": {
+				"a": "#e8e4d4",
+				"b": "#9e9784",
+				"c": "#ff4040"
+			},
+			"hp": 306,
+			"attack": 16,
+			"defense": 6,
+			"attack_speed": 0.9,
+			"crit_chance": 0.05,
+			"dodge": 0.03,
+			"damage_type": "physical",
+			"gold": 4,
+			"xp": 5
+		},
+		"crystal_golem": {
+			"name": "Crystal Golem",
+			"sprite": "golem",
+			"palette": {
+				"a": "#7fd6e8",
+				"b": "#3e7fa3",
+				"c": "#e8fbff"
+			},
+			"hp": 568,
+			"attack": 19,
+			"defense": 14,
+			"attack_speed": 0.5,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 6,
+			"xp": 7
+		},
+		"gem_eye": {
+			"name": "Gazer",
+			"sprite": "eye",
+			"palette": {
+				"a": "#b77fe8",
+				"b": "#5a3a8c",
+				"c": "#ffffff"
+			},
+			"hp": 272,
+			"attack": 24,
+			"defense": 5,
+			"attack_speed": 1.0,
+			"crit_chance": 0.1,
+			"dodge": 0.08,
+			"damage_type": "magic",
+			"gold": 5,
+			"xp": 6
+		},
+		"ember_imp": {
+			"name": "Ember Imp",
+			"sprite": "imp",
+			"palette": {
+				"a": "#e8663e",
+				"b": "#8c2a1c",
+				"c": "#ffd23f"
+			},
+			"hp": 238,
+			"attack": 22,
+			"defense": 4,
+			"attack_speed": 1.1,
+			"crit_chance": 0.08,
+			"dodge": 0.1,
+			"damage_type": "magic",
+			"gold": 5,
+			"xp": 6
+		},
+		"forge_hound": {
+			"name": "Forge Hound",
+			"sprite": "beast",
+			"palette": {
+				"a": "#5c4a42",
+				"b": "#2e2420",
+				"c": "#ff8a2a"
+			},
+			"hp": 355,
+			"attack": 20,
+			"defense": 7,
+			"attack_speed": 1.2,
+			"crit_chance": 0.08,
+			"dodge": 0.05,
+			"damage_type": "physical",
+			"gold": 5,
+			"xp": 6
+		},
+		"frost_wisp": {
+			"name": "Frost Wisp",
+			"sprite": "wisp",
+			"palette": {
+				"a": "#a8e6ff",
+				"b": "#4a90c2",
+				"c": "#ffffff"
+			},
+			"hp": 207,
+			"attack": 24,
+			"defense": 3,
+			"attack_speed": 0.9,
+			"crit_chance": 0.05,
+			"dodge": 0.2,
+			"damage_type": "magic",
+			"gold": 5,
+			"xp": 6
+		},
+		"ice_troll": {
+			"name": "Ice Troll",
+			"sprite": "beast",
+			"palette": {
+				"a": "#cfe9f2",
+				"b": "#6c8fa3",
+				"c": "#3d6bff"
+			},
+			"hp": 692,
+			"attack": 22,
+			"defense": 10,
+			"attack_speed": 0.6,
+			"crit_chance": 0.05,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 7,
+			"xp": 8
+		},
+		"void_wraith": {
+			"name": "Void Wraith",
+			"sprite": "wraith",
+			"palette": {
+				"a": "#40306b",
+				"b": "#1a1230",
+				"c": "#d24dff"
+			},
+			"hp": 370,
+			"attack": 27,
+			"defense": 6,
+			"attack_speed": 1.0,
+			"crit_chance": 0.1,
+			"dodge": 0.15,
+			"damage_type": "magic",
+			"gold": 6,
+			"xp": 7
+		},
+		"void_eye": {
+			"name": "Void Watcher",
+			"sprite": "eye",
+			"palette": {
+				"a": "#2a2a3a",
+				"b": "#101018",
+				"c": "#ff3df0"
+			},
+			"hp": 296,
+			"attack": 30,
+			"defense": 5,
+			"attack_speed": 1.1,
+			"crit_chance": 0.12,
+			"dodge": 0.1,
+			"damage_type": "magic",
+			"gold": 6,
+			"xp": 7
+		},
+		"moss_slime": {
+			"name": "Moss Slime",
+			"sprite": "slime",
+			"hp": 286,
+			"attack": 12,
+			"defense": 3,
+			"attack_speed": 0.8,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4,
+			"art": "slime",
+			"hue": 0.22,
+			"traits": {
+				"regen": 0.02
+			}
+		},
+		"thorn_sprout": {
+			"name": "Thorn Sprout",
+			"sprite": "mushroom",
+			"hp": 272,
+			"attack": 11,
+			"defense": 8,
+			"attack_speed": 0.7,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "magic",
+			"gold": 3,
+			"xp": 4,
+			"art": "mushroom",
+			"hue": 0.3,
+			"traits": {
+				"thorns": 0.15
+			}
+		},
+		"rot_bat": {
+			"name": "Rot Bat",
+			"sprite": "bat",
+			"hp": 158,
+			"attack": 12,
+			"defense": 1,
+			"attack_speed": 1.3,
+			"crit_chance": 0.05,
+			"dodge": 0.15,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4,
+			"art": "bat",
+			"hue": 0.08,
+			"traits": {
+				"lifesteal": 0.2
+			}
+		},
+		"shard_bat": {
+			"name": "Shard Bat",
+			"sprite": "bat",
+			"hp": 158,
+			"attack": 11,
+			"defense": 1,
+			"attack_speed": 1.56,
+			"crit_chance": 0.05,
+			"dodge": 0.25,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4,
+			"art": "bat",
+			"hue": 0.52
+		},
+		"prism_slime": {
+			"name": "Prism Slime",
+			"sprite": "slime",
+			"hp": 333,
+			"attack": 12,
+			"defense": 3,
+			"attack_speed": 0.8,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4,
+			"art": "slime",
+			"hue": 0.8,
+			"traits": {
+				"regen": 0.03
+			}
+		},
+		"geode_crawler": {
+			"name": "Geode Crawler",
+			"sprite": "golem",
+			"hp": 398,
+			"attack": 19,
+			"defense": 14,
+			"attack_speed": 0.8,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 6,
+			"xp": 7,
+			"art": "crystal_golem",
+			"hue": 0.85,
+			"scale": 0.8
+		},
+		"cinder_skeleton": {
+			"name": "Cinder Skeleton",
+			"sprite": "skeleton",
+			"hp": 306,
+			"attack": 19,
+			"defense": 6,
+			"attack_speed": 0.9,
+			"crit_chance": 0.05,
+			"dodge": 0.03,
+			"damage_type": "physical",
+			"gold": 4,
+			"xp": 5,
+			"art": "skeleton",
+			"hue": 0.05,
+			"traits": {
+				"thorns": 0.2
+			}
+		},
+		"magma_slime": {
+			"name": "Magma Slime",
+			"sprite": "slime",
+			"hp": 309,
+			"attack": 14,
+			"defense": 3,
+			"attack_speed": 0.8,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "magic",
+			"gold": 3,
+			"xp": 4,
+			"art": "slime",
+			"hue": 0.04
+		},
+		"slag_golem": {
+			"name": "Slag Golem",
+			"sprite": "golem",
+			"hp": 625,
+			"attack": 19,
+			"defense": 22,
+			"attack_speed": 0.5,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 6,
+			"xp": 7,
+			"art": "crystal_golem",
+			"hue": 0.07
+		},
+		"frost_skeleton": {
+			"name": "Frost Skeleton",
+			"sprite": "skeleton",
+			"hp": 306,
+			"attack": 16,
+			"defense": 8,
+			"attack_speed": 0.9,
+			"crit_chance": 0.05,
+			"dodge": 0.03,
+			"damage_type": "physical",
+			"gold": 4,
+			"xp": 5,
+			"art": "skeleton",
+			"hue": 0.55
+		},
+		"snow_bat": {
+			"name": "Snow Bat",
+			"sprite": "bat",
+			"hp": 190,
+			"attack": 11,
+			"defense": 1,
+			"attack_speed": 1.3,
+			"crit_chance": 0.05,
+			"dodge": 0.2,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4,
+			"art": "bat",
+			"hue": 0.58
+		},
+		"ice_imp": {
+			"name": "Ice Imp",
+			"sprite": "imp",
+			"hp": 238,
+			"attack": 24,
+			"defense": 4,
+			"attack_speed": 1.1,
+			"crit_chance": 0.08,
+			"dodge": 0.1,
+			"damage_type": "magic",
+			"gold": 5,
+			"xp": 6,
+			"art": "ember_imp",
+			"hue": 0.55
+		},
+		"void_hound": {
+			"name": "Void Hound",
+			"sprite": "beast",
+			"hp": 355,
+			"attack": 24,
+			"defense": 7,
+			"attack_speed": 1.44,
+			"crit_chance": 0.08,
+			"dodge": 0.05,
+			"damage_type": "physical",
+			"gold": 5,
+			"xp": 6,
+			"art": "forge_hound",
+			"hue": 0.75,
+			"traits": {
+				"lifesteal": 0.15
+			}
+		},
+		"abyss_slime": {
+			"name": "Abyss Slime",
+			"sprite": "slime",
+			"hp": 357,
+			"attack": 12,
+			"defense": 3,
+			"attack_speed": 0.8,
+			"crit_chance": 0.0,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 3,
+			"xp": 4,
+			"art": "slime",
+			"hue": 0.72,
+			"traits": {
+				"lifesteal": 0.25
+			}
+		},
+		"null_imp": {
+			"name": "Null Imp",
+			"sprite": "imp",
+			"hp": 238,
+			"attack": 28,
+			"defense": 4,
+			"attack_speed": 1.1,
+			"crit_chance": 0.08,
+			"dodge": 0.18,
+			"damage_type": "magic",
+			"gold": 5,
+			"xp": 6,
+			"art": "ember_imp",
+			"hue": 0.85
+		},
+		"shade_troll": {
+			"name": "Shade Troll",
+			"sprite": "beast",
+			"hp": 761,
+			"attack": 22,
+			"defense": 10,
+			"attack_speed": 0.6,
+			"crit_chance": 0.05,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 7,
+			"xp": 8,
+			"art": "ice_troll",
+			"hue": 0.75,
+			"traits": {
+				"regen": 0.02
+			}
+		}
 	},
 	"bosses": {
-		"moss_colossus": {"name": "Moss Colossus",  "sprite": "golem",    "palette": {"a": "#4f8c3e", "b": "#2a4a22", "c": "#d8ff8a"}, "hp": 2371, "attack": 20, "defense": 10, "attack_speed": 0.55, "crit_chance": 0.05, "dodge": 0.0,  "damage_type": "physical", "gold": 40, "xp": 50, "skill": {"type": "slam", "name": "Earthquake", "cooldown": 8.0, "mult": 1.1}},
-		"crystal_queen": {"name": "Crystal Queen",  "sprite": "eye",      "palette": {"a": "#e8a8ff", "b": "#6a3a9c", "c": "#ffffff"}, "hp": 2075, "attack": 26, "defense": 8,  "attack_speed": 0.8,  "crit_chance": 0.1,  "dodge": 0.08, "damage_type": "magic",    "gold": 45, "xp": 55, "skill": {"type": "slam", "name": "Prism Burst", "cooldown": 7.0, "mult": 1.0}},
-		"ashen_king":    {"name": "The Ashen King", "sprite": "skeleton", "palette": {"a": "#3a302c", "b": "#1a1412", "c": "#ff6a1a"}, "hp": 2272, "attack": 27, "defense": 10, "attack_speed": 0.75, "crit_chance": 0.12, "dodge": 0.05, "damage_type": "physical", "gold": 50, "xp": 60, "set_bias": "ashen_king", "skill": {"type": "slam", "name": "Cinder Wave", "cooldown": 8.0, "mult": 1.2}},
-		"frost_titan":   {"name": "Frost Titan",    "sprite": "beast",    "palette": {"a": "#e8f6ff", "b": "#7aa6c2", "c": "#2a5aff"}, "hp": 2766, "attack": 26, "defense": 12, "attack_speed": 0.5,  "crit_chance": 0.05, "dodge": 0.0,  "damage_type": "physical", "gold": 50, "xp": 60, "set_bias": "verdant_warden", "skill": {"type": "slam", "name": "Avalanche", "cooldown": 9.0, "mult": 1.3}},
-		"void_herald":   {"name": "Void Herald",    "sprite": "wraith",   "palette": {"a": "#5a2a8c", "b": "#1a0a30", "c": "#ffe23d"}, "hp": 2272, "attack": 31, "defense": 8,  "attack_speed": 0.85, "crit_chance": 0.15, "dodge": 0.12, "damage_type": "magic",    "gold": 60, "xp": 70, "set_bias": "stormcaller", "skill": {"type": "slam", "name": "Oblivion", "cooldown": 7.0, "mult": 1.2}}
+		"moss_colossus": {
+			"name": "Moss Colossus",
+			"sprite": "golem",
+			"palette": {
+				"a": "#4f8c3e",
+				"b": "#2a4a22",
+				"c": "#d8ff8a"
+			},
+			"hp": 2371,
+			"attack": 20,
+			"defense": 10,
+			"attack_speed": 0.55,
+			"crit_chance": 0.05,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 40,
+			"xp": 50,
+			"skills": [
+				{
+					"type": "slam",
+					"name": "Earthquake",
+					"cooldown": 8.0,
+					"mult": 1.1
+				},
+				{
+					"type": "shield",
+					"name": "Bark Skin",
+					"cooldown": 14.0,
+					"value": 0.5,
+					"duration": 3.0
+				}
+			]
+		},
+		"crystal_queen": {
+			"name": "Crystal Queen",
+			"sprite": "eye",
+			"palette": {
+				"a": "#e8a8ff",
+				"b": "#6a3a9c",
+				"c": "#ffffff"
+			},
+			"hp": 2075,
+			"attack": 26,
+			"defense": 8,
+			"attack_speed": 0.8,
+			"crit_chance": 0.1,
+			"dodge": 0.08,
+			"damage_type": "magic",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "slam",
+					"name": "Prism Burst",
+					"cooldown": 7.0,
+					"mult": 1.0
+				},
+				{
+					"type": "summon",
+					"name": "Shard Guard",
+					"cooldown": 12.0,
+					"unit": "shard_bat",
+					"count": 2,
+					"max": 4
+				}
+			]
+		},
+		"ashen_king": {
+			"name": "The Ashen King",
+			"sprite": "skeleton",
+			"palette": {
+				"a": "#3a302c",
+				"b": "#1a1412",
+				"c": "#ff6a1a"
+			},
+			"hp": 2272,
+			"attack": 27,
+			"defense": 10,
+			"attack_speed": 0.75,
+			"crit_chance": 0.12,
+			"dodge": 0.05,
+			"damage_type": "physical",
+			"gold": 50,
+			"xp": 60,
+			"set_bias": "ashen_king",
+			"skills": [
+				{
+					"type": "slam",
+					"name": "Cinder Wave",
+					"cooldown": 8.0,
+					"mult": 1.2
+				},
+				{
+					"type": "summon",
+					"name": "Raise the Ashen",
+					"cooldown": 13.0,
+					"unit": "cinder_skeleton",
+					"count": 2,
+					"max": 4
+				},
+				{
+					"type": "frenzy",
+					"name": "Burning Wrath",
+					"cooldown": 18.0,
+					"value": 1.5,
+					"duration": 4.0
+				}
+			]
+		},
+		"frost_titan": {
+			"name": "Frost Titan",
+			"sprite": "beast",
+			"palette": {
+				"a": "#e8f6ff",
+				"b": "#7aa6c2",
+				"c": "#2a5aff"
+			},
+			"hp": 2766,
+			"attack": 26,
+			"defense": 12,
+			"attack_speed": 0.5,
+			"crit_chance": 0.05,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 50,
+			"xp": 60,
+			"set_bias": "verdant_warden",
+			"skills": [
+				{
+					"type": "slam",
+					"name": "Avalanche",
+					"cooldown": 9.0,
+					"mult": 1.3
+				},
+				{
+					"type": "heal",
+					"name": "Glacial Mend",
+					"cooldown": 15.0,
+					"value": 0.12
+				}
+			]
+		},
+		"void_herald": {
+			"name": "Void Herald",
+			"sprite": "wraith",
+			"palette": {
+				"a": "#5a2a8c",
+				"b": "#1a0a30",
+				"c": "#ffe23d"
+			},
+			"hp": 2272,
+			"attack": 31,
+			"defense": 8,
+			"attack_speed": 0.85,
+			"crit_chance": 0.15,
+			"dodge": 0.12,
+			"damage_type": "magic",
+			"gold": 60,
+			"xp": 70,
+			"set_bias": "stormcaller",
+			"skills": [
+				{
+					"type": "drain",
+					"name": "Oblivion",
+					"cooldown": 8.0,
+					"mult": 0.9,
+					"value": 0.5
+				},
+				{
+					"type": "summon",
+					"name": "Call the Void",
+					"cooldown": 12.0,
+					"unit": "null_imp",
+					"count": 2,
+					"max": 4
+				},
+				{
+					"type": "shield",
+					"name": "Null Ward",
+					"cooldown": 16.0,
+					"value": 0.6,
+					"duration": 3.0
+				}
+			]
+		},
+		"slime_king": {
+			"name": "Slime King",
+			"art": "slime",
+			"sprite": "slime",
+			"hue": 0.14,
+			"scale": 1.6,
+			"hp": 2200,
+			"attack": 18,
+			"defense": 5,
+			"attack_speed": 0.8,
+			"crit_chance": 0.1,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "summon",
+					"name": "Split",
+					"cooldown": 9.0,
+					"unit": "moss_slime",
+					"count": 2,
+					"max": 5
+				},
+				{
+					"type": "slam",
+					"name": "Belly Flop",
+					"cooldown": 10.0,
+					"mult": 1.2
+				}
+			]
+		},
+		"bat_matriarch": {
+			"name": "Bat Matriarch",
+			"art": "bat",
+			"sprite": "bat",
+			"hue": 0.95,
+			"scale": 1.6,
+			"hp": 1800,
+			"attack": 22,
+			"defense": 2,
+			"attack_speed": 1.3,
+			"crit_chance": 0.1,
+			"dodge": 0.075,
+			"damage_type": "physical",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "drain",
+					"name": "Blood Swarm",
+					"cooldown": 8.0,
+					"mult": 0.8,
+					"value": 0.6
+				},
+				{
+					"type": "summon",
+					"name": "Brood",
+					"cooldown": 11.0,
+					"unit": "rot_bat",
+					"count": 2,
+					"max": 4
+				}
+			]
+		},
+		"prism_golem": {
+			"name": "Prism Golem",
+			"art": "crystal_golem",
+			"sprite": "golem",
+			"hue": 0.88,
+			"scale": 1.6,
+			"hp": 2600,
+			"attack": 22,
+			"defense": 22,
+			"attack_speed": 0.5,
+			"crit_chance": 0.1,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "shield",
+					"name": "Crystal Aegis",
+					"cooldown": 12.0,
+					"value": 0.6,
+					"duration": 4.0
+				},
+				{
+					"type": "slam",
+					"name": "Shatter",
+					"cooldown": 9.0,
+					"mult": 1.3
+				}
+			]
+		},
+		"eye_of_ages": {
+			"name": "Eye of Ages",
+			"art": "gem_eye",
+			"sprite": "eye",
+			"hue": 0.6,
+			"scale": 1.6,
+			"hp": 1900,
+			"attack": 28,
+			"defense": 8,
+			"attack_speed": 1.0,
+			"crit_chance": 0.1,
+			"dodge": 0.04,
+			"damage_type": "magic",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "slam",
+					"name": "Gaze of Ruin",
+					"cooldown": 7.0,
+					"mult": 1.1
+				},
+				{
+					"type": "frenzy",
+					"name": "Focus",
+					"cooldown": 15.0,
+					"value": 1.6,
+					"duration": 4.0
+				}
+			]
+		},
+		"forge_behemoth": {
+			"name": "Forge Behemoth",
+			"art": "forge_hound",
+			"sprite": "beast",
+			"hue": 0.02,
+			"scale": 1.6,
+			"hp": 2600,
+			"attack": 26,
+			"defense": 11,
+			"attack_speed": 1.2,
+			"crit_chance": 0.1,
+			"dodge": 0.025,
+			"damage_type": "physical",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "frenzy",
+					"name": "Stoke the Furnace",
+					"cooldown": 12.0,
+					"value": 1.6,
+					"duration": 5.0
+				},
+				{
+					"type": "slam",
+					"name": "Molten Charge",
+					"cooldown": 9.0,
+					"mult": 1.3
+				}
+			]
+		},
+		"imp_warlord": {
+			"name": "Imp Warlord",
+			"art": "ember_imp",
+			"sprite": "imp",
+			"hue": 0.98,
+			"scale": 1.6,
+			"hp": 2000,
+			"attack": 26,
+			"defense": 6,
+			"attack_speed": 1.1,
+			"crit_chance": 0.1,
+			"dodge": 0.05,
+			"damage_type": "magic",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "summon",
+					"name": "Imp Horde",
+					"cooldown": 10.0,
+					"unit": "ember_imp",
+					"count": 2,
+					"max": 5
+				},
+				{
+					"type": "drain",
+					"name": "Soul Tax",
+					"cooldown": 11.0,
+					"mult": 0.8,
+					"value": 0.5
+				}
+			]
+		},
+		"troll_chieftain": {
+			"name": "Troll Chieftain",
+			"art": "ice_troll",
+			"sprite": "beast",
+			"hue": 0.62,
+			"scale": 1.4,
+			"hp": 3200,
+			"attack": 25,
+			"defense": 16,
+			"attack_speed": 0.6,
+			"crit_chance": 0.1,
+			"dodge": 0.0,
+			"damage_type": "physical",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "heal",
+					"name": "Troll Blood",
+					"cooldown": 11.0,
+					"value": 0.1
+				},
+				{
+					"type": "slam",
+					"name": "Glacier Club",
+					"cooldown": 9.0,
+					"mult": 1.3
+				}
+			]
+		},
+		"wisp_matron": {
+			"name": "Wisp Matron",
+			"art": "frost_wisp",
+			"sprite": "wisp",
+			"hue": 0.5,
+			"scale": 1.6,
+			"hp": 2100,
+			"attack": 27,
+			"defense": 5,
+			"attack_speed": 0.9,
+			"crit_chance": 0.1,
+			"dodge": 0.1,
+			"damage_type": "magic",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "summon",
+					"name": "Will-o'-wisps",
+					"cooldown": 10.0,
+					"unit": "frost_wisp",
+					"count": 2,
+					"max": 5
+				},
+				{
+					"type": "shield",
+					"name": "Frost Veil",
+					"cooldown": 14.0,
+					"value": 0.5,
+					"duration": 4.0
+				}
+			]
+		},
+		"wraith_lord": {
+			"name": "Wraith Lord",
+			"art": "void_wraith",
+			"sprite": "wraith",
+			"hue": 0.13,
+			"scale": 1.6,
+			"hp": 2400,
+			"attack": 31,
+			"defense": 10,
+			"attack_speed": 1.0,
+			"crit_chance": 0.1,
+			"dodge": 0.075,
+			"damage_type": "magic",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "drain",
+					"name": "Soul Rend",
+					"cooldown": 7.0,
+					"mult": 1.0,
+					"value": 0.6
+				},
+				{
+					"type": "frenzy",
+					"name": "Dread",
+					"cooldown": 14.0,
+					"value": 1.5,
+					"duration": 4.0
+				}
+			]
+		},
+		"watcher_prime": {
+			"name": "Watcher Prime",
+			"art": "void_eye",
+			"sprite": "eye",
+			"hue": 0.9,
+			"scale": 1.6,
+			"hp": 2300,
+			"attack": 32,
+			"defense": 8,
+			"attack_speed": 1.1,
+			"crit_chance": 0.1,
+			"dodge": 0.05,
+			"damage_type": "magic",
+			"gold": 45,
+			"xp": 55,
+			"skills": [
+				{
+					"type": "slam",
+					"name": "Annihilation Beam",
+					"cooldown": 8.0,
+					"mult": 1.2
+				},
+				{
+					"type": "summon",
+					"name": "Lesser Eyes",
+					"cooldown": 11.0,
+					"unit": "void_eye",
+					"count": 2,
+					"max": 4
+				}
+			]
+		}
 	},
 	"scaling": {
 		"hp_growth": 1.062,
@@ -27,9 +994,104 @@
 		"gold_growth": 1.05,
 		"xp_growth": 1.04,
 		"boss_tiers": {
-			"guardian": {"name": "Guardian",   "hp_mult": 1.0, "attack_mult": 1.0, "gold_mult": 1.0, "minions": 0},
-			"elite":    {"name": "Elite Guardian", "hp_mult": 1.5, "attack_mult": 1.15, "gold_mult": 2.0, "minions": 1},
-			"lord":     {"name": "Tower Lord", "hp_mult": 2.2, "attack_mult": 1.3, "gold_mult": 4.0, "minions": 2}
+			"guardian": {
+				"name": "Guardian",
+				"hp_mult": 1.0,
+				"attack_mult": 1.0,
+				"gold_mult": 1.0,
+				"minions": 0
+			},
+			"elite": {
+				"name": "Elite Guardian",
+				"hp_mult": 1.5,
+				"attack_mult": 1.15,
+				"gold_mult": 2.0,
+				"minions": 1
+			},
+			"lord": {
+				"name": "Tower Lord",
+				"hp_mult": 2.2,
+				"attack_mult": 1.3,
+				"gold_mult": 4.0,
+				"minions": 2
+			}
 		}
+	},
+	"affixes": {
+		"armored": {
+			"name": "Armored",
+			"min_floor": 5,
+			"weight": 3,
+			"mult": {
+				"defense": 2.0
+			}
+		},
+		"swift": {
+			"name": "Swift",
+			"min_floor": 5,
+			"weight": 3,
+			"mult": {
+				"attack_speed": 1.5
+			},
+			"add": {
+				"dodge": 0.1
+			}
+		},
+		"giant": {
+			"name": "Giant",
+			"min_floor": 10,
+			"weight": 2,
+			"mult": {
+				"hp": 2.2,
+				"attack": 1.3
+			},
+			"scale": 1.3
+		},
+		"vampiric": {
+			"name": "Vampiric",
+			"min_floor": 10,
+			"weight": 2,
+			"traits": {
+				"lifesteal": 0.25
+			}
+		},
+		"thorny": {
+			"name": "Thorny",
+			"min_floor": 15,
+			"weight": 2,
+			"traits": {
+				"thorns": 0.2
+			}
+		},
+		"regenerating": {
+			"name": "Regenerating",
+			"min_floor": 15,
+			"weight": 2,
+			"traits": {
+				"regen": 0.03
+			}
+		},
+		"shielded": {
+			"name": "Shielded",
+			"min_floor": 20,
+			"weight": 2,
+			"traits": {
+				"opening_shield": 0.6
+			}
+		},
+		"berserk": {
+			"name": "Berserk",
+			"min_floor": 25,
+			"weight": 2,
+			"traits": {
+				"berserk": 1.6
+			}
+		}
+	},
+	"affix_chance": {
+		"base": 0.05,
+		"per_floor": 0.004,
+		"max": 0.55,
+		"boss_min_floor": 30
 	}
 }

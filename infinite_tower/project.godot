@@ -23,6 +23,7 @@ config/icon="res://icon.svg"
 
 Game="*res://core/game.gd"
 WindowManager="*res://core/window_manager.gd"
+Audio="*res://core/audio.gd"
 
 [input]
 

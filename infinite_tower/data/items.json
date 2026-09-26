@@ -1,98 +1,713 @@
 {
-	"slots": ["weapon", "helm", "chest", "gloves", "boots", "ring"],
-	"scaling_stats": ["hp", "attack", "defense", "magic_power"],
+	"slots": [
+		"weapon",
+		"helm",
+		"chest",
+		"gloves",
+		"boots",
+		"ring"
+	],
+	"scaling_stats": [
+		"hp",
+		"attack",
+		"defense",
+		"magic_power",
+		"power"
+	],
 	"item_growth": 1.042,
 	"rarities": {
-		"common":    {"name": "Common",    "order": 0, "mult": 1.0,  "affixes": 0, "weight": 600, "color": "#b4b4b4", "salvage": 1},
-		"uncommon":  {"name": "Uncommon",  "order": 1, "mult": 1.25, "affixes": 1, "weight": 260, "color": "#5fd35f", "salvage": 2},
-		"rare":      {"name": "Rare",      "order": 2, "mult": 1.6,  "affixes": 2, "weight": 100, "color": "#4aa3ff", "salvage": 5},
-		"epic":      {"name": "Epic",      "order": 3, "mult": 2.1,  "affixes": 3, "weight": 32,  "color": "#b35cff", "salvage": 12},
-		"legendary": {"name": "Legendary", "order": 4, "mult": 2.8,  "affixes": 4, "weight": 8,   "color": "#ff9d2a", "salvage": 30},
-		"mythic":    {"name": "Mythic",    "order": 5, "mult": 3.8,  "affixes": 5, "weight": 2,   "color": "#ff4f6d", "salvage": 80},
-		"relic":     {"name": "RELIC",     "order": 6, "mult": 0.0,  "affixes": 0, "weight": 0.35,"color": "#b388ff", "salvage": 0}
+		"common": {
+			"name": "Common",
+			"order": 0,
+			"mult": 1.0,
+			"affixes": 0,
+			"weight": 600,
+			"color": "#b4b4b4",
+			"salvage": 1
+		},
+		"uncommon": {
+			"name": "Uncommon",
+			"order": 1,
+			"mult": 1.25,
+			"affixes": 1,
+			"weight": 260,
+			"color": "#5fd35f",
+			"salvage": 2
+		},
+		"rare": {
+			"name": "Rare",
+			"order": 2,
+			"mult": 1.6,
+			"affixes": 2,
+			"weight": 100,
+			"color": "#4aa3ff",
+			"salvage": 5
+		},
+		"epic": {
+			"name": "Epic",
+			"order": 3,
+			"mult": 2.1,
+			"affixes": 3,
+			"weight": 32,
+			"color": "#b35cff",
+			"salvage": 12
+		},
+		"legendary": {
+			"name": "Legendary",
+			"order": 4,
+			"mult": 2.8,
+			"affixes": 4,
+			"weight": 8,
+			"color": "#ff9d2a",
+			"salvage": 30
+		},
+		"mythic": {
+			"name": "Mythic",
+			"order": 5,
+			"mult": 3.8,
+			"affixes": 5,
+			"weight": 2,
+			"color": "#ff4f6d",
+			"salvage": 80
+		},
+		"relic": {
+			"name": "RELIC",
+			"order": 6,
+			"mult": 0.0,
+			"affixes": 0,
+			"weight": 0.35,
+			"color": "#b388ff",
+			"salvage": 0
+		}
 	},
 	"bases": [
-		{"id": "iron_sword", "icon": "item_sword",    "name": "Iron Sword",     "slot": "weapon", "class": "knight",   "stats": {"attack": 7, "hp": 12}},
-		{"id": "war_axe", "icon": "item_axe",       "name": "War Axe",        "slot": "weapon", "class": "knight",   "stats": {"attack": 9}},
-		{"id": "tower_shield", "icon": "item_axe",  "name": "Tower Mace",     "slot": "weapon", "class": "knight",   "stats": {"attack": 5, "defense": 5}},
-		{"id": "short_bow", "icon": "item_bow",     "name": "Short Bow",      "slot": "weapon", "class": "ranger",   "stats": {"attack": 8}, "fixed": {"attack_speed_pct": 0.03}},
-		{"id": "longbow", "icon": "item_bow",       "name": "Longbow",        "slot": "weapon", "class": "ranger",   "stats": {"attack": 10}},
-		{"id": "crossbow", "icon": "item_bow",      "name": "Crossbow",       "slot": "weapon", "class": "ranger",   "stats": {"attack": 9}, "fixed": {"crit_damage": 0.1}},
-		{"id": "oak_staff", "icon": "item_staff",     "name": "Oak Staff",      "slot": "weapon", "class": "arcanist", "stats": {"magic_power": 10}},
-		{"id": "crystal_wand", "icon": "item_staff",  "name": "Crystal Wand",   "slot": "weapon", "class": "arcanist", "stats": {"magic_power": 8}, "fixed": {"crit_chance": 0.02}},
-		{"id": "ember_tome", "icon": "item_tome",    "name": "Ember Tome",     "slot": "weapon", "class": "arcanist", "stats": {"magic_power": 8}, "fixed": {"fire_damage_pct": 0.05}},
-		{"id": "leather_cap",   "name": "Leather Cap",    "slot": "helm",   "class": "", "stats": {"hp": 18, "defense": 2}},
-		{"id": "iron_helm",     "name": "Iron Helm",      "slot": "helm",   "class": "", "stats": {"hp": 12, "defense": 4}},
-		{"id": "circlet",       "name": "Circlet",        "slot": "helm",   "class": "", "stats": {"hp": 8, "magic_power": 3, "attack": 3}},
-		{"id": "padded_vest",   "name": "Padded Vest",    "slot": "chest",  "class": "", "stats": {"hp": 32, "defense": 3}},
-		{"id": "plate_mail",    "name": "Plate Mail",     "slot": "chest",  "class": "", "stats": {"hp": 22, "defense": 7}},
-		{"id": "silk_robe",     "name": "Silk Robe",      "slot": "chest",  "class": "", "stats": {"hp": 18, "magic_power": 4}},
-		{"id": "leather_grips", "name": "Leather Grips",  "slot": "gloves", "class": "", "stats": {"attack": 3, "defense": 1}},
-		{"id": "gauntlets",     "name": "Gauntlets",      "slot": "gloves", "class": "", "stats": {"defense": 3, "hp": 10}},
-		{"id": "mystic_wraps",  "name": "Mystic Wraps",   "slot": "gloves", "class": "", "stats": {"magic_power": 3, "hp": 6}},
-		{"id": "leather_boots", "name": "Leather Boots",  "slot": "boots",  "class": "", "stats": {"hp": 14, "defense": 2}, "fixed": {"move_speed_pct": 0.02}},
-		{"id": "greaves",       "name": "Iron Greaves",   "slot": "boots",  "class": "", "stats": {"hp": 10, "defense": 4}},
-		{"id": "copper_ring",   "name": "Copper Ring",    "slot": "ring",   "class": "", "stats": {"attack": 3, "magic_power": 3}},
-		{"id": "jade_ring",     "name": "Jade Ring",      "slot": "ring",   "class": "", "stats": {"hp": 24}},
-		{"id": "signet",        "name": "Signet",         "slot": "ring",   "class": "", "stats": {"defense": 3, "attack": 2, "magic_power": 2}}
+		{
+			"id": "iron_sword",
+			"icon": "item_sword",
+			"name": "Iron Sword",
+			"slot": "weapon",
+			"class": "knight",
+			"stats": {
+				"attack": 7,
+				"hp": 12
+			}
+		},
+		{
+			"id": "war_axe",
+			"icon": "item_axe",
+			"name": "War Axe",
+			"slot": "weapon",
+			"class": "knight",
+			"stats": {
+				"attack": 9
+			}
+		},
+		{
+			"id": "tower_shield",
+			"icon": "item_axe",
+			"name": "Tower Mace",
+			"slot": "weapon",
+			"class": "knight",
+			"stats": {
+				"attack": 5,
+				"defense": 5
+			}
+		},
+		{
+			"id": "short_bow",
+			"icon": "item_bow",
+			"name": "Short Bow",
+			"slot": "weapon",
+			"class": "ranger",
+			"stats": {
+				"attack": 8
+			},
+			"fixed": {
+				"attack_speed_pct": 0.03
+			}
+		},
+		{
+			"id": "longbow",
+			"icon": "item_bow",
+			"name": "Longbow",
+			"slot": "weapon",
+			"class": "ranger",
+			"stats": {
+				"attack": 10
+			}
+		},
+		{
+			"id": "crossbow",
+			"icon": "item_bow",
+			"name": "Crossbow",
+			"slot": "weapon",
+			"class": "ranger",
+			"stats": {
+				"attack": 9
+			},
+			"fixed": {
+				"crit_damage": 0.1
+			}
+		},
+		{
+			"id": "oak_staff",
+			"icon": "item_staff",
+			"name": "Oak Staff",
+			"slot": "weapon",
+			"class": "arcanist",
+			"stats": {
+				"magic_power": 10
+			}
+		},
+		{
+			"id": "crystal_wand",
+			"icon": "item_staff",
+			"name": "Crystal Wand",
+			"slot": "weapon",
+			"class": "arcanist",
+			"stats": {
+				"magic_power": 8
+			},
+			"fixed": {
+				"crit_chance": 0.02
+			}
+		},
+		{
+			"id": "ember_tome",
+			"icon": "item_tome",
+			"name": "Ember Tome",
+			"slot": "weapon",
+			"class": "arcanist",
+			"stats": {
+				"magic_power": 8
+			},
+			"fixed": {
+				"fire_damage_pct": 0.05
+			}
+		},
+		{
+			"id": "leather_cap",
+			"name": "Leather Cap",
+			"slot": "helm",
+			"class": "",
+			"stats": {
+				"hp": 18,
+				"defense": 2
+			}
+		},
+		{
+			"id": "iron_helm",
+			"name": "Iron Helm",
+			"slot": "helm",
+			"class": "",
+			"stats": {
+				"hp": 12,
+				"defense": 4
+			}
+		},
+		{
+			"id": "circlet",
+			"name": "Circlet",
+			"slot": "helm",
+			"class": "",
+			"stats": {
+				"hp": 8,
+				"power": 3
+			}
+		},
+		{
+			"id": "padded_vest",
+			"name": "Padded Vest",
+			"slot": "chest",
+			"class": "",
+			"stats": {
+				"hp": 32,
+				"defense": 3
+			}
+		},
+		{
+			"id": "plate_mail",
+			"name": "Plate Mail",
+			"slot": "chest",
+			"class": "",
+			"stats": {
+				"hp": 22,
+				"defense": 7
+			}
+		},
+		{
+			"id": "silk_robe",
+			"name": "Silk Robe",
+			"slot": "chest",
+			"class": "",
+			"stats": {
+				"hp": 18,
+				"power": 4
+			}
+		},
+		{
+			"id": "leather_grips",
+			"name": "Leather Grips",
+			"slot": "gloves",
+			"class": "",
+			"stats": {
+				"power": 3,
+				"defense": 1
+			}
+		},
+		{
+			"id": "gauntlets",
+			"name": "Gauntlets",
+			"slot": "gloves",
+			"class": "",
+			"stats": {
+				"defense": 3,
+				"hp": 10
+			}
+		},
+		{
+			"id": "mystic_wraps",
+			"name": "Mystic Wraps",
+			"slot": "gloves",
+			"class": "",
+			"stats": {
+				"power": 3,
+				"hp": 6
+			}
+		},
+		{
+			"id": "leather_boots",
+			"name": "Leather Boots",
+			"slot": "boots",
+			"class": "",
+			"stats": {
+				"hp": 14,
+				"defense": 2
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "greaves",
+			"name": "Iron Greaves",
+			"slot": "boots",
+			"class": "",
+			"stats": {
+				"hp": 10,
+				"defense": 4
+			}
+		},
+		{
+			"id": "copper_ring",
+			"name": "Copper Ring",
+			"slot": "ring",
+			"class": "",
+			"stats": {
+				"power": 4
+			}
+		},
+		{
+			"id": "jade_ring",
+			"name": "Jade Ring",
+			"slot": "ring",
+			"class": "",
+			"stats": {
+				"hp": 24
+			}
+		},
+		{
+			"id": "signet",
+			"name": "Signet",
+			"slot": "ring",
+			"class": "",
+			"stats": {
+				"defense": 3,
+				"power": 3
+			}
+		}
 	],
 	"affixes": [
-		{"stat": "attack_pct",       "min": 0.02, "max": 0.06, "suffix": "of Fury"},
-		{"stat": "magic_power_pct",  "min": 0.02, "max": 0.06, "suffix": "of Sorcery"},
-		{"stat": "hp_pct",           "min": 0.02, "max": 0.07, "suffix": "of Vigor"},
-		{"stat": "defense_pct",      "min": 0.02, "max": 0.06, "suffix": "of the Bastion"},
-		{"stat": "crit_chance",      "min": 0.01, "max": 0.035,"suffix": "of Precision"},
-		{"stat": "crit_damage",      "min": 0.05, "max": 0.2,  "suffix": "of Ruin"},
-		{"stat": "attack_speed_pct", "min": 0.02, "max": 0.06, "suffix": "of Haste"},
-		{"stat": "dodge",            "min": 0.01, "max": 0.03, "suffix": "of Shadows"},
-		{"stat": "damage_pct",       "min": 0.02, "max": 0.05, "suffix": "of Slaying"},
-		{"stat": "fire_damage_pct",  "min": 0.03, "max": 0.08, "suffix": "of Embers"},
-		{"stat": "gold_pct",         "min": 0.03, "max": 0.1,  "suffix": "of Greed"},
-		{"stat": "drop_pct",         "min": 0.02, "max": 0.06, "suffix": "of Fortune"},
-		{"stat": "move_speed_pct",   "min": 0.02, "max": 0.05, "suffix": "of the Wind"}
+		{
+			"stat": "attack_pct",
+			"min": 0.02,
+			"max": 0.06,
+			"suffix": "of Fury",
+			"slots": [
+				"weapon",
+				"gloves",
+				"ring"
+			]
+		},
+		{
+			"stat": "magic_power_pct",
+			"min": 0.02,
+			"max": 0.06,
+			"suffix": "of Sorcery",
+			"slots": [
+				"weapon",
+				"helm",
+				"ring"
+			]
+		},
+		{
+			"stat": "hp_pct",
+			"min": 0.02,
+			"max": 0.07,
+			"suffix": "of Vigor",
+			"slots": [
+				"helm",
+				"chest",
+				"boots"
+			]
+		},
+		{
+			"stat": "defense_pct",
+			"min": 0.02,
+			"max": 0.06,
+			"suffix": "of the Bastion",
+			"slots": [
+				"chest",
+				"helm",
+				"boots",
+				"gloves"
+			]
+		},
+		{
+			"stat": "crit_chance",
+			"min": 0.01,
+			"max": 0.035,
+			"suffix": "of Precision",
+			"slots": [
+				"weapon",
+				"gloves",
+				"ring"
+			]
+		},
+		{
+			"stat": "crit_damage",
+			"min": 0.05,
+			"max": 0.2,
+			"suffix": "of Ruin",
+			"slots": [
+				"weapon",
+				"ring"
+			]
+		},
+		{
+			"stat": "attack_speed_pct",
+			"min": 0.02,
+			"max": 0.06,
+			"suffix": "of Haste",
+			"slots": [
+				"weapon",
+				"gloves"
+			]
+		},
+		{
+			"stat": "dodge",
+			"min": 0.01,
+			"max": 0.03,
+			"suffix": "of Shadows",
+			"slots": [
+				"boots",
+				"chest"
+			]
+		},
+		{
+			"stat": "damage_pct",
+			"min": 0.02,
+			"max": 0.05,
+			"suffix": "of Slaying",
+			"slots": [
+				"weapon",
+				"ring"
+			]
+		},
+		{
+			"stat": "fire_damage_pct",
+			"min": 0.03,
+			"max": 0.08,
+			"suffix": "of Embers",
+			"slots": [
+				"weapon",
+				"ring"
+			]
+		},
+		{
+			"stat": "gold_pct",
+			"min": 0.03,
+			"max": 0.1,
+			"suffix": "of Greed",
+			"slots": [
+				"ring",
+				"helm"
+			]
+		},
+		{
+			"stat": "drop_pct",
+			"min": 0.02,
+			"max": 0.06,
+			"suffix": "of Fortune",
+			"slots": [
+				"ring",
+				"boots"
+			]
+		},
+		{
+			"stat": "move_speed_pct",
+			"min": 0.02,
+			"max": 0.05,
+			"suffix": "of the Wind",
+			"slots": [
+				"boots"
+			]
+		}
 	],
 	"set_chance": 0.25,
 	"sets": {
 		"ashen_king": {
 			"name": "Ashen King",
 			"min_floor": 20,
-			"pieces": {"weapon": "Ashen Brand", "helm": "Crown of Cinders", "chest": "Ashen Mantle", "gloves": "Smoldering Grasp", "boots": "Charred Sabatons", "ring": "Ember Seal"},
+			"pieces": {
+				"weapon": "Ashen Brand",
+				"helm": "Crown of Cinders",
+				"chest": "Ashen Mantle",
+				"gloves": "Smoldering Grasp",
+				"boots": "Charred Sabatons",
+				"ring": "Ember Seal"
+			},
 			"bonuses": {
-				"2": {"stats": {"attack_pct": 0.10, "magic_power_pct": 0.10}, "text": "+10% Attack Power"},
-				"4": {"stats": {"fire_damage_pct": 0.20}, "specials": ["fire_imbue"], "text": "+20% Fire Damage (attacks become Fire)"},
-				"6": {"specials": ["burning_soul"], "text": "Burning Soul: attacks apply a burn over time"}
+				"2": {
+					"stats": {
+						"attack_pct": 0.1,
+						"magic_power_pct": 0.1
+					},
+					"text": "+10% Attack Power"
+				},
+				"4": {
+					"stats": {
+						"fire_damage_pct": 0.2
+					},
+					"specials": [
+						"fire_imbue"
+					],
+					"text": "+20% Fire Damage (attacks become Fire)"
+				},
+				"6": {
+					"specials": [
+						"burning_soul"
+					],
+					"text": "Burning Soul: attacks apply a burn over time"
+				}
 			}
 		},
 		"verdant_warden": {
 			"name": "Verdant Warden",
 			"min_floor": 40,
-			"pieces": {"weapon": "Thornheart", "helm": "Warden's Hood", "chest": "Barkskin Vest", "gloves": "Vinegrips", "boots": "Rootwalkers", "ring": "Seedstone Band"},
+			"pieces": {
+				"weapon": "Thornheart",
+				"helm": "Warden's Hood",
+				"chest": "Barkskin Vest",
+				"gloves": "Vinegrips",
+				"boots": "Rootwalkers",
+				"ring": "Seedstone Band"
+			},
 			"bonuses": {
-				"2": {"stats": {"hp_pct": 0.12}, "text": "+12% HP"},
-				"4": {"stats": {"defense_pct": 0.20}, "text": "+20% Defense"},
-				"6": {"specials": ["regrowth"], "text": "Regrowth: regenerate 2% max HP per second"}
+				"2": {
+					"stats": {
+						"hp_pct": 0.12
+					},
+					"text": "+12% HP"
+				},
+				"4": {
+					"stats": {
+						"defense_pct": 0.2
+					},
+					"text": "+20% Defense"
+				},
+				"6": {
+					"specials": [
+						"regrowth"
+					],
+					"text": "Regrowth: regenerate 2% max HP per second"
+				}
 			}
 		},
 		"stormcaller": {
 			"name": "Stormcaller",
 			"min_floor": 60,
-			"pieces": {"weapon": "Thunderstring", "helm": "Storm Visage", "chest": "Galeweave", "gloves": "Sparkknuckles", "boots": "Striders of Lightning", "ring": "Band of the Tempest"},
+			"pieces": {
+				"weapon": "Thunderstring",
+				"helm": "Storm Visage",
+				"chest": "Galeweave",
+				"gloves": "Sparkknuckles",
+				"boots": "Striders of Lightning",
+				"ring": "Band of the Tempest"
+			},
 			"bonuses": {
-				"2": {"stats": {"attack_speed_pct": 0.10}, "text": "+10% Attack Speed"},
-				"4": {"stats": {"crit_chance": 0.08}, "text": "+8% Crit Chance"},
-				"6": {"specials": ["chain_lightning"], "text": "Chain Lightning: crits arc to another enemy for 60%"}
+				"2": {
+					"stats": {
+						"attack_speed_pct": 0.1
+					},
+					"text": "+10% Attack Speed"
+				},
+				"4": {
+					"stats": {
+						"crit_chance": 0.08
+					},
+					"text": "+8% Crit Chance"
+				},
+				"6": {
+					"specials": [
+						"chain_lightning"
+					],
+					"text": "Chain Lightning: crits arc to another enemy for 60%"
+				}
 			}
 		}
 	},
 	"relics": {
-		"blood_crown":     {"name": "Blood Crown",      "special": "blood_crown",     "description": "Critical hits heal the whole party for 5% of the damage dealt."},
-		"merchants_eye":   {"name": "Merchant's Eye",   "special": "merchants_eye",   "description": "Guarantees a Rare+ item every 100 floors climbed."},
-		"phoenix_feather": {"name": "Phoenix Feather",  "special": "phoenix_feather", "description": "Revives the first fallen hero once per combat at 40% HP."},
-		"gilded_idol":     {"name": "Gilded Idol",      "stats": {"gold_pct": 0.5},        "description": "+50% Gold from all sources."},
-		"hourglass":       {"name": "Sandless Hourglass","stats": {"move_speed_pct": 0.3}, "description": "+30% climbing speed."},
-		"titan_heart":     {"name": "Titan Heart",      "stats": {"hp_pct": 0.2},          "description": "+20% HP for the whole party."},
-		"echo_stone":      {"name": "Echo Stone",       "stats": {"cdr": 0.25},            "description": "Hero skills recharge 25% faster."},
-		"soul_lantern":    {"name": "Soul Lantern",     "stats": {"soul_pct": 0.25},       "description": "+25% Souls gained on Ascension."},
-		"war_banner":      {"name": "War Banner",       "stats": {"damage_pct": 0.15},     "description": "+15% damage for the whole party."}
-	}
+		"blood_crown": {
+			"name": "Blood Crown",
+			"special": "blood_crown",
+			"description": "Critical hits heal the whole party for 5% of the damage dealt."
+		},
+		"merchants_eye": {
+			"name": "Merchant's Eye",
+			"special": "merchants_eye",
+			"description": "Guarantees a Rare+ item every 100 floors climbed."
+		},
+		"phoenix_feather": {
+			"name": "Phoenix Feather",
+			"special": "phoenix_feather",
+			"description": "Revives the first fallen hero once per combat at 40% HP."
+		},
+		"gilded_idol": {
+			"name": "Gilded Idol",
+			"stats": {
+				"gold_pct": 0.5
+			},
+			"description": "+50% Gold from all sources."
+		},
+		"hourglass": {
+			"name": "Sandless Hourglass",
+			"stats": {
+				"move_speed_pct": 0.3
+			},
+			"description": "+30% climbing speed."
+		},
+		"titan_heart": {
+			"name": "Titan Heart",
+			"stats": {
+				"hp_pct": 0.2
+			},
+			"description": "+20% HP for the whole party."
+		},
+		"echo_stone": {
+			"name": "Echo Stone",
+			"stats": {
+				"cdr": 0.25
+			},
+			"description": "Hero skills recharge 25% faster."
+		},
+		"soul_lantern": {
+			"name": "Soul Lantern",
+			"stats": {
+				"soul_pct": 0.25
+			},
+			"description": "+25% Souls gained on Ascension."
+		},
+		"war_banner": {
+			"name": "War Banner",
+			"stats": {
+				"damage_pct": 0.15
+			},
+			"description": "+15% damage for the whole party."
+		}
+	},
+	"consumables": {
+		"health_potion": {
+			"name": "Health Potion",
+			"icon": "cons_potion",
+			"kind": "potion",
+			"value": 0.45,
+			"price": 15,
+			"weight": 10,
+			"text": "Heals the most wounded hero for 45% HP. Drunk automatically below 30% HP."
+		},
+		"fire_bomb": {
+			"name": "Fire Bomb",
+			"icon": "cons_bomb",
+			"kind": "bomb",
+			"value": 3.0,
+			"price": 30,
+			"weight": 4,
+			"text": "Blasts every enemy for 300% fire damage. Thrown automatically at bosses."
+		},
+		"haste_elixir": {
+			"name": "Haste Elixir",
+			"icon": "cons_elixir",
+			"kind": "buff",
+			"stats": {
+				"attack_speed_pct": 0.3
+			},
+			"floors": 5,
+			"price": 40,
+			"weight": 3,
+			"text": "+30% Attack Speed for 5 floors."
+		},
+		"fury_tonic": {
+			"name": "Fury Tonic",
+			"icon": "cons_tonic",
+			"kind": "buff",
+			"stats": {
+				"attack_pct": 0.3,
+				"magic_power_pct": 0.3
+			},
+			"floors": 5,
+			"price": 40,
+			"weight": 3,
+			"text": "+30% Attack and Magic for 5 floors."
+		},
+		"iron_draught": {
+			"name": "Iron Draught",
+			"icon": "cons_iron",
+			"kind": "buff",
+			"stats": {
+				"defense_pct": 0.5,
+				"hp_pct": 0.2
+			},
+			"floors": 5,
+			"price": 40,
+			"weight": 3,
+			"text": "+50% Defense and +20% HP for 5 floors."
+		},
+		"fortune_scroll": {
+			"name": "Scroll of Fortune",
+			"icon": "cons_scroll",
+			"kind": "buff",
+			"stats": {
+				"gold_pct": 0.5,
+				"drop_pct": 1.0
+			},
+			"floors": 10,
+			"price": 60,
+			"weight": 2,
+			"text": "+50% Gold and double drop chance for 10 floors."
+		},
+		"climbing_scroll": {
+			"name": "Scroll of Haste",
+			"icon": "cons_scroll",
+			"kind": "buff",
+			"stats": {
+				"move_speed_pct": 0.6
+			},
+			"floors": 10,
+			"price": 50,
+			"weight": 2,
+			"text": "Climb 60% faster for 10 floors."
+		}
+	},
+	"consumable_drop_chance": 0.05
 }

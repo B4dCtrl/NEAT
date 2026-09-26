@@ -33,6 +33,7 @@ func _init() -> void:
 	test_ascension()
 	test_roster_and_skills()
 	test_bonfire_and_market()
+	test_variety_and_supplies()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -261,6 +262,36 @@ func test_bonfire_and_market() -> void:
 	check(not Market.buy(state, hero_idx), "an offer sells once")
 	check(not Market.ensure_stock(state, now + 60), "stock stays within a rotation")
 	check(Market.ensure_stock(state, now + 3600), "stock rotates")
+
+
+func test_variety_and_supplies() -> void:
+	var bosses := {}
+	var affixed := 0
+	for f in range(10, 400, 10):
+		var info := TowerGen.generate(3, f)
+		for e in info["enemies"]:
+			if DataDB.bosses().has(e):
+				bosses[e] = true
+	for f in range(100, 300):
+		var info := TowerGen.generate(3, f)
+		if not info.get("affixes", []).filter(func(a): return a != "").is_empty():
+			affixed += 1
+	check(bosses.size() >= 8, "many different bosses (%d)" % bosses.size())
+	check(affixed > 20, "elite affixes appear (%d floors)" % affixed)
+	var armored := TowerGen.enemy_stats("slime", 50, "", "armored")
+	check(float(armored["defense"]) > float(TowerGen.enemy_stats("slime", 50)["defense"]), "armored affix raises defense")
+	# Potions keep a hurt party alive and leave the bag afterwards.
+	var state := GameState.new_game(21)
+	state["consumables"] = {"health_potion": 3, "fire_bomb": 1}
+	var sim := Expedition.new(state)
+	sim.floor_info = TowerGen.generate(21, 10)
+	state["floor"] = 10
+	state["heroes"][0]["hp_ratio"] = 0.2
+	sim._start_combat()
+	sim.combat.run_to_end()
+	check(sim.combat.consumed.get("potion", 0) >= 1, "auto-use drinks a potion when low")
+	sim._end_combat()
+	check(int(state["consumables"]["health_potion"]) < 3, "used potions leave the bag")
 
 
 ## Long run with no player input: how far does the idle loop get?

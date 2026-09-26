@@ -276,16 +276,58 @@ func _rebuild_relics() -> void:
 
 static func item_tooltip(item: Dictionary) -> String:
 	var lines := []
-	lines.append("%s" % item["name"])
 	var rarity_name: String = DataDB.rarities()[item["rarity"]]["name"]
-	var cls: String = item["class"]
-	lines.append("%s %s  ·  iLvl %d%s" % [rarity_name, item["slot"].capitalize(), item["ilvl"], ("  ·  " + DataDB.classes()[cls]["name"] + " weapon") if cls != "" else ""])
+	lines.append(item["name"])
+	lines.append("%s %s  ·  Item Level %d" % [rarity_name, item["slot"].capitalize(), item["ilvl"]])
+	lines.append("Usable by: " + users_text(item))
+	var base_keys := []
+	for b in DataDB.items()["bases"]:
+		if b["id"] == item.get("base", ""):
+			base_keys = b["stats"].keys() + b.get("fixed", {}).keys()
+	lines.append("")
 	for key in item["stats"]:
-		lines.append("  " + UiUtil.stat_line(key, float(item["stats"][key])))
+		if key in base_keys:
+			lines.append("  " + UiUtil.stat_line(key, float(item["stats"][key])))
+	var bonus := []
+	for key in item["stats"]:
+		if not key in base_keys:
+			bonus.append("  " + UiUtil.stat_line(key, float(item["stats"][key])))
+	if not bonus.is_empty():
+		lines.append("Bonuses:")
+		lines.append_array(bonus)
 	if item.get("set", "") != "":
 		var set_def: Dictionary = DataDB.sets()[item["set"]]
 		lines.append("")
 		lines.append("Set: %s" % set_def["name"])
 		for threshold in set_def["bonuses"]:
-			lines.append("  (%s) %s" % [threshold, set_def["bonuses"][threshold]["text"]])
+			lines.append("  (%s pieces) %s" % [threshold, set_def["bonuses"][threshold]["text"]])
 	return "\n".join(lines)
+
+
+## "Everyone", or the classes that can wield a class-locked weapon.
+static func users_text(item: Dictionary) -> String:
+	if item["class"] == "":
+		return "every hero"
+	var names := []
+	for id in DataDB.classes():
+		if item["class"] == id or item["class"] in DataDB.classes()[id].get("uses", []):
+			names.append(DataDB.classes()[id]["name"])
+	return ", ".join(names)
+
+
+## Per-stat difference between `item` and what is equipped in its slot.
+static func compare_lines(item: Dictionary, equipped) -> Array:
+	var keys: Array = item["stats"].keys()
+	if equipped != null:
+		for k in equipped["stats"]:
+			if not k in keys:
+				keys.append(k)
+	var out := []
+	for k in keys:
+		var a := float(item["stats"].get(k, 0.0))
+		var b := float(equipped["stats"].get(k, 0.0)) if equipped != null else 0.0
+		if absf(a - b) < 0.0005:
+			continue
+		var line := UiUtil.stat_line(k, absf(a - b)).substr(1)
+		out.append([("▲ +" if a > b else "▼ -") + line, a > b])
+	return out

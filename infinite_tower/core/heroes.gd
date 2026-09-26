@@ -5,6 +5,7 @@ extends RefCounted
 ## Also owns the per-hero skill tree.
 
 const DataDB = preload("res://core/data_db.gd")
+const StatCalc = preload("res://core/stat_calculator.gd")
 
 const FOUNDER_CLASS := "stairborn"
 
@@ -53,7 +54,11 @@ static func total_heroes(state: Dictionary) -> int:
 
 
 ## Joins the party when there is a free slot, otherwise the bench.
+## Veteran Recruits (Ascension) makes new heroes start at a higher level.
 static func add_hero(state: Dictionary, hero: Dictionary) -> String:
+	var bonus := int(StatCalc.party_mods(state).get("recruit_level", 0))
+	if int(hero["level"]) == 1 and bonus > 0:
+		hero["level"] = 1 + bonus
 	if state["heroes"].size() < party_slots():
 		state["heroes"].append(hero)
 		return "party"
@@ -86,24 +91,31 @@ static func bench_hero(state: Dictionary, party_idx: int) -> bool:
 
 # ------------------------------------------------------------------ minting
 
+static func _discount(state: Dictionary) -> float:
+	return 1.0 - minf(0.6, float(StatCalc.party_mods(state).get("mint_discount", 0.0)))
+
+
 static func mint_cost(state: Dictionary) -> float:
 	var h: Dictionary = DataDB.balance()["hire"]
-	return floorf(float(h["mint_gold_base"]) * pow(float(h["mint_gold_growth"]), int(state.get("mints", 0))))
+	return floorf(float(h["mint_gold_base"]) * pow(float(h["mint_gold_growth"]), int(state.get("mints", 0))) * _discount(state))
 
 
 static func hire_price(state: Dictionary) -> float:
 	var h: Dictionary = DataDB.balance()["hire"]
-	return floorf(float(h["gold_base"]) * pow(float(h["gold_growth"]), maxi(0, total_heroes(state) - 1)))
+	return floorf(float(h["gold_base"]) * pow(float(h["gold_growth"]), maxi(0, total_heroes(state) - 1)) * _discount(state))
 
 
-static func roll_rarity(rng: RandomNumberGenerator) -> String:
+static func roll_rarity(rng: RandomNumberGenerator, luck: float = 0.0) -> String:
 	var table: Dictionary = DataDB.balance()["hero_rarities"]
+	var weights := {}
 	var total := 0.0
 	for k in table:
-		total += float(table[k]["weight"])
+		# Noble Blood (Ascension) shifts weight away from common heroes.
+		weights[k] = float(table[k]["weight"]) * (1.0 if k == "common" else 1.0 + luck)
+		total += weights[k]
 	var roll := rng.randf() * total
 	for k in table:
-		roll -= float(table[k]["weight"])
+		roll -= weights[k]
 		if roll <= 0.0:
 			return k
 	return "common"
@@ -115,7 +127,7 @@ static func generate(state: Dictionary, rng: RandomNumberGenerator) -> Dictionar
 	var names: Array = DataDB.balance()["hero_names"]
 	var class_id: String = classes[rng.randi() % classes.size()]
 	var hero_name: String = names[rng.randi() % names.size()]
-	return make_hero(state, class_id, hero_name, roll_rarity(rng))
+	return make_hero(state, class_id, hero_name, roll_rarity(rng, float(StatCalc.party_mods(state).get("rarity_luck", 0.0))))
 
 
 static func can_mint(state: Dictionary) -> bool:
