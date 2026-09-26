@@ -10,9 +10,11 @@ const HISTORY_CAP := 150
 const DEFAULT_SETTINGS := {
 	"always_on_top": true,
 	"dock": "bottom",          # "bottom" | "top"
-	"bar_width": 0,            # 0 = full usable screen width
-	"bar_height": 54,
-	"bar_opacity": 0.92,
+	"bar_width": 640,          # 0 = full usable screen width
+	"bar_height": 150,
+	"bar_opacity": 0.0,        # 0 = fully transparent, only the tower floats on the desktop
+	"bar_x": -1,               # remembered horizontal position (-1 = near the tray)
+	"art_style": "mono",       # "mono" (1-bit) | "color" (biome palettes)
 	"fps_taskbar": 30,
 	"master_volume": 0.8,
 	"notify_glow": true,
@@ -106,6 +108,10 @@ static func migrate(state: Dictionary) -> Dictionary:
 	for key in fresh["stats"]:
 		if not state["stats"].has(key):
 			state["stats"][key] = fresh["stats"][key]
+	if not state["settings"].has("art_style"):
+		# v1 saves used the opaque 54px strip: move them to the floating tower layout.
+		for key in ["bar_width", "bar_height", "bar_opacity"]:
+			state["settings"][key] = DEFAULT_SETTINGS[key]
 	for key in DEFAULT_SETTINGS:
 		if not state["settings"].has(key):
 			state["settings"][key] = DEFAULT_SETTINGS[key]

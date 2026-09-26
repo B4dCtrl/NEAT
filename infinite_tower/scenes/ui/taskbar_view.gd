@@ -1,21 +1,27 @@
 extends Control
-## TASKBAR MODE: the thin always-visible strip.
-##   [ party ]  ~~~ staircase ~~~  FLOOR 382 | Slime | 18.2k gold | +1 Relic  [»]
+## TASKBAR MODE: a transparent window resting on the taskbar. Only the spiral
+## tower and a floating HUD are visible; the rest of the window is
+## click-through, like a desktop pet.
+##   [tower]  [party] FLOOR 382  Slime  18.2k  [»]
 ## Focus safety: nothing here ever grabs keyboard focus or raises the window.
-## Notifications are shown as a soft glow around the bar only.
+## Notifications are a soft glow plus a line of text, never a popup.
 
 signal expand_requested()
 
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
+const TowerStage = preload("res://scenes/ui/tower_stage.gd")
 
 const NOTIFY_COLORS := {
 	"legendary": Color("#ff9d2a"), "relic": Color("#b388ff"), "boss": Color("#ff4f4f"),
-	"fall": Color("#7a8494"), "milestone": Color("#7fe8ff"), "set": Color("#5fd35f"), "info": Color("#c9d1d9"),
+	"fall": Color("#c9d1d9"), "milestone": Color("#7fe8ff"), "set": Color("#5fd35f"), "info": Color("#efe9d8"),
 }
 const DRAG_THRESHOLD := 6.0
+const HUD_H := 40.0
 
 @onready var stage: Control = %Stage
+@onready var hud: HBoxContainer = %Hud
+@onready var notify_box: HBoxContainer = %Notify
 @onready var floor_label: Label = %FloorLabel
 @onready var enemy_label: Label = %EnemyLabel
 @onready var gold_label: Label = %GoldLabel
@@ -30,19 +36,40 @@ var _press_pos := Vector2.ZERO
 var _pressing := false
 var _dragging := false
 var _t := 0.0
+var _last_size := Vector2.ZERO
 
 
 func _ready() -> void:
 	%FloorIcon.texture = PixelArt.icon("floor")
 	%EnemyIcon.texture = PixelArt.icon("skull")
 	%GoldIcon.texture = PixelArt.icon("coin")
-	notify_icon.texture = PixelArt.icon("relic")
-	for n in [expand_button]:
-		n.focus_mode = Control.FOCUS_NONE
+	notify_label.label_settings = notify_label.label_settings.duplicate()
 	expand_button.pressed.connect(func(): expand_requested.emit())
 	Game.notified.connect(_on_notified)
-	_set_notify_visible(false)
+	notify_box.visible = false
+	resized.connect(_layout)
+	_layout()
 	_refresh()
+
+
+func tower_column_width() -> float:
+	return (TowerStage.R_OUT * stage.px + 10.0) * 2.0
+
+
+## Tower on the left, HUD to its right along the bottom edge.
+func _layout() -> void:
+	var col := tower_column_width()
+	stage.tower_center = col * 0.5
+	hud.offset_left = col
+	notify_box.offset_left = col
+	notify_box.offset_top = size.y - HUD_H - 26.0
+	notify_box.offset_bottom = size.y - HUD_H
+	# Only the tower column and the HUD strip catch the mouse.
+	var poly := PackedVector2Array([
+		Vector2(0, 0), Vector2(col, 0), Vector2(col, size.y - HUD_H),
+		Vector2(size.x, size.y - HUD_H), Vector2(size.x, size.y), Vector2(0, size.y)])
+	WindowManager.set_passthrough(poly)
+	_last_size = size
 
 
 func _process(delta: float) -> void:
@@ -51,7 +78,7 @@ func _process(delta: float) -> void:
 	if _notify_left > 0.0:
 		_notify_left -= delta
 		if _notify_left <= 0.0:
-			_set_notify_visible(false)
+			notify_box.visible = false
 	_refresh()
 	queue_redraw()
 
@@ -60,10 +87,6 @@ func _refresh() -> void:
 	floor_label.text = "FLOOR %d" % Game.state["floor"]
 	enemy_label.text = Game.current_enemy_name()
 	gold_label.text = UiUtil.num(Game.state["gold"])
-	var compact := size.x < 900.0
-	enemy_label.visible = not compact
-	%EnemyIcon.visible = not compact
-	%Sep1.visible = not compact
 
 
 func _on_notified(kind: String, text: String) -> void:
@@ -72,40 +95,36 @@ func _on_notified(kind: String, text: String) -> void:
 	_glow_color = NOTIFY_COLORS.get(kind, Color.WHITE)
 	_glow_left = 6.0 if kind in ["relic", "legendary", "boss"] else 3.0
 	notify_label.text = text
-	notify_label.add_theme_color_override("font_color", _glow_color)
+	notify_label.label_settings.font_color = _glow_color
 	var icon_id := "relic" if kind in ["relic", "set"] else ("sword" if kind == "legendary" else ("skull" if kind == "boss" else "crystal"))
 	notify_icon.texture = PixelArt.icon(icon_id)
 	_notify_left = 8.0
-	_set_notify_visible(true)
-
-
-func _set_notify_visible(v: bool) -> void:
-	notify_label.visible = v
-	notify_icon.visible = v
-	%Sep3.visible = v
+	notify_box.visible = true
 
 
 func _draw() -> void:
-	var opacity := float(Game.state["settings"].get("bar_opacity", 0.92))
-	var bg := Color(0.06, 0.06, 0.09, opacity)
-	var radius := 8
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = bg
-	sb.set_corner_radius_all(radius)
-	sb.border_color = Color(1, 1, 1, 0.08)
-	sb.set_border_width_all(1)
+	var col := tower_column_width()
+	var strip := Rect2(col - 4.0, size.y - HUD_H, size.x - col + 4.0, HUD_H)
+	var opacity := float(Game.state["settings"].get("bar_opacity", 0.0))
+	if opacity > 0.0:
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.06, 0.06, 0.09, opacity)
+		sb.set_corner_radius_all(8)
+		draw_style_box(sb, strip)
 	if _glow_left > 0.0:
+		# Soft pulsing halo around the tower top: visible, never intrusive.
 		var pulse := 0.5 + 0.5 * sin(_t * 6.0)
 		var c := _glow_color
-		c.a = clampf(_glow_left / 2.0, 0.0, 1.0) * (0.45 + 0.4 * pulse)
+		c.a = clampf(_glow_left / 2.0, 0.0, 1.0) * (0.35 + 0.35 * pulse)
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(c.r, c.g, c.b, c.a * 0.25)
 		sb.border_color = c
 		sb.set_border_width_all(2)
-		sb.shadow_color = Color(c.r, c.g, c.b, c.a * 0.6)
-		sb.shadow_size = 4
-	draw_style_box(sb, Rect2(Vector2.ZERO, size))
+		sb.set_corner_radius_all(10)
+		draw_style_box(sb, strip)
 
 
-# Click expands, drag slides the bar along its dock edge.
+# Click expands, drag slides the window along the taskbar.
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:

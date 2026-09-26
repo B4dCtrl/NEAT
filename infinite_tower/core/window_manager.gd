@@ -1,26 +1,30 @@
 extends Node
 ## Autoload "WindowManager": owns the OS window for the two UX modes.
 ##
-## TASKBAR    borderless strip docked to the bottom/top of the usable screen area,
-##            optional always-on-top, transparent corners, and *unfocusable* so it
-##            never steals keyboard/mouse focus from whatever the user is doing.
+## TASKBAR    transparent borderless window resting on the taskbar (or the top
+##            edge): only the tower and the HUD text are drawn, the rest of the
+##            window lets clicks through to the desktop (mouse passthrough).
+##            Always-on-top is optional and the window is *unfocusable*, so it
+##            never steals keyboard focus from whatever the user is doing.
 ## EXPEDITION regular decorated window, centered, focusable (the user asked for it).
 
 signal mode_changed(mode: String)
 
 const EXPEDITION_SIZE := Vector2i(1100, 680)
 const EXPEDITION_MIN := Vector2i(960, 600)
-const BAR_MIN_WIDTH := 480
+const BAR_MIN_WIDTH := 360
 const TRANSITION_TIME := 0.16
 
 var mode := "taskbar"
 var _bar_offset_x := -1   # horizontal position of a narrower-than-screen bar
 var _tween: Tween
+var _passthrough := PackedVector2Array()
 
 
 func _ready() -> void:
 	Game.settings_changed.connect(_on_settings_changed)
 	get_window().min_size = Vector2i(BAR_MIN_WIDTH, 32)
+	_bar_offset_x = int(Game.state["settings"].get("bar_x", -1))
 	apply_mode.call_deferred("taskbar", false)
 
 
@@ -55,10 +59,12 @@ func apply_mode(new_mode: String, animate: bool) -> void:
 		win.always_on_top = bool(settings.get("always_on_top", true))
 		# Focus safety: the strip is click-through for keyboard focus.
 		win.unfocusable = true
+		win.mouse_passthrough_polygon = _passthrough
 		target = bar_rect()
 	else:
 		Engine.max_fps = 60
 		win.unfocusable = false
+		win.mouse_passthrough_polygon = PackedVector2Array()
 		win.always_on_top = false
 		win.borderless = false
 		win.unresizable = false
@@ -88,7 +94,8 @@ func bar_rect() -> Rect2i:
 		width = screen.size.x
 	width = maxi(width, BAR_MIN_WIDTH)
 	if _bar_offset_x < 0 or _bar_offset_x + width > screen.size.x:
-		_bar_offset_x = (screen.size.x - width) / 2
+		# Default: bottom-right, next to the system tray, like a desktop pet.
+		_bar_offset_x = maxi(0, screen.size.x - width - 24)
 	var y := screen.position.y if settings.get("dock", "bottom") == "top" else screen.end.y - height
 	return Rect2i(screen.position.x + _bar_offset_x, y, width, height)
 
@@ -107,6 +114,15 @@ func nudge_bar(dx: int) -> void:
 	var win := get_window()
 	_bar_offset_x = clampi(_bar_offset_x + dx, 0, maxi(0, screen.size.x - win.size.x))
 	win.position = Vector2i(screen.position.x + _bar_offset_x, win.position.y)
+	Game.state["settings"]["bar_x"] = _bar_offset_x
+
+
+## Region of the taskbar window that captures the mouse; everything else is
+## click-through. Called by the taskbar view whenever its layout changes.
+func set_passthrough(polygon: PackedVector2Array) -> void:
+	_passthrough = polygon
+	if mode == "taskbar" and not is_headless():
+		get_window().mouse_passthrough_polygon = polygon
 
 
 func _on_settings_changed() -> void:

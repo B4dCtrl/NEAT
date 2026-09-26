@@ -21,8 +21,8 @@ var _bob_phase := 0.0
 var _tint := Color.WHITE
 
 
-func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false) -> void:
-	textures = PixelArt.frames(sprite_id, palette)
+func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false) -> void:
+	textures = PixelArt.frames(sprite_id, palette, mono)
 	px_scale = scale_px
 	face_left = left
 	dead = false

@@ -10,7 +10,7 @@ var _textures: Array = []
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	for hero in Game.state["heroes"]:
-		var f := PixelArt.frames(DataDB.classes()[hero["class"]]["sprite"])
+		var f := PixelArt.frames(DataDB.classes()[hero["class"]]["sprite"], {}, Game.state["settings"].get("art_style", "mono") == "mono")
 		_textures.append(f[0] if not f.is_empty() else null)
 	custom_minimum_size = Vector2(3 * 26 + 10, 0)
 

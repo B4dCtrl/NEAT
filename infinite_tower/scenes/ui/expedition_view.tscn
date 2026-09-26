@@ -80,7 +80,7 @@ tooltip_text = "Back to the taskbar (Esc / Tab)"
 text = "  Taskbar Mode  "
 
 [node name="StageFrame" type="PanelContainer" parent="Margin/VBox"]
-custom_minimum_size = Vector2(0, 176)
+custom_minimum_size = Vector2(0, 230)
 layout_mode = 2
 
 [node name="Stage" type="Control" parent="Margin/VBox/StageFrame"]
@@ -89,9 +89,10 @@ clip_contents = true
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2")
-px = 4.0
-anchor = Vector2(0.3, 0.82)
+px = 3.0
+transparent_bg = false
 show_numbers = true
+feet_y = 0.66
 
 [node name="Status" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2

@@ -1,11 +1,14 @@
 extends Control
-## Renders the Infinite Staircase. Works at any size: a 54px taskbar strip or the
-## big expedition header. Purely a view of Game.expedition, never mutates it.
+## Renders the Infinite Tower: a cylindrical tower with a HELICAL staircase
+## wound around it. The party stays near the front of the tower and the tower
+## ROTATES as they climb (one full turn per floor), in the spirit of a
+## 1-bit "infinitely spiralling tower". Works at any size; the taskbar version
+## has a transparent background so only the tower floats over the desktop.
+## Purely a view of Game.expedition, it never mutates the simulation.
 ##
-## World layout: every floor is a flight of stairs followed by a flat landing.
-## The camera follows the party along the diagonal, so the tower scrolls down-left
-## while the heroes climb; fights happen on the landing, which stays readable
-## even in a very thin window.
+## Path parameter t is measured in revolutions: floor f spans t in [f, f+1).
+## The first STAIR_FRAC of each turn is steps, the rest is a flat landing where
+## fights happen.
 
 const DataDB = preload("res://core/data_db.gd")
 const TowerGen = preload("res://core/tower_generator.gd")
@@ -13,34 +16,44 @@ const HeroSprite = preload("res://scenes/entities/hero_sprite.tscn")
 const EnemySprite = preload("res://scenes/entities/enemy_sprite.tscn")
 const UiNum = preload("res://scenes/ui/ui_util.gd")
 
-## World units -> screen pixels.
+## Size of one art pixel on screen.
 @export var px := 2.0
-## Where the party anchor sits, as a fraction of the stage size.
-@export var anchor := Vector2(0.3, 0.8)
+@export var transparent_bg := true
 @export var show_numbers := false
+## Where the party's feet sit vertically (fraction of the stage height).
+@export var feet_y := 0.74
+## Horizontal position of the tower axis in pixels (<0 = centered).
+@export var tower_center := -1.0
 
-const STEP_RUN := 6.0
-const STEP_RISE := 2.0
-const STEPS := 8
-const FLIGHT := STEP_RUN * STEPS            # horizontal length of a flight
-const RISE := STEP_RISE * STEPS             # height gained per floor
-const LANDING := 72.0
-const PERIOD := FLIGHT + LANDING
-const REST := 22.0                           # party anchor offset into the landing
-const HERO_GAP := 12.0
-const BOSS_SCALE := 1.4
+const STEPS := 16
+const STAIR_FRAC := 0.72                # share of a turn that is stairs
+const R_TOWER := 30.0                   # tower radius (art pixels)
+const R_OUT := 46.0                     # outer edge of the steps
+const R_WALK := 39.0                    # where feet land
+const PITCH := 30.0                     # height gained per turn (= per floor)
+const TILT := 0.22                      # camera looks slightly down
+const SLOT := 0.045                     # spacing between units, in turns
+const BOSS_SCALE := 1.35
+const BRICK_H := 6.0
+const BRICKS_PER_TURN := 14
+
+const MONO := {
+	"ink": Color("#16151a"), "paper": Color("#efe9d8"), "mid": Color("#a39d90"),
+	"back": Color("#6f6a61"), "back_riser": Color("#45423d"), "sky": Color("#101014"),
+}
 
 var hero_sprites: Array = []
 var enemy_sprites: Array = []
 var _combat_id := 0
-var _cam_s := 0.0
-var _cam_y := 0.0
-var _focus := 0.0          # 0 = normal, 1 = boss close-up
+var _cam_t := 0.0          # which part of the tower faces the viewer
+var _cam_h := 0.0          # camera height
 var _fall := 0.0
-var _floaters: Array = []  # {s, y, text, color, t, big}
-var _colors := {}
-var _biome_id := ""
+var _floaters: Array = []
+var _pal := {}
+var _pal_key := ""
 var _time := 0.0
+var _tower_tex: ImageTexture
+var _tower_tex_key := ""
 
 
 func _ready() -> void:
@@ -52,63 +65,81 @@ func _ready() -> void:
 		hero_sprites.append(sp)
 	_rebuild_heroes()
 	_snap_camera()
+	Game.settings_changed.connect(_on_style_changed)
+
+
+func is_mono() -> bool:
+	return Game.state["settings"].get("art_style", "mono") == "mono"
+
+
+func _on_style_changed() -> void:
+	_pal_key = ""
+	_rebuild_heroes()
+	_combat_id = -1
 
 
 func _rebuild_heroes() -> void:
 	var classes := DataDB.classes()
 	for i in hero_sprites.size():
 		var hero: Dictionary = Game.state["heroes"][i]
-		hero_sprites[i].configure(classes[hero["class"]]["sprite"], {}, px, false)
+		hero_sprites[i].configure(classes[hero["class"]]["sprite"], {}, px, false, is_mono())
 		hero_sprites[i].unit_uid = "h%d" % i
-
-
-func set_px(value: float) -> void:
-	px = value
-	_rebuild_heroes()
-	for sp in enemy_sprites:
-		sp.px_scale = px * (BOSS_SCALE if sp.get_meta("boss", false) else 1.0)
 
 
 # ------------------------------------------------------------------ geometry
 
-static func rest_s(floor_num: int) -> float:
-	return floor_num * PERIOD + FLIGHT + REST
+static func rest_t(floor_num: int) -> float:
+	return floor_num + STAIR_FRAC + (1.0 - STAIR_FRAC) * 0.22
 
 
-## Height of the walkable surface at world distance s (stepped on flights).
-static func ground_y(s: float) -> float:
-	var k := floorf(s / PERIOD)
-	var local := s - k * PERIOD
-	if local < FLIGHT:
-		return k * RISE + minf(floorf(local / STEP_RUN) + 1.0, STEPS) * STEP_RISE
-	return (k + 1.0) * RISE
+## Height of the walking surface at t (stepped on the stairs).
+static func ground_h(t: float) -> float:
+	var k := floorf(t)
+	var l := t - k
+	if l < STAIR_FRAC:
+		return k * PITCH + minf(floorf(l / STAIR_FRAC * STEPS) + 1.0, STEPS) * PITCH / STEPS
+	return (k + 1.0) * PITCH
 
 
-## Smooth version used by the camera.
-static func smooth_y(s: float) -> float:
-	var k := floorf(s / PERIOD)
-	var local := s - k * PERIOD
-	if local < FLIGHT:
-		return k * RISE + local / FLIGHT * RISE
-	return (k + 1.0) * RISE
+static func smooth_h(t: float) -> float:
+	var k := floorf(t)
+	var l := t - k
+	if l < STAIR_FRAC:
+		return k * PITCH + l / STAIR_FRAC * PITCH
+	return (k + 1.0) * PITCH
 
 
-func to_screen(s: float, y: float) -> Vector2:
-	var ax := lerpf(anchor.x, 0.42, _focus) * size.x
-	return Vector2(ax + (s - _cam_s) * px, anchor.y * size.y - (y - _cam_y) * px)
+func axis_x() -> float:
+	return tower_center if tower_center >= 0.0 else size.x * 0.5
 
 
-func party_anchor_s() -> float:
+## Screen position (x, y) and depth z (1 = facing the viewer, -1 = behind).
+func project(t: float, r: float, h: float) -> Vector3:
+	var a := (t - _cam_t) * TAU
+	var z := cos(a)
+	var base := feet_y * size.y - R_WALK * TILT * px
+	return Vector3(axis_x() + r * sin(a) * px, base - (h - _cam_h) * px + z * r * TILT * px, z)
+
+
+func party_t() -> float:
 	var exp = Game.expedition
 	var f := int(Game.state["floor"])
 	if exp.phase == "walk":
-		return lerpf(rest_s(f - 1), rest_s(f), exp.walk_progress())
-	return rest_s(f)
+		return lerpf(rest_t(f - 1), rest_t(f), exp.walk_progress())
+	return rest_t(f)
+
+
+## The camera frames the whole fight when there is one.
+func _target_cam_t() -> float:
+	var exp = Game.expedition
+	if exp.phase in ["combat", "intro"] or (exp.phase == "pause" and exp.after_pause == "next_floor"):
+		return rest_t(int(Game.state["floor"])) + SLOT * 1.6
+	return party_t()
 
 
 func _snap_camera() -> void:
-	_cam_s = party_anchor_s()
-	_cam_y = smooth_y(_cam_s)
+	_cam_t = _target_cam_t()
+	_cam_h = smooth_h(party_t())
 
 
 # ------------------------------------------------------------------ update
@@ -118,25 +149,19 @@ func _process(delta: float) -> void:
 		return
 	_time += delta
 	var exp = Game.expedition
-	var info: Dictionary = exp.floor_info
-	var biome := TowerGen.biome_for(int(Game.state["floor"]))
-	if biome["id"] != _biome_id:
-		_biome_id = biome["id"]
-		_colors = {}
-		for k in biome["colors"]:
-			_colors[k] = Color.html(biome["colors"][k])
+	_update_palette()
 
 	var falling: bool = exp.phase == "pause" and exp.after_pause == "walk"
-	_fall = minf(_fall + delta * 1.5, 1.0) if falling else 0.0
+	_fall = minf(_fall + delta * 1.4, 1.0) if falling else maxf(_fall - delta * 3.0, 0.0)
 
-	var boss_scene: bool = not info.is_empty() and info["type"] == "guardian" and exp.phase in ["intro", "combat"] and int(info["floor"]) == int(Game.state["floor"])
-	_focus = move_toward(_focus, 1.0 if boss_scene else 0.0, delta * 2.0)
-
-	var target_s := party_anchor_s()
-	if absf(target_s - _cam_s) > PERIOD:
+	var target_t := _target_cam_t()
+	var target_h := smooth_h(party_t())
+	if absf(target_t - _cam_t) > 25.0:
 		_snap_camera()
-	_cam_s = lerpf(_cam_s, target_s, minf(1.0, delta * 10.0))
-	_cam_y = lerpf(_cam_y, smooth_y(_cam_s), minf(1.0, delta * 10.0))
+	# After a Fall Back the tower visibly unwinds downwards instead of snapping.
+	var rate := 2.5 if absf(target_t - _cam_t) > 1.0 else 8.0
+	_cam_t = lerpf(_cam_t, target_t, minf(1.0, delta * rate))
+	_cam_h = lerpf(_cam_h, target_h, minf(1.0, delta * rate))
 
 	_sync_enemies(exp)
 	_place_heroes(exp)
@@ -148,8 +173,58 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 
+func _update_palette() -> void:
+	var biome := TowerGen.biome_for(int(Game.state["floor"]))
+	var key: String = ("mono" if is_mono() else biome["id"]) + str(size.x) + str(px)
+	if key == _pal_key:
+		return
+	_pal_key = key
+	if is_mono():
+		_pal = MONO.duplicate()
+	else:
+		var c: Dictionary = biome["colors"]
+		_pal = {
+			"ink": Color("#121117"), "paper": Color.html(c["step_edge"]), "mid": Color.html(c["step"]),
+			"back": Color.html(c["wall"]), "back_riser": Color.html(c["wall_dark"]), "sky": Color.html(c["sky"]),
+			"tower": Color.html(c["wall"]).lightened(0.25),
+		}
+	_build_tower_texture()
+
+
+## Pre-shades the cylinder once (light from the upper left, ordered dithering),
+## so per-frame drawing is just a tiled texture plus rotating brick joints.
+func _build_tower_texture() -> void:
+	var w := int(R_TOWER * 2.0 * px)
+	var cell := int(maxf(1.0, px))
+	var h := 4 * cell
+	var img := Image.create(maxi(w, 1), h, false, Image.FORMAT_RGBA8)
+	var bayer := [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+	var light: Color = _pal.get("tower", _pal["paper"])
+	var dark: Color = _pal["ink"]
+	var mid: Color = _pal["mid"]
+	for x in w:
+		var nx := (x + 0.5) / w * 2.0 - 1.0
+		var lambert := clampf(-0.55 * nx + 0.85 * sqrt(maxf(0.0, 1.0 - nx * nx)), 0.0, 1.0)
+		var edge := x < cell or x >= w - cell
+		for y in h:
+			var bx := int(x / cell) % 4
+			var by := int(y / cell) % 4
+			var threshold: float = (bayer[by * 4 + bx] + 0.5) / 16.0
+			var col: Color
+			if edge:
+				col = dark
+			elif lambert > threshold + 0.25:
+				col = light
+			elif lambert > threshold - 0.2:
+				col = mid
+			else:
+				col = dark
+			img.set_pixel(x, y, col)
+	_tower_tex = ImageTexture.create_from_image(img)
+
+
 func _hero_order() -> Array:
-	# Front row heroes stand at the front (right), back row behind.
+	# Back-row heroes walk behind, front-row heroes lead the climb.
 	var idx := [0, 1, 2]
 	var heroes: Array = Game.state["heroes"]
 	idx.sort_custom(func(a, b):
@@ -160,17 +235,19 @@ func _hero_order() -> Array:
 
 
 func _place_heroes(exp) -> void:
-	var base_s := party_anchor_s()
+	var base_t := party_t()
 	var order := _hero_order()
 	var walking: bool = exp.phase == "walk"
 	for slot in order.size():
 		var i: int = order[slot]
 		var sp = hero_sprites[i]
-		var s := base_s + (slot - 1) * HERO_GAP
-		var pos := to_screen(s, ground_y(s))
+		var t := base_t + (slot - 1) * SLOT
+		var p := project(t, R_WALK, ground_h(t))
+		var pos := Vector2(p.x, p.y)
 		if _fall > 0.0:
-			pos.y += _fall * _fall * size.y * 1.6
+			pos.y += _fall * _fall * size.y * 1.4
 		sp.position = pos.round()
+		sp.visible = p.z > 0.05
 		sp.walking = walking
 		sp.modulate.a = 1.0 - _fall
 		var u = exp.combat.heroes[i] if exp.combat != null and exp.phase == "combat" else null
@@ -196,8 +273,7 @@ func _sync_enemies(exp) -> void:
 	for u in c.enemies:
 		var def := DataDB.unit_def(u.def_id)
 		var sp = EnemySprite.instantiate()
-		sp.set_meta("boss", u.is_boss)
-		sp.configure(def["sprite"], def.get("palette", {}), px * (BOSS_SCALE if u.is_boss else 1.0), true)
+		sp.configure(def["sprite"], def.get("palette", {}), px * (BOSS_SCALE if u.is_boss else 1.0), true, is_mono())
 		sp.unit_uid = u.uid
 		add_child(sp)
 		enemy_sprites.append(sp)
@@ -207,21 +283,23 @@ func _place_enemies(exp) -> void:
 	var c = exp.combat
 	if c == null:
 		return
-	var land := rest_s(int(Game.state["floor"]))
-	var boss_offset := 0.0
+	var land := rest_t(int(Game.state["floor"]))
+	var extra := 0.0
 	for i in enemy_sprites.size():
 		var sp = enemy_sprites[i]
 		var u = c.enemies[i]
-		var s: float
+		var t: float
 		if u.is_boss:
-			s = land + 34.0
-			boss_offset = 10.0
+			t = land + SLOT * 3.0
+			extra = SLOT * 0.8
 		else:
-			s = land + 26.0 + boss_offset + i * 11.0
-		# Enemies slide in from the right when the fight starts.
+			t = land + SLOT * 2.4 + extra + i * SLOT
+		# Enemies come round the tower when the fight starts.
 		var intro := clampf(c.time * 3.0, 0.0, 1.0) if exp.phase == "combat" else 1.0
-		s += (1.0 - intro) * 30.0
-		sp.position = to_screen(s, ground_y(s)).round()
+		t += (1.0 - intro) * 0.12
+		var p := project(t, R_WALK, ground_h(t))
+		sp.position = Vector2(p.x, p.y).round()
+		sp.visible = p.z > 0.05
 		sp.hp_ratio = u.hp_ratio()
 		sp.set_dead(not u.alive)
 		sp.walking = false
@@ -235,6 +313,7 @@ func _sprite_for(uid: String):
 
 
 func _consume_combat_events() -> void:
+	var numbers: bool = show_numbers and Game.state["settings"].get("show_damage_numbers", true)
 	for ev in Game.combat_events:
 		var src = _sprite_for(ev.get("src", "")) if ev.get("src", "") != "" else null
 		match ev["t"]:
@@ -242,13 +321,13 @@ func _consume_combat_events() -> void:
 				var dst = _sprite_for(ev["dst"])
 				if dst != null:
 					dst.hurt()
-					if show_numbers and Game.state["settings"].get("show_damage_numbers", true):
+					if numbers:
 						_float_at(dst, UiNum.num(ev["dmg"]), Color("#ffd23f") if ev["crit"] else Color.WHITE, ev["crit"])
 				if src != null and ev["tag"] == "":
 					src.lunge()
 			"miss":
 				var dst = _sprite_for(ev["dst"])
-				if dst != null and show_numbers and Game.state["settings"].get("show_damage_numbers", true):
+				if dst != null and numbers:
 					_float_at(dst, "miss", Color("#9aa4b2"), false)
 			"skill":
 				if src != null:
@@ -262,6 +341,9 @@ func _consume_combat_events() -> void:
 
 
 func _float_at(sp, text: String, color: Color, big: bool) -> void:
+	# The tiny taskbar tower stays clean: floating text only in the big view.
+	if not show_numbers:
+		return
 	var top: Vector2 = sp.position - Vector2(0, sp.size_px().y)
 	_floaters.append({"pos": top + Vector2(randf_range(-4, 4), 0), "text": text, "color": color, "t": 0.0, "big": big})
 
@@ -269,98 +351,146 @@ func _float_at(sp, text: String, color: Color, big: bool) -> void:
 # ------------------------------------------------------------------ drawing
 
 func _draw() -> void:
-	if _colors.is_empty():
+	if _pal.is_empty():
 		return
-	var sky: Color = _colors["sky"]
-	var wall: Color = _colors["wall"]
-	var wall_dark: Color = _colors["wall_dark"]
-	draw_rect(Rect2(Vector2.ZERO, size), sky)
-	_draw_bricks(wall, wall_dark)
-	_draw_stairs()
-	if _focus > 0.0:
-		var vignette := Color(0, 0, 0, 0.35 * _focus)
-		var w := size.x * 0.18
-		draw_rect(Rect2(0, 0, w, size.y), vignette)
-		draw_rect(Rect2(size.x - w, 0, w, size.y), vignette)
-		var accent: Color = Color("#ff4f4f")
-		accent.a = 0.25 * _focus * (0.6 + 0.4 * sin(_time * 4.0))
-		draw_rect(Rect2(Vector2.ZERO, size), accent, false, 2.0)
+	if not transparent_bg:
+		draw_rect(Rect2(Vector2.ZERO, size), _pal["sky"])
+		_draw_stars()
+	var segs := _visible_segments()
+	var back := []
+	var front := []
+	for s in segs:
+		(front if s["z"] >= 0.0 else back).append(s)
+	back.sort_custom(func(a, b): return a["z"] < b["z"])
+	front.sort_custom(func(a, b): return a["z"] < b["z"])
+	for s in back:
+		_draw_segment(s, false)
+	_draw_tower()
+	for s in front:
+		_draw_segment(s, true)
+	_draw_floaters()
+
+
+func _draw_stars() -> void:
+	var c: Color = _pal["paper"]
+	for i in 40:
+		var sx := fposmod(i * 97.13 + _cam_t * 30.0, size.x)
+		var sy := fposmod(i * 53.71 + _cam_h * px * 0.3, size.y)
+		c.a = 0.25 + 0.2 * sin(_time * 1.5 + i)
+		draw_rect(Rect2(sx, sy, px * 0.5, px * 0.5), c)
+
+
+## Step and landing wedges in view, each {t0, t1, h, z, stair}.
+func _visible_segments() -> Array:
+	var out := []
+	var k0 := int(floorf(_cam_t)) - 4
+	for k in range(k0, k0 + 9):
+		if k < 0:
+			continue
+		var dt := STAIR_FRAC / STEPS
+		for i in STEPS:
+			var t0 := k + i * dt
+			_add_segment(out, t0, t0 + dt, k * PITCH + (i + 1) * PITCH / STEPS, true)
+		var land_parts := 6
+		var lt := (1.0 - STAIR_FRAC) / land_parts
+		for i in land_parts:
+			var t0 := k + STAIR_FRAC + i * lt
+			_add_segment(out, t0, t0 + lt, (k + 1) * PITCH, false)
+	return out
+
+
+func _add_segment(out: Array, t0: float, t1: float, h: float, stair: bool) -> void:
+	var mid := project((t0 + t1) * 0.5, R_OUT, h)
+	if mid.y < -PITCH * px or mid.y > size.y + PITCH * px:
+		return
+	out.append({"t0": t0, "t1": t1, "h": h, "z": mid.z, "stair": stair})
+
+
+func _draw_segment(s: Dictionary, is_front: bool) -> void:
+	var t0: float = s["t0"]
+	var t1: float = s["t1"]
+	var h: float = s["h"]
+	var thick := PITCH / STEPS * 1.6
+	var outer := PackedVector2Array()
+	var inner := PackedVector2Array()
+	var under := PackedVector2Array()
+	var n := 3
+	for j in n + 1:
+		var t := lerpf(t0, t1, float(j) / n)
+		var o := project(t, R_OUT, h)
+		var ii := project(t, R_TOWER, h)
+		var u := project(t, R_OUT, h - thick)
+		outer.append(Vector2(o.x, o.y))
+		inner.append(Vector2(ii.x, ii.y))
+		under.append(Vector2(u.x, u.y))
+	var tread := PackedVector2Array(outer)
+	for j in range(inner.size() - 1, -1, -1):
+		tread.append(inner[j])
+	var riser := PackedVector2Array(outer)
+	for j in range(under.size() - 1, -1, -1):
+		riser.append(under[j])
+	var ink: Color = _pal["ink"]
+	var line_w := maxf(1.0, px * 0.5)
+	if is_front:
+		_poly(riser, _pal["mid"])
+		_poly(tread, _pal["paper"])
+		draw_polyline(outer, ink, line_w)
+		draw_polyline(under, ink, line_w)
+		draw_line(outer[0], under[0], ink, line_w)
+	else:
+		_poly(riser, _pal["back_riser"])
+		_poly(tread, _pal["back"])
+		draw_polyline(outer, ink, line_w)
+
+
+func _poly(points: PackedVector2Array, color: Color) -> void:
+	if points.size() >= 3 and Geometry2D.triangulate_polygon(points).size() > 0:
+		draw_colored_polygon(points, color)
+
+
+func _draw_tower() -> void:
+	var cx := axis_x()
+	var half := R_TOWER * px
+	var rect := Rect2(cx - half, 0, half * 2.0, size.y)
+	if _tower_tex != null:
+		draw_texture_rect(_tower_tex, rect, true)
+	var ink: Color = _pal["ink"]
+	ink.a = 0.45
+	var line_w := maxf(1.0, px * 0.5)
+	# Brick courses scroll with height; joints move sideways as the tower turns.
+	var bh := BRICK_H * px
+	var y0 := fposmod(feet_y * size.y + _cam_h * px, bh) - bh
+	var row := int(floorf((feet_y * size.y + _cam_h * px) / bh))
+	var y := y0
+	while y < size.y:
+		draw_line(Vector2(cx - half, y), Vector2(cx + half, y), ink, line_w)
+		var shift := 0.5 if (row & 1) == 0 else 0.0
+		for j in BRICKS_PER_TURN:
+			var a := ((j + shift) / BRICKS_PER_TURN - fposmod(_cam_t, 1.0)) * TAU
+			if cos(a) > 0.15:
+				var x := cx + sin(a) * half
+				draw_line(Vector2(x, y), Vector2(x, y + bh), ink, line_w)
+		y += bh
+		row -= 1
+	# Arrow slits: one per floor, halfway round from the landing.
+	var k0 := int(floorf(_cam_t)) - 3
+	var slit: Color = _pal["ink"]
+	for k in range(k0, k0 + 7):
+		for off in [0.45, 0.95]:
+			var p := project(k + off, R_TOWER, k * PITCH + PITCH * 0.55)
+			if p.z > 0.25 and p.y > -10 and p.y < size.y + 10:
+				var w := 2.5 * px * p.z
+				draw_rect(Rect2(p.x - w * 0.5, p.y - 5.0 * px, w, 5.0 * px), slit)
+				draw_rect(Rect2(p.x - w * 0.5, p.y - 5.0 * px - px * 0.8, w, px * 0.8), slit)
+
+
+func _draw_floaters() -> void:
 	var font := get_theme_default_font()
 	for f in _floaters:
 		var t: float = f["t"]
 		var c: Color = f["color"]
 		c.a = 1.0 - t / 1.1
-		var fs := int(maxf(8.0, px * (6.0 if f["big"] else 5.0)))
+		var fs := int(maxf(9.0, px * (5.0 if f["big"] else 4.0)))
 		var p: Vector2 = f["pos"] - Vector2(0, t * 10.0 * px)
-		draw_string_outline(font, p + Vector2(-20, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 40, fs, 2, Color(0, 0, 0, c.a))
-		draw_string(font, p + Vector2(-20, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 40, fs, c)
-
-
-func _draw_bricks(wall: Color, dark: Color) -> void:
-	# Tower wall scrolls with the camera (parallax 0.6) so vertical motion reads clearly.
-	var bh := 5.0 * px
-	var bw := 14.0 * px
-	var ox := fposmod(-_cam_s * px * 0.6, bw * 2.0)
-	var oy := fposmod(_cam_y * px * 0.6, bh * 2.0)
-	var row := -2
-	var y := oy - bh * 2.0
-	draw_rect(Rect2(Vector2.ZERO, size), dark)
-	while y < size.y:
-		var shift := (bw * 0.5) if (row & 1) == 0 else 0.0
-		var x := ox - bw * 2.0 + shift
-		while x < size.x:
-			draw_rect(Rect2(x, y, bw - px, bh - px), wall)
-			draw_rect(Rect2(x, y + bh - px, bw, px), dark)
-			draw_rect(Rect2(x + bw - px, y, px, bh), dark)
-			x += bw
-		y += bh
-		row += 1
-	# Arrow slits that glow with the biome accent.
-	var accent: Color = _colors["accent"]
-	var slit_every := 90.0 * px
-	var sx := fposmod(-_cam_s * px * 0.6, slit_every)
-	while sx < size.x:
-		var sy := fposmod(oy + sx * 0.37, size.y * 0.6) + size.y * 0.05
-		draw_rect(Rect2(sx, sy, 2.0 * px, 5.0 * px), _colors["sky"])
-		var glow := accent
-		glow.a = 0.35 + 0.15 * sin(_time * 2.0 + sx)
-		draw_rect(Rect2(sx, sy + 3.0 * px, 2.0 * px, 2.0 * px), glow)
-		sx += slit_every
-
-
-func _draw_stairs() -> void:
-	var step_col: Color = _colors["step"]
-	var edge: Color = _colors["step_edge"]
-	var shade: Color = _colors["wall_dark"].darkened(0.35)
-	# The staircase wraps vertically: a flight leaving the top re-enters at the
-	# bottom, so even a 1920x54 strip is filled with diagonal flights (the
-	# "infinite staircase" loop). Units live near the anchor and never wrap.
-	var rise_px := RISE * px
-	var wrap_h := ceilf((size.y + rise_px) / rise_px) * rise_px
-	var top := size.y - wrap_h
-	var depth := STEP_RISE * px * 2.5
-	var s_left := _cam_s - (lerpf(anchor.x, 0.42, _focus) * size.x) / px - STEP_RUN
-	var s_right := s_left + size.x / px + STEP_RUN * 2.0
-	var s := floorf(s_left / STEP_RUN) * STEP_RUN
-	var w := STEP_RUN * px + 1.0
-	while s < s_right:
-		var p := to_screen(s, ground_y(s + 0.01))
-		p.y = fposmod(p.y - top, wrap_h) + top
-		draw_rect(Rect2(p.x, p.y, w, depth), step_col)
-		draw_rect(Rect2(p.x, p.y + depth, w, px), shade)
-		draw_rect(Rect2(p.x, p.y, w, px), edge)
-		s += STEP_RUN
-	# Floor numbers painted under each landing.
-	var font := get_theme_default_font()
-	var fs := int(maxf(8.0, px * 3.5))
-	var label_col := edge
-	label_col.a = 0.6
-	var k0 := int(floorf(s_left / PERIOD)) - 1
-	for k in range(k0, k0 + int(size.x / px / PERIOD) + 3):
-		if k < 1:
-			continue
-		var p := to_screen(k * PERIOD + FLIGHT + LANDING * 0.5, (k + 1) * RISE)
-		p.y = fposmod(p.y - top, wrap_h) + top
-		if p.x < -40 or p.x > size.x + 40 or p.y + depth + fs > size.y + fs * 0.5:
-			continue
-		draw_string(font, Vector2(p.x - 20, p.y + depth + fs), str(k), HORIZONTAL_ALIGNMENT_CENTER, 40, fs, label_col)
+		draw_string_outline(font, p + Vector2(-30, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 60, fs, 3, Color(0, 0, 0, c.a))
+		draw_string(font, p + Vector2(-30, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 60, fs, c)

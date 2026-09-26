@@ -17,11 +17,12 @@ func _ready() -> void:
 	scroll.add_child(grid)
 
 	_section(grid, "Taskbar window")
+	_option(grid, "art_style", "Art style", [["1-bit (monochrome)", "mono"], ["Color (biome palettes)", "color"]])
 	_check(grid, "always_on_top", "Always on top")
 	_option(grid, "dock", "Dock position", [["Bottom of screen", "bottom"], ["Top of screen", "top"]])
-	_option(grid, "bar_width", "Bar width", [["Full width", 0], ["1920 px", 1920], ["1600 px", 1600], ["1280 px", 1280], ["1024 px", 1024], ["800 px", 800]])
-	_slider(grid, "bar_height", "Bar height", 40, 72, 2)
-	_slider(grid, "bar_opacity", "Bar opacity", 0.4, 1.0, 0.02)
+	_option(grid, "bar_width", "Bar width", [["480 px", 480], ["640 px", 640], ["800 px", 800], ["1024 px", 1024], ["Full width", 0]])
+	_slider(grid, "bar_height", "Window height", 110, 260, 10)
+	_slider(grid, "bar_opacity", "HUD backdrop opacity", 0.0, 1.0, 0.05)
 	_option(grid, "fps_taskbar", "Taskbar FPS (battery)", [["15", 15], ["30", 30], ["60", 60]])
 
 	_section(grid, "Notifications")

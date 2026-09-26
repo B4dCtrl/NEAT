@@ -15,6 +15,7 @@ também, se quiser).
 
 ```bash
 godot --path infinite_tower            # joga
+# ou exporte: godot --headless --path infinite_tower --export-release "Windows Desktop" export/windows/Summiteers.exe
 godot --path infinite_tower -e         # abre no editor
 ```
 
@@ -95,16 +96,20 @@ A **mesma** `Expedition.advance()` é chamada com `delta` do frame (ao vivo) e c
 
 ## Decisões de design
 
-### Escada infinita numa janela de 54px
-Cada andar é **um lance de escada + um patamar**. A câmera segue o grupo na diagonal, então
-os degraus e a parede de tijolos (parallax) descem enquanto os heróis sobem. O combate
-acontece no **patamar plano**, onde heróis e inimigos cabem lado a lado mesmo com 54px de
-altura. Numa barra de 1920px, a escada **dá a volta verticalmente** (wrap): quando um lance
-sai pelo topo ele reaparece embaixo, preenchendo a barra inteira com lances diagonais — a
-"esteira rolante em loop".
+### Torre helicoidal flutuando sobre a taskbar
+Inspirado em *A Fool's Errand* (Playdate) e *TBH: Task Bar Hero*. A janela da barra é
+**transparente** e fica logo acima da taskbar, no canto direito. Só aparecem uma torre
+cilíndrica e um HUD com contorno de texto, legível sobre qualquer wallpaper. O resto da
+janela deixa o clique passar para o desktop (`mouse_passthrough_polygon`).
 
-Em andares de chefe a câmera **centraliza**, as bordas escurecem, o chefe aparece em escala
-maior e a subida pausa até o *Boss Chest*.
+A escada é **helicoidal**: cada andar é uma volta completa ao redor da torre (72% degraus,
+28% patamar). O grupo fica na frente e a **torre gira** enquanto ele sobe. Os tijolos e
+as seteiras se deslocam lateralmente, os degraus de trás passam por trás do cilindro e a
+câmera olha levemente de cima. O combate acontece no patamar, e a câmera enquadra a luta.
+No Fall Back a torre "desenrosca" para baixo.
+
+Estilo padrão **1-bit** (tinta/papel com pontilhado ordenado Bayer, sprites quantizados
+em 3 tons). Em *Settings → Art style* há a opção de cores por bioma.
 
 ### Focus Safety
 No Taskbar Mode a janela é `unfocusable` (`WINDOW_FLAG_NO_FOCUS`): recebe cliques mas

@@ -8,8 +8,9 @@ static var _cache: Dictionary = {}
 
 
 ## Returns the animation frames for a sprite id as ImageTextures.
-static func frames(sprite_id: String, palette_override: Dictionary = {}) -> Array:
-	var key := sprite_id + str(palette_override)
+## mono=true quantises the palette to 1-bit-style ink / mid / paper tones.
+static func frames(sprite_id: String, palette_override: Dictionary = {}, mono: bool = false) -> Array:
+	var key := sprite_id + str(palette_override) + ("#mono" if mono else "")
 	if _cache.has(key):
 		return _cache[key]
 	var def: Dictionary = DataDB.sprites().get(sprite_id, {})
@@ -24,6 +25,8 @@ static func frames(sprite_id: String, palette_override: Dictionary = {}) -> Arra
 	var colors := {}
 	for k in palette:
 		colors[k] = Color.html(palette[k])
+		if mono:
+			colors[k] = mono_tone(colors[k], k == "o")
 	for grid in def["frames"]:
 		var h: int = grid.size()
 		var w: int = String(grid[0]).length()
@@ -43,3 +46,19 @@ static func frames(sprite_id: String, palette_override: Dictionary = {}) -> Arra
 static func icon(icon_id: String) -> Texture2D:
 	var f := frames("icon_" + icon_id)
 	return f[0] if not f.is_empty() else null
+
+
+const INK := Color("#16151a")
+const MID := Color("#8f897d")
+const PAPER := Color("#efe9d8")
+
+
+static func mono_tone(c: Color, outline: bool) -> Color:
+	if outline:
+		return INK
+	var lum := c.r * 0.3 + c.g * 0.59 + c.b * 0.11
+	if lum < 0.3:
+		return INK
+	if lum < 0.6:
+		return MID
+	return PAPER

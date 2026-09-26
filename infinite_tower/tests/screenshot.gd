@@ -25,6 +25,8 @@ func _shot(name: String) -> void:
 	await process_frame
 	await process_frame
 	var img := root.get_texture().get_image()
+	if name.contains("taskbar"):
+		img = _over_desktop(img)
 	img.save_png(out_dir.path_join(name + ".png"))
 	print("saved ", name, " ", img.get_size())
 
@@ -36,6 +38,11 @@ func _run() -> void:
 	await _shot("01_taskbar_start")
 	game.time_scale = 30.0
 	await _wait(240)
+	game.time_scale = 1.0
+	await _wait(20)
+	await _shot("01b_taskbar_walk")
+	game.time_scale = 30.0
+	await _wait(60)
 	game.time_scale = 1.0
 	# Try to catch a fight in progress.
 	for i in 300:
@@ -62,3 +69,23 @@ func _run() -> void:
 	await _wait(60)
 	await _shot("03_taskbar_boss")
 	quit()
+
+
+## Transparent pixels would show the real desktop: fake a wallpaper + taskbar
+## behind them so the screenshot reads like the real thing.
+func _over_desktop(img: Image) -> Image:
+	img.convert(Image.FORMAT_RGBA8)
+	var w := img.get_width()
+	var h := img.get_height()
+	var bar := 48
+	var out := Image.create(w, h + bar, false, Image.FORMAT_RGBA8)
+	for y in h + bar:
+		for x in w:
+			var c: Color
+			if y >= h:
+				c = Color("#202226")
+			else:
+				c = Color("#2b5d8a").lerp(Color("#7fb2d9"), float(y) / h).lerp(Color("#e8c9a0"), float(x) / w * 0.35)
+			out.set_pixel(x, y, c)
+	out.blend_rect(img, Rect2i(0, 0, w, h), Vector2i.ZERO)
+	return out
