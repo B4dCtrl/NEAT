@@ -20,7 +20,6 @@ func _ready() -> void:
 	_option(grid, "art_style", "Art style", [["1-bit (monochrome)", "mono"], ["Color (biome palettes)", "color"]])
 	_check(grid, "always_on_top", "Always on top")
 	_option(grid, "dock", "Dock position", [["Bottom of screen", "bottom"], ["Top of screen", "top"]])
-	_option(grid, "bar_width", "Bar width", [["480 px", 480], ["640 px", 640], ["800 px", 800], ["1024 px", 1024], ["Full width", 0]])
 	_slider(grid, "bar_height", "Window height", 110, 260, 10)
 	_slider(grid, "bar_opacity", "HUD backdrop opacity", 0.0, 1.0, 0.05)
 	_option(grid, "fps_taskbar", "Taskbar FPS (battery)", [["15", 15], ["30", 30], ["60", 60]])

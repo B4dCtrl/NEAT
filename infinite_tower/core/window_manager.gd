@@ -12,7 +12,8 @@ signal mode_changed(mode: String)
 
 const EXPEDITION_SIZE := Vector2i(1100, 780)
 const EXPEDITION_MIN := Vector2i(960, 700)
-const BAR_MIN_WIDTH := 360
+const BAR_MIN_WIDTH := 200
+const TaskbarView = preload("res://scenes/ui/taskbar_view.gd")
 const TRANSITION_TIME := 0.16
 
 var mode := "taskbar"
@@ -89,13 +90,11 @@ func bar_rect() -> Rect2i:
 	var settings: Dictionary = Game.state["settings"]
 	var screen := DisplayServer.screen_get_usable_rect(get_window().current_screen)
 	var height := int(settings.get("bar_height", 54))
-	var width := int(settings.get("bar_width", 0))
-	if width <= 0 or width > screen.size.x:
-		width = screen.size.x
-	width = maxi(width, BAR_MIN_WIDTH)
+	# Compact: just the HUD column + the tower, so it fits the taskbar corner.
+	var width := mini(TaskbarView.window_width(), screen.size.x)
 	if _bar_offset_x < 0 or _bar_offset_x + width > screen.size.x:
-		# Default: bottom-right, next to the system tray, like a desktop pet.
-		_bar_offset_x = maxi(0, screen.size.x - width - 24)
+		# Default: flush with the bottom-right corner, next to the system tray.
+		_bar_offset_x = maxi(0, screen.size.x - width)
 	var y := screen.position.y if settings.get("dock", "bottom") == "top" else screen.end.y - height
 	return Rect2i(screen.position.x + _bar_offset_x, y, width, height)
 

@@ -97,7 +97,7 @@ A **mesma** `Expedition.advance()` é chamada com `delta` do frame (ao vivo) e c
 
 ### Torre helicoidal flutuando sobre a taskbar
 Inspirado em *A Fool's Errand* (Playdate) e *TBH: Task Bar Hero*. A janela da barra é
-**transparente** e fica logo acima da taskbar, no canto direito. Só aparecem uma torre
+**transparente**, compacta (~400px) e fica encostada no canto direito, logo acima da taskbar. Só aparecem uma torre
 cilíndrica e um HUD com contorno de texto, legível sobre qualquer wallpaper. O resto da
 janela deixa o clique passar para o desktop (`mouse_passthrough_polygon`).
 
@@ -137,8 +137,12 @@ Steam Inventory Service (relics e peças de set, negociáveis) a partir dos JSON
 ativar: defina `steam_app_id` em `data/platform.json` e instale o GodotSteam.
 
 ### Arte do PixelLab
-PNGs em `assets/sprites/` substituem a pixel art em texto automaticamente (heróis por
-classe, inimigos por id, ícones de item). Veja `assets/sprites/README.md`.
+Heróis (com animação de caminhada), monstros, chefes e ícones foram gerados no PixelLab e
+estão em `assets/sprites/`. Esses PNGs substituem automaticamente a pixel art em texto de
+`data/sprites.json` (que continua valendo para o que não tiver PNG). Os personagens ficam
+coloridos mesmo no modo 1-bit, destacados sobre a torre em tinta e papel.
+Para importar novos downloads: `godot --headless --path . -s res://tools/import_pixellab.gd -- <pasta>`
+(corta as bordas, alinha os pés, monta a tira de animação e vira os inimigos).
 
 ### Progresso offline determinístico
 O save guarda a posição do RNG (como string — 64 bits não cabem em float JSON). Ao abrir o

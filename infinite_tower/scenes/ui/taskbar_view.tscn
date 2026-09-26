@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scenes/ui/party_mini.gd" id="3"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_floor"]
-font_size = 16
+font_size = 15
 font_color = Color(1, 0.97, 0.88, 1)
 outline_size = 5
 outline_color = Color(0.05, 0.05, 0.07, 1)
@@ -44,21 +44,19 @@ feet_y = 0.7
 [node name="Hud" type="HBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 12
+anchors_preset = 2
 anchor_top = 1.0
-anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 200.0
-offset_top = -36.0
-offset_right = -4.0
+offset_left = 4.0
+offset_top = -34.0
+offset_right = 160.0
 offset_bottom = -4.0
-grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 theme_override_constants/separation = 6
 
 [node name="PartyMini" type="Control" parent="Hud"]
-custom_minimum_size = Vector2(80, 0)
+custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("3")
@@ -75,68 +73,24 @@ stretch_mode = 5
 
 [node name="FloorLabel" type="Label" parent="Hud"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(92, 0)
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 text = "FLOOR 1"
 label_settings = SubResource("LabelSettings_floor")
 vertical_alignment = 1
 
-[node name="EnemyIcon" type="TextureRect" parent="Hud"]
-unique_name_in_owner = true
-texture_filter = 1
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
 
-[node name="EnemyLabel" type="Label" parent="Hud"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "..."
-label_settings = SubResource("LabelSettings_hud")
-vertical_alignment = 1
-clip_text = true
 
-[node name="GoldIcon" type="TextureRect" parent="Hud"]
-unique_name_in_owner = true
-texture_filter = 1
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
 
-[node name="GoldLabel" type="Label" parent="Hud"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 0)
-layout_mode = 2
-text = "0"
-label_settings = SubResource("LabelSettings_hud")
-vertical_alignment = 1
 
-[node name="ExpandButton" type="Button" parent="Hud"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(28, 0)
-layout_mode = 2
-focus_mode = 0
-tooltip_text = "Open Expedition (Tab)"
-text = "»"
 
 [node name="Notify" type="HBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 200.0
+offset_left = 4.0
 offset_top = 70.0
-offset_right = -4.0
+offset_right = 160.0
 offset_bottom = 96.0
-grow_horizontal = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
 
@@ -156,5 +110,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "+1 Relic"
 label_settings = SubResource("LabelSettings_hud")
-vertical_alignment = 1
-clip_text = true
+vertical_alignment = 2
+autowrap_mode = 3
+max_lines_visible = 2

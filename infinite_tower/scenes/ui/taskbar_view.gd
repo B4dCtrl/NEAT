@@ -2,7 +2,8 @@ extends Control
 ## TASKBAR MODE: a transparent window resting on the taskbar. Only the spiral
 ## tower and a floating HUD are visible; the rest of the window is
 ## click-through, like a desktop pet.
-##   [tower]  [party] FLOOR 382  Slime  18.2k  [»]   <- HUD only on mouse hover
+##   [heroes] F 382 [tower]   <- tiny HUD on the left, only on mouse hover;
+##   the window is just wide enough to sit right in the corner of the taskbar.
 ## Focus safety: nothing here ever grabs keyboard focus or raises the window.
 ## Notifications are a soft glow plus a line of text, never a popup.
 
@@ -18,16 +19,17 @@ const NOTIFY_COLORS := {
 }
 const DRAG_THRESHOLD := 6.0
 const HUD_H := 40.0
+## Width of the left HUD column (hero icons + floor).
+const HUD_W := 160.0
+## Room on the right for big bosses standing on the landing.
+const RIGHT_MARGIN := 40.0
 
 @onready var stage: Control = %Stage
 @onready var hud: HBoxContainer = %Hud
 @onready var notify_box: HBoxContainer = %Notify
 @onready var floor_label: Label = %FloorLabel
-@onready var enemy_label: Label = %EnemyLabel
-@onready var gold_label: Label = %GoldLabel
 @onready var notify_label: Label = %NotifyLabel
 @onready var notify_icon: TextureRect = %NotifyIcon
-@onready var expand_button: Button = %ExpandButton
 
 var _glow_color := Color.TRANSPARENT
 var _glow_left := 0.0
@@ -43,11 +45,8 @@ var _hud_shown := false
 
 
 func _ready() -> void:
-	%FloorIcon.texture = PixelArt.icon("floor")
-	%EnemyIcon.texture = PixelArt.icon("skull")
-	%GoldIcon.texture = PixelArt.icon("coin")
+	%FloorIcon.visible = false
 	notify_label.label_settings = notify_label.label_settings.duplicate()
-	expand_button.pressed.connect(func(): expand_requested.emit())
 	Game.notified.connect(_on_notified)
 	notify_box.visible = false
 	hud.modulate.a = 0.0
@@ -61,13 +60,22 @@ func tower_column_width() -> float:
 	return (TowerStage.R_OUT * stage.px + 10.0) * 2.0
 
 
-## Tower on the left, HUD to its right along the bottom edge.
+## Compact window: the HUD column on the left, the tower on the right edge.
+static func window_width(px: float = 2.0) -> int:
+	return int(HUD_W + (TowerStage.R_OUT * px + 10.0) * 2.0 + RIGHT_MARGIN)
+
+
+func _tower_rect() -> Rect2:
+	return Rect2(HUD_W, 0, size.x - HUD_W, size.y)
+
+
+func _hud_rect() -> Rect2:
+	return Rect2(0, size.y - HUD_H, HUD_W, HUD_H)
+
+
 func _layout() -> void:
-	var col := tower_column_width()
-	stage.tower_center = col * 0.5
-	hud.offset_left = col
-	notify_box.offset_left = col
-	notify_box.offset_top = size.y - HUD_H - 26.0
+	stage.tower_center = HUD_W + tower_column_width() * 0.5
+	notify_box.offset_top = size.y - HUD_H - 40.0
 	notify_box.offset_bottom = size.y - HUD_H
 	_update_passthrough()
 	_last_size = size
@@ -76,14 +84,14 @@ func _layout() -> void:
 ## Only the tower (and the HUD while it is shown) catch the mouse; the rest of
 ## the window is click-through.
 func _update_passthrough() -> void:
-	var col := tower_column_width()
+	var t := _tower_rect()
 	var poly: PackedVector2Array
 	if _hud_shown:
 		poly = PackedVector2Array([
-			Vector2(0, 0), Vector2(col, 0), Vector2(col, size.y - HUD_H),
-			Vector2(size.x, size.y - HUD_H), Vector2(size.x, size.y), Vector2(0, size.y)])
+			Vector2(t.position.x, 0), Vector2(size.x, 0), Vector2(size.x, size.y),
+			Vector2(0, size.y), Vector2(0, size.y - HUD_H), Vector2(t.position.x, size.y - HUD_H)])
 	else:
-		poly = PackedVector2Array([Vector2(0, 0), Vector2(col, 0), Vector2(col, size.y), Vector2(0, size.y)])
+		poly = PackedVector2Array([Vector2(t.position.x, 0), Vector2(size.x, 0), Vector2(size.x, size.y), Vector2(t.position.x, size.y)])
 	WindowManager.set_passthrough(poly)
 
 
@@ -92,9 +100,8 @@ func _update_passthrough() -> void:
 func _update_hud(delta: float) -> void:
 	_hud_hold = maxf(0.0, _hud_hold - delta)
 	var local := _mouse_local()
-	var col := tower_column_width()
-	var over_tower := Rect2(0, 0, col, size.y).has_point(local)
-	var over_hud := _hud_shown and Rect2(col, size.y - HUD_H, size.x - col, HUD_H).has_point(local)
+	var over_tower := _tower_rect().has_point(local)
+	var over_hud := _hud_shown and _hud_rect().has_point(local)
 	var want := over_tower or over_hud or _hud_hold > 0.0 or _pressing
 	_hud_alpha = move_toward(_hud_alpha, 1.0 if want else 0.0, delta * (6.0 if want else 2.5))
 	hud.modulate.a = _hud_alpha
@@ -127,8 +134,6 @@ func _process(delta: float) -> void:
 
 func _refresh() -> void:
 	floor_label.text = "FLOOR %d" % Game.state["floor"]
-	enemy_label.text = Game.current_enemy_name()
-	gold_label.text = UiUtil.num(Game.state["gold"])
 
 
 func _on_notified(kind: String, text: String) -> void:
@@ -147,8 +152,7 @@ func _on_notified(kind: String, text: String) -> void:
 
 
 func _draw() -> void:
-	var col := tower_column_width()
-	var strip := Rect2(col - 4.0, size.y - HUD_H, size.x - col + 4.0, HUD_H)
+	var strip := _hud_rect().grow(-2.0)
 	var opacity := float(Game.state["settings"].get("bar_opacity", 0.0)) * _hud_alpha
 	if opacity > 0.0:
 		var sb := StyleBoxFlat.new()

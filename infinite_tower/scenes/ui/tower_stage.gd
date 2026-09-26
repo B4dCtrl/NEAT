@@ -33,7 +33,11 @@ const R_OUT := 46.0                     # outer edge of the steps
 const R_WALK := 39.0                    # where feet land
 const PITCH := 30.0                     # height gained per turn (= per floor)
 const TILT := 0.22                      # camera looks slightly down
-const SLOT := 0.045                     # spacing between units, in turns
+const SLOT := 0.045                     # spacing unit, in turns
+const HERO_SLOT := 0.06                 # spacing between heroes
+const ENEMY_START := 0.115              # first enemy, ahead of the party anchor
+const ENEMY_SLOT := 0.05
+const FIGHT_CENTER := 0.1               # the camera frames party + enemies around here
 const BOSS_SCALE := 1.35
 const BRICK_H := 6.0
 const BRICKS_PER_TURN := 14
@@ -148,7 +152,7 @@ func _is_falling(exp) -> bool:
 func _target_cam_t() -> float:
 	var exp = Game.expedition
 	if exp.phase in ["combat", "intro"] or (exp.phase == "pause" and exp.after_pause == "next_floor"):
-		return rest_t(int(Game.state["floor"])) + SLOT * 1.6
+		return rest_t(int(Game.state["floor"])) + FIGHT_CENTER
 	return party_t()
 
 
@@ -259,7 +263,7 @@ func _place_heroes(exp) -> void:
 	for slot in order.size():
 		var i: int = order[slot]
 		var sp = hero_sprites[i]
-		var t := base_t + (slot - centre) * SLOT
+		var t := base_t + (slot - centre) * HERO_SLOT
 		var p := project(t, R_WALK, ground_h(t))
 		var pos := Vector2(p.x, p.y)
 		if _fall > 0.0:
@@ -309,10 +313,10 @@ func _place_enemies(exp) -> void:
 		var u = c.enemies[i]
 		var t: float
 		if u.is_boss:
-			t = land + SLOT * 3.0
-			extra = SLOT * 0.8
+			t = land + ENEMY_START + ENEMY_SLOT * 0.8
+			extra = ENEMY_SLOT * 1.2
 		else:
-			t = land + SLOT * 2.4 + extra + i * SLOT
+			t = land + ENEMY_START + extra + i * ENEMY_SLOT
 		# Enemies come round the tower when the fight starts.
 		var intro := clampf(c.time * 3.0, 0.0, 1.0) if exp.phase == "combat" else 1.0
 		t += (1.0 - intro) * 0.12
@@ -366,7 +370,7 @@ func _draw_bonfires() -> void:
 	for k in range(k0, k0 + 7):
 		if k < 1 or not TowerGen.is_bonfire(k):
 			continue
-		var t := rest_t(k) + SLOT * 1.6
+		var t := rest_t(k) + FIGHT_CENTER
 		var p := project(t, R_WALK, ground_h(t))
 		if p.z < 0.2 or p.y < -20 or p.y > size.y + 20:
 			continue
@@ -415,7 +419,7 @@ func _on_loot(drop: Dictionary) -> void:
 		rank = DataDB.rarity_order(drop["rarity"])
 	var land := rest_t(int(Game.state["floor"]))
 	var n := _drops.size()
-	_drops.append({"tex": tex, "color": color, "age": -0.2 * n, "t": land + SLOT * (2.2 + 0.5 * (n % 4)), "rank": rank})
+	_drops.append({"tex": tex, "color": color, "age": -0.2 * n, "t": land + ENEMY_START + ENEMY_SLOT * 0.5 * (n % 4), "rank": rank})
 
 
 func _draw_drops() -> void:

@@ -16,9 +16,9 @@ func _ready() -> void:
 func _rebuild() -> void:
 	_textures.clear()
 	for hero in Game.state["heroes"]:
-		var f := PixelArt.frames(DataDB.classes()[hero["class"]]["sprite"], {}, Game.state["settings"].get("art_style", "mono") == "mono")
+		var f := PixelArt.unit_frames(hero["class"], DataDB.classes()[hero["class"]]["sprite"], {}, Game.state["settings"].get("art_style", "mono") == "mono")
 		_textures.append(f[0] if not f.is_empty() else null)
-	custom_minimum_size = Vector2(3 * 26 + 10, 0)
+	custom_minimum_size = Vector2(maxi(1, _textures.size()) * 17 + 6, 0)
 
 
 func _process(_delta: float) -> void:
@@ -42,7 +42,9 @@ func _draw() -> void:
 			alive = exp.combat.heroes[i].alive
 		var y := (size.y - 12.0 * scale - bar_h - 2.0) * 0.5
 		if tex != null:
-			draw_texture_rect(tex, Rect2(x + 2.0, y, tex.get_width() * scale, 12.0 * scale), false, Color.WHITE if alive else Color(0.4, 0.4, 0.4, 0.7))
+			var h := 12.0 * scale
+			var w := minf(cell - 2.0, tex.get_width() * h / tex.get_height())
+			draw_texture_rect(tex, Rect2(x + 2.0 + (cell - 4.0 - w) * 0.5, y, w, h), false, Color.WHITE if alive else Color(0.4, 0.4, 0.4, 0.7))
 		var by := y + 12.0 * scale + 2.0
 		draw_rect(Rect2(x + 2.0, by, cell - 4.0, bar_h), Color(0, 0, 0, 0.6))
 		var col := Color("#5fd35f") if ratio > 0.5 else (Color("#ffd23f") if ratio > 0.25 else Color("#ff4f4f"))

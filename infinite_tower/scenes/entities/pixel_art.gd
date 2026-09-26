@@ -18,7 +18,9 @@ static func frames(sprite_id: String, palette_override: Dictionary = {}, mono: b
 	var key := sprite_id + str(palette_override) + ("#mono" if mono else "")
 	if _cache.has(key):
 		return _cache[key]
-	var external := _external_frames(sprite_id, mono)
+	# Imported (PixelLab) art keeps its colours even in 1-bit mode: the tower
+	# stays ink-and-paper and the characters pop out of it.
+	var external := _external_frames(sprite_id, false)
 	if not external.is_empty():
 		_cache[key] = external
 		return external
