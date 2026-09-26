@@ -1,0 +1,225 @@
+extends Node
+## Autoload "Game": owns the state, drives the Expedition in real time, turns
+## simulation events into signals for the views, autosaves and applies offline
+## progress on boot. All player actions go through here.
+
+const DataDB = preload("res://core/data_db.gd")
+const GameState = preload("res://core/game_state.gd")
+const Expedition = preload("res://core/expedition.gd")
+const SaveSystem = preload("res://core/save_system.gd")
+const StatCalc = preload("res://core/stat_calculator.gd")
+const Inventory = preload("res://core/inventory.gd")
+const Progression = preload("res://core/progression.gd")
+const PlatformServices = preload("res://core/platform_services.gd")
+
+## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
+signal notified(kind: String, text: String)
+signal floor_changed(floor_num: int)
+signal combat_started()
+signal combat_ended(victory: bool)
+signal inventory_changed()
+signal state_changed()
+signal settings_changed()
+signal offline_report_ready(report: Dictionary)
+
+const AUTOSAVE_INTERVAL := 30.0
+
+var state: Dictionary
+var expedition: Expedition
+var offline_report: Dictionary = {}
+var time_scale := 1.0
+var _autosave_left := AUTOSAVE_INTERVAL
+var _state_changed_left := 0.25
+## Combat events of the current frame, consumed by the stages for animation.
+var combat_events: Array = []
+
+
+func _ready() -> void:
+	process_priority = -10
+	state = SaveSystem.load_game()
+	if state.is_empty():
+		state = GameState.new_game()
+		GameState.add_history(state, "info", "The expedition begins.")
+	else:
+		var away := SaveSystem.offline_seconds(state, int(Time.get_unix_time_from_system()))
+		if away >= 60.0:
+			offline_report = SaveSystem.simulate_offline(state, away)
+			GameState.add_history(state, "offline", "Climbed while away: floor %d -> %d" % [offline_report["floor_start"], offline_report["floor_end"]])
+	expedition = Expedition.new(state)
+	PlatformServices.init()
+	if not offline_report.is_empty():
+		call_deferred("emit_signal", "offline_report_ready", offline_report)
+
+
+func _process(delta: float) -> void:
+	var dt := delta * time_scale
+	state["stats"]["play_time"] = float(state["stats"]["play_time"]) + dt
+	expedition.advance(dt)
+	if expedition.combat != null and not expedition.combat.events.is_empty():
+		combat_events = expedition.combat.events.duplicate()
+		expedition.combat.events.clear()
+	else:
+		combat_events = []
+	_drain_events()
+
+	_state_changed_left -= delta
+	if _state_changed_left <= 0.0:
+		_state_changed_left = 0.25
+		state_changed.emit()
+	_autosave_left -= delta
+	if _autosave_left <= 0.0:
+		save()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED:
+		save()
+
+
+func save() -> void:
+	_autosave_left = AUTOSAVE_INTERVAL
+	expedition.sync_to_state()
+	SaveSystem.save_game(state)
+
+
+func _drain_events() -> void:
+	if expedition.events.is_empty():
+		return
+	var evs := expedition.events.duplicate()
+	expedition.events.clear()
+	for ev in evs:
+		match ev["type"]:
+			"floor":
+				floor_changed.emit(int(ev["floor"]))
+			"combat_start":
+				combat_started.emit()
+			"combat_end":
+				combat_ended.emit(ev["victory"])
+			"boss":
+				var tier_name: String = DataDB.enemy_scaling()["boss_tiers"][ev["tier"]]["name"]
+				notified.emit("boss", "%s: %s" % [tier_name, ev["name"]])
+			"fall_back":
+				notified.emit("fall", "Fell back to floor %d" % ev["to"])
+			"loot":
+				var item: Dictionary = ev["item"]
+				inventory_changed.emit()
+				if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary"):
+					notified.emit("legendary", item["name"])
+				elif item.get("set", "") != "":
+					notified.emit("set", item["name"])
+			"relic":
+				inventory_changed.emit()
+				if ev["new"]:
+					notified.emit("relic", "+1 Relic: " + DataDB.relics()[ev["id"]]["name"])
+			"milestone":
+				PlatformServices.unlock_achievement(ev["achievement"])
+				notified.emit("milestone", "%s  +%d Crystals" % [ev["name"], ev["crystals"]])
+			"shrine":
+				notified.emit("info", ev["name"])
+			"vault":
+				notified.emit("info", "Treasure Vault!")
+			"wall_broken":
+				notified.emit("info", "Broke through floor %d!" % ev["floor"])
+			"level_up":
+				pass
+
+
+# ---------------------------------------------------------------- queries
+
+func hero_stats(hero_idx: int) -> Dictionary:
+	return StatCalc.hero_stats(state, state["heroes"][hero_idx])
+
+
+func current_enemy_name() -> String:
+	var info: Dictionary = expedition.floor_info
+	if expedition.phase == "walk" or info.is_empty():
+		return "..."
+	match info["type"]:
+		"shrine":
+			return info["shrine"]["name"]
+		"vault":
+			return "Treasure Vault"
+	if expedition.combat != null:
+		for u in expedition.combat.enemies:
+			if u.alive:
+				return u.name
+	if not info["enemies"].is_empty():
+		return DataDB.unit_def(info["enemies"][0])["name"]
+	return "..."
+
+
+# ---------------------------------------------------------------- actions
+
+func equip(hero_idx: int, uid: int) -> void:
+	if Inventory.equip_uid(state, hero_idx, uid):
+		inventory_changed.emit()
+
+
+func unequip(hero_idx: int, slot: String) -> void:
+	Inventory.unequip(state, hero_idx, slot)
+	inventory_changed.emit()
+
+
+func salvage(uid: int) -> void:
+	Inventory.salvage(state, uid)
+	inventory_changed.emit()
+
+
+func salvage_below(rarity: String) -> void:
+	Inventory.salvage_below(state, rarity)
+	inventory_changed.emit()
+
+
+func equip_relic(relic_id: String) -> void:
+	if Inventory.equip_relic(state, relic_id):
+		inventory_changed.emit()
+
+
+func unequip_relic(relic_id: String) -> void:
+	Inventory.unequip_relic(state, relic_id)
+	inventory_changed.emit()
+
+
+func train(key: String) -> void:
+	if Progression.buy_training(state, key):
+		state_changed.emit()
+
+
+func set_row(hero_idx: int, row: String) -> void:
+	state["heroes"][hero_idx]["row"] = row
+	state_changed.emit()
+
+
+func buy_ascension_node(node_id: String) -> void:
+	if Progression.buy_node(state, node_id):
+		state_changed.emit()
+
+
+func ascend() -> void:
+	var souls := Progression.ascend(state)
+	if souls > 0:
+		expedition = Expedition.new(state)
+		notified.emit("milestone", "Ascended! +%d Souls" % souls)
+		inventory_changed.emit()
+		state_changed.emit()
+		save()
+
+
+func set_setting(key: String, value) -> void:
+	state["settings"][key] = value
+	settings_changed.emit()
+
+
+func reset_save() -> void:
+	SaveSystem.delete_save()
+	state = GameState.new_game()
+	GameState.add_history(state, "info", "A new expedition begins.")
+	expedition = Expedition.new(state)
+	inventory_changed.emit()
+	settings_changed.emit()
+	state_changed.emit()
+	save()
+
+
+func clear_offline_report() -> void:
+	offline_report = {}

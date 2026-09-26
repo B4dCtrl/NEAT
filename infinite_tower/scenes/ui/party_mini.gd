@@ -1,0 +1,43 @@
+extends Control
+## Tiny party portraits with HP bars for the taskbar HUD: [ Knight Ranger Arcanist ].
+
+const DataDB = preload("res://core/data_db.gd")
+const PixelArt = preload("res://scenes/entities/pixel_art.gd")
+
+var _textures: Array = []
+
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	for hero in Game.state["heroes"]:
+		var f := PixelArt.frames(DataDB.classes()[hero["class"]]["sprite"])
+		_textures.append(f[0] if not f.is_empty() else null)
+	custom_minimum_size = Vector2(3 * 26 + 10, 0)
+
+
+func _process(_delta: float) -> void:
+	queue_redraw()
+
+
+func _draw() -> void:
+	var exp = Game.expedition
+	var bar_h := 3.0
+	var scale := floorf(clampf((size.y - bar_h - 8.0) / 12.0, 1.0, 3.0))
+	var cell := 12.0 * scale + 4.0
+	var x := 4.0
+	for i in _textures.size():
+		var tex: Texture2D = _textures[i]
+		var ratio := float(Game.state["heroes"][i]["hp_ratio"])
+		var alive := true
+		if exp != null and exp.combat != null and exp.phase == "combat":
+			ratio = exp.combat.heroes[i].hp_ratio()
+			alive = exp.combat.heroes[i].alive
+		var y := (size.y - 12.0 * scale - bar_h - 2.0) * 0.5
+		if tex != null:
+			draw_texture_rect(tex, Rect2(x + 2.0, y, tex.get_width() * scale, 12.0 * scale), false, Color.WHITE if alive else Color(0.4, 0.4, 0.4, 0.7))
+		var by := y + 12.0 * scale + 2.0
+		draw_rect(Rect2(x + 2.0, by, cell - 4.0, bar_h), Color(0, 0, 0, 0.6))
+		var col := Color("#5fd35f") if ratio > 0.5 else (Color("#ffd23f") if ratio > 0.25 else Color("#ff4f4f"))
+		draw_rect(Rect2(x + 2.0, by, (cell - 4.0) * ratio, bar_h), col)
+		x += cell
+	custom_minimum_size.x = x + 4.0

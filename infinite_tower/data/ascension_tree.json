@@ -1,0 +1,14 @@
+{
+	"nodes": {
+		"might":        {"name": "Might",        "col": 0, "row": 0, "max": 50, "cost": 1,  "cost_growth": 1.3, "stats": {"attack_pct": 0.08, "magic_power_pct": 0.08}, "text": "+8% Attack & Magic Power", "requires": {}},
+		"vitality":     {"name": "Vitality",     "col": 1, "row": 0, "max": 50, "cost": 1,  "cost_growth": 1.3, "stats": {"hp_pct": 0.10}, "text": "+10% HP", "requires": {}},
+		"greed":        {"name": "Greed",        "col": 2, "row": 0, "max": 30, "cost": 1,  "cost_growth": 1.35, "stats": {"gold_pct": 0.15}, "text": "+15% Gold", "requires": {}},
+		"bulwark":      {"name": "Bulwark",      "col": 0, "row": 1, "max": 50, "cost": 2,  "cost_growth": 1.3, "stats": {"defense_pct": 0.08}, "text": "+8% Defense", "requires": {"might": 3}},
+		"wisdom":       {"name": "Wisdom",       "col": 1, "row": 1, "max": 30, "cost": 2,  "cost_growth": 1.35, "stats": {"xp_pct": 0.15}, "text": "+15% Hero XP", "requires": {"vitality": 3}},
+		"fortune":      {"name": "Fortune",      "col": 2, "row": 1, "max": 20, "cost": 2,  "cost_growth": 1.4, "stats": {"drop_pct": 0.08}, "text": "+8% Drop Chance", "requires": {"greed": 3}},
+		"swiftness":    {"name": "Swiftness",    "col": 0, "row": 2, "max": 15, "cost": 3,  "cost_growth": 1.4, "stats": {"move_speed_pct": 0.06}, "text": "+6% Movement Speed", "requires": {"bulwark": 3}},
+		"head_start":   {"name": "Head Start",   "col": 1, "row": 2, "max": 20, "cost": 4,  "cost_growth": 1.45, "stats": {"start_floor": 5}, "text": "Start each Ascension 5 floors higher", "requires": {"wisdom": 3}},
+		"soul_harvest": {"name": "Soul Harvest", "col": 2, "row": 2, "max": 15, "cost": 4,  "cost_growth": 1.45, "stats": {"soul_pct": 0.10}, "text": "+10% Souls on Ascension", "requires": {"fortune": 3}},
+		"relic_vault":  {"name": "Relic Vault",  "col": 1, "row": 3, "max": 2,  "cost": 25, "cost_growth": 3.0, "stats": {"relic_slots": 1}, "text": "+1 Relic slot", "requires": {"head_start": 5, "soul_harvest": 3}}
+	}
+}

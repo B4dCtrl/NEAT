@@ -1,0 +1,47 @@
+{
+	"knight": {
+		"name": "Knight",
+		"default_name": "Aldric",
+		"starter_weapon": "iron_sword",
+		"role": "Frontline / Tank",
+		"default_row": "front",
+		"aggro": 4.0,
+		"damage_type": "physical",
+		"attack_pattern": "single",
+		"element": "",
+		"sprite": "knight",
+		"base": {"hp": 260, "attack": 15, "defense": 16, "magic_power": 0, "attack_speed": 0.75, "crit_chance": 0.05, "crit_damage": 1.5, "dodge": 0.03},
+		"growth": {"hp": 28, "attack": 1.6, "defense": 1.7},
+		"skill": {"id": "shield_wall", "name": "Shield Wall", "type": "party_shield", "cooldown": 10.0, "duration": 4.0, "value": 0.35, "description": "Taunts all enemies and reduces party damage taken by 35% for 4s."}
+	},
+	"ranger": {
+		"name": "Ranger",
+		"default_name": "Wren",
+		"starter_weapon": "short_bow",
+		"role": "Physical Ranged DPS",
+		"default_row": "back",
+		"aggro": 1.5,
+		"damage_type": "physical",
+		"attack_pattern": "single",
+		"element": "",
+		"sprite": "ranger",
+		"base": {"hp": 150, "attack": 20, "defense": 7, "magic_power": 0, "attack_speed": 1.25, "crit_chance": 0.15, "crit_damage": 1.75, "dodge": 0.10},
+		"growth": {"hp": 15, "attack": 2.3, "defense": 0.7},
+		"skill": {"id": "volley", "name": "Volley", "type": "multi_shot", "cooldown": 7.0, "hits": 4, "mult": 0.9, "description": "Fires 4 arrows at random enemies for 90% damage each."}
+	},
+	"arcanist": {
+		"name": "Arcanist",
+		"default_name": "Mira",
+		"starter_weapon": "oak_staff",
+		"role": "Magic / AOE",
+		"default_row": "back",
+		"aggro": 1.0,
+		"damage_type": "magic",
+		"attack_pattern": "aoe",
+		"element": "fire",
+		"sprite": "arcanist",
+		"base": {"hp": 125, "attack": 0, "defense": 5, "magic_power": 24, "attack_speed": 0.6, "crit_chance": 0.08, "crit_damage": 1.6, "dodge": 0.05},
+		"growth": {"hp": 12, "magic_power": 2.8, "defense": 0.5},
+		"skill": {"id": "meteor", "name": "Meteor", "type": "meteor", "cooldown": 12.0, "mult": 2.2, "burn": 0.25, "duration": 3.0, "description": "Hits all enemies for 220% magic damage and ignites them."}
+	}
+}

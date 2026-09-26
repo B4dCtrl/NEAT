@@ -1,0 +1,148 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/taskbar_view.gd" id="1"]
+[ext_resource type="Script" path="res://scenes/ui/tower_stage.gd" id="2"]
+[ext_resource type="Script" path="res://scenes/ui/party_mini.gd" id="3"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_floor"]
+font_size = 15
+font_color = Color(1, 0.95, 0.8, 1)
+outline_size = 3
+outline_color = Color(0, 0, 0, 0.8)
+
+[node name="TaskbarView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = -6.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="PartyMini" type="Control" parent="Row"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("3")
+
+[node name="Stage" type="Control" parent="Row"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("2")
+px = 2.0
+anchor = Vector2(0.22, 0.76)
+
+[node name="Hud" type="HBoxContainer" parent="Row"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="FloorIcon" type="TextureRect" parent="Row/Hud"]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FloorLabel" type="Label" parent="Row/Hud"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+text = "FLOOR 1"
+label_settings = SubResource("LabelSettings_floor")
+
+[node name="Sep1" type="VSeparator" parent="Row/Hud"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="EnemyIcon" type="TextureRect" parent="Row/Hud"]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EnemyLabel" type="Label" parent="Row/Hud"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "..."
+clip_text = true
+
+[node name="Sep2" type="VSeparator" parent="Row/Hud"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="GoldIcon" type="TextureRect" parent="Row/Hud"]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldLabel" type="Label" parent="Row/Hud"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 0)
+layout_mode = 2
+text = "0"
+
+[node name="Sep3" type="VSeparator" parent="Row/Hud"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NotifyIcon" type="TextureRect" parent="Row/Hud"]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NotifyLabel" type="Label" parent="Row/Hud"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+text = "+1 Relic"
+clip_text = true
+
+[node name="ExpandButton" type="Button" parent="Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+focus_mode = 0
+tooltip_text = "Open Expedition (Tab)"
+text = "»"
+flat = true

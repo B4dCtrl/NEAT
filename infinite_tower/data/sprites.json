@@ -1,0 +1,538 @@
+{
+	"sprites": {
+		"knight": {
+			"palette": {"o": "#14121c", "w": "#c9d1d9", "k": "#3b3f4a", "e": "#7fe0ff", "a": "#3d6fd1", "b": "#f2c14e", "c": "#8a93a3"},
+			"frames": [
+				[
+					"....oooo....",
+					"...owwwwo...",
+					"...owkkeo...",
+					"...owwwwo..w",
+					"..oaaaaaao.w",
+					".ocaabbaaaow",
+					".ocaabbaaoww",
+					".ocaaaaaao.k",
+					"..okkkkkko..",
+					"..owwo.oww..",
+					"..owo...owo.",
+					"..oo.....oo."
+				],
+				[
+					"....oooo....",
+					"...owwwwo...",
+					"...owkkeo...",
+					"...owwwwo..w",
+					"..oaaaaaao.w",
+					".ocaabbaaaow",
+					".ocaabbaaoww",
+					".ocaaaaaao.k",
+					"..okkkkkko..",
+					"...owwoowo..",
+					"...owo.owo..",
+					"...oo..oo..."
+				]
+			]
+		},
+		"ranger": {
+			"palette": {"o": "#14121c", "a": "#3f8f4a", "b": "#8a5a33", "s": "#f0c8a0", "e": "#1a1a1a", "w": "#c9a36b", "k": "#4a3020"},
+			"frames": [
+				[
+					"....ooooo...",
+					"...oaaaaao..",
+					"..oaasssao.w",
+					"..oasesso.wo",
+					"...obbbbo.w.",
+					"..obabbbbowo",
+					"..obbabbbow.",
+					"..osbbbaso.w",
+					"...okkkko...",
+					"...obo.obo..",
+					"...oko.oko..",
+					"...oo..oo..."
+				],
+				[
+					"....ooooo...",
+					"...oaaaaao..",
+					"..oaasssao.w",
+					"..oasesso.wo",
+					"...obbbbo.w.",
+					"..obabbbbowo",
+					"..obbabbbow.",
+					"..osbbbaso.w",
+					"...okkkko...",
+					"....oboobo..",
+					"....okoko...",
+					"....oo.oo..."
+				]
+			]
+		},
+		"arcanist": {
+			"palette": {"o": "#14121c", "a": "#7a3fc2", "b": "#f2c14e", "s": "#f0c8a0", "e": "#1a1a1a", "w": "#8a5a33", "c": "#ff9d4a"},
+			"frames": [
+				[
+					"......o......",
+					".....oao...c.",
+					"....oaaao.oco",
+					"...oaaaaao.w.",
+					"..oooooooo.w.",
+					"...osssso..w.",
+					"...osesso.ow.",
+					"..oaaaaaaaow.",
+					"..oabaaaaaow.",
+					"..oaaabaaao..",
+					"..oaaaaaaao..",
+					"..ooooooooo.."
+				],
+				[
+					"......o......",
+					".....oao...c.",
+					"....oaaao.oco",
+					"...oaaaaao.w.",
+					"..oooooooo.w.",
+					"...osssso..w.",
+					"...osesso.ow.",
+					"..oaaaaaaaow.",
+					"..oabaaaaaow.",
+					"..oaaaabaao..",
+					"...oaaaaao...",
+					"...oooooo...."
+				]
+			]
+		},
+		"slime": {
+			"palette": {"o": "#14121c", "e": "#14121c", "w": "#ffffff", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"............",
+					"............",
+					"............",
+					"............",
+					".....oooo...",
+					"...ooccaaoo.",
+					"..ocaaaaaaao",
+					"..oawoaawoao",
+					".oaaaaaaaaao",
+					".oaaaaaaaaao",
+					".obbbbbbbbbo",
+					"..ooooooooo."
+				],
+				[
+					"............",
+					"............",
+					"............",
+					"............",
+					"............",
+					"....oooooo..",
+					"..ooccaaaaoo",
+					".ocaaaaaaaao",
+					".oawoaaawoao",
+					".oaaaaaaaaao",
+					"obbbbbbbbbbo",
+					".oooooooooo."
+				]
+			]
+		},
+		"mushroom": {
+			"palette": {"o": "#14121c", "w": "#14121c", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"............",
+					"....oooo....",
+					"..ooaaaaoo..",
+					".oacaaaacao.",
+					"oaaaaaaaaaao",
+					"oaacaaaacaao",
+					".oooooooooo.",
+					"...obbbbo...",
+					"...owbbwo...",
+					"...obbbbo...",
+					"...obbbbo...",
+					"...oooooo..."
+				],
+				[
+					"............",
+					"............",
+					"....oooo....",
+					"..ooaaaaoo..",
+					".oacaaaacao.",
+					"oaaaaaaaaaao",
+					"oooooooooooo",
+					"...obbbbo...",
+					"...owbbwo...",
+					"...obbbbo...",
+					"..obbbbbbo..",
+					"..oooooooo.."
+				]
+			]
+		},
+		"bat": {
+			"palette": {"o": "#14121c", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"............",
+					"............",
+					"o..........o",
+					"oo...oo...oo",
+					"oao.oaao.oao",
+					"oaaoaccaoaao",
+					"oaaaacaaaaao",
+					".oaaaaaaaao.",
+					"..ooaaaaoo..",
+					"....oaao....",
+					".....oo.....",
+					"............"
+				],
+				[
+					"............",
+					"............",
+					"............",
+					".....oo.....",
+					"....oaao....",
+					"..ooaccaoo..",
+					".oaaacaaaao.",
+					"oaaaaaaaaaao",
+					"oao.oaao.oao",
+					"oo...oo...oo",
+					"o..........o",
+					"............"
+				]
+			]
+		},
+		"skeleton": {
+			"palette": {"o": "#14121c", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"....oooo....",
+					"...oaaaao...",
+					"..oaccacao..",
+					"..oaaaaaao..",
+					"...oaoaoo...",
+					"....oaao....",
+					"..oooaaooo..",
+					".oa.oabao.ao",
+					"...oaaaao...",
+					"....obbo....",
+					"...oa..ao...",
+					"...oo..oo..."
+				],
+				[
+					"....oooo....",
+					"...oaaaao...",
+					"..oaccacao..",
+					"..oaaaaaao..",
+					"...oaoaoo...",
+					"....oaao....",
+					"..oooaaooo..",
+					".oa.oabao.ao",
+					"...oaaaao...",
+					"....obbo....",
+					"....oaao....",
+					"....oooo...."
+				]
+			]
+		},
+		"golem": {
+			"palette": {"o": "#14121c", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"...oooooo...",
+					"..oaaaaaao..",
+					".oaccaacaao.",
+					".oaaaaaaaao.",
+					"oooaabbaaooo",
+					"oacoaaaaocao",
+					"oaaoaabaoaao",
+					"oaaoaaaaoaao",
+					"ooooabbaoooo",
+					"...oaaaao...",
+					"..oaao.oaao.",
+					"..oooo.oooo."
+				],
+				[
+					"...oooooo...",
+					"..oaaaaaao..",
+					".oaccaacaao.",
+					".oaaaaaaaao.",
+					"oooaabbaaooo",
+					"oacoaaaaocao",
+					"oaaoaabaoaao",
+					"oaaoaaaaoaao",
+					"ooooabbaoooo",
+					"...oaaaao...",
+					"...oaaooaao.",
+					"...oooooooo."
+				]
+			]
+		},
+		"eye": {
+			"palette": {"o": "#14121c", "k": "#14121c", "w": "#ffffff", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"............",
+					"....oooo....",
+					"..ooaaaaoo..",
+					".oaaawwwaao.",
+					".oaawwkwwao.",
+					"oaaawkkkwaao",
+					"oaaawwkwwaao",
+					".oaaawwwaao.",
+					".oaaaaaaaao.",
+					"..ooabbaoo..",
+					"..o.obbo.o..",
+					"....o..o...."
+				],
+				[
+					"............",
+					"............",
+					"....oooo....",
+					"..ooaaaaoo..",
+					".oaaawwwaao.",
+					".oaawwkwwao.",
+					"oaaawkkkwaao",
+					".oaawwkwwao.",
+					".oaaaaaaaao.",
+					"..ooabbaoo..",
+					"...o.bb.o...",
+					"....o..o...."
+				]
+			]
+		},
+		"imp": {
+			"palette": {"o": "#14121c", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"..o......o..",
+					"..oo....oo..",
+					"..oaooooao..",
+					"...oaaaao...",
+					"..oaccaaco..",
+					"..oaaaaaao..",
+					"...oaaaao...",
+					"..oboaaobo..",
+					".ob.oaao.bo.",
+					"....oaao....",
+					"...oa..ao...",
+					"...oo..oo..."
+				],
+				[
+					"..o......o..",
+					"..oo....oo..",
+					"..oaooooao..",
+					"...oaaaao...",
+					"..oaccaaco..",
+					"..oaaaaaao..",
+					"...oaaaao...",
+					"..oboaaobo..",
+					".ob.oaao.bo.",
+					"....oaao....",
+					"....oaao....",
+					"....oooo...."
+				]
+			]
+		},
+		"wisp": {
+			"palette": {"o": "#14121c", "w": "#ffffff", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"............",
+					"....oooo....",
+					"...occcco...",
+					"..occwwcco..",
+					"..ocwaawco..",
+					"..ocaaaaco..",
+					"..ocabbaco..",
+					"...oaaaao...",
+					"...oabbao...",
+					"....oaao....",
+					".....oo.....",
+					"............"
+				],
+				[
+					"............",
+					"............",
+					"....oooo....",
+					"...occcco...",
+					"..occwwcco..",
+					"..ocwaawco..",
+					"..ocaaaaco..",
+					"...oabbao...",
+					"....oaao....",
+					"...oabbao...",
+					"....oaao....",
+					".....oo....."
+				]
+			]
+		},
+		"beast": {
+			"palette": {"o": "#14121c", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"............",
+					"..oo........",
+					".oaao.......",
+					"oaccaooooooo",
+					"oaaaaaaaaaao",
+					".oaaaabaaaao",
+					"..obaaaaaaao",
+					"..oaaabbaaao",
+					"..obaaaaaaao",
+					"..oaaooooaao",
+					"..oao...oao.",
+					"..ooo...ooo."
+				],
+				[
+					"............",
+					"..oo........",
+					".oaao.......",
+					"oaccaooooooo",
+					"oaaaaaaaaaao",
+					".oaaaabaaaao",
+					"..obaaaaaaao",
+					"..oaaabbaaao",
+					"..obaaaaaaao",
+					"..oaaooooaao",
+					"...oao.oao..",
+					"...ooo.ooo.."
+				]
+			]
+		},
+		"wraith": {
+			"palette": {"o": "#14121c", "a": "#888888", "b": "#555555", "c": "#dddddd"},
+			"frames": [
+				[
+					"....oooo....",
+					"...oaaaao...",
+					"..oaaaaaao..",
+					"..oaccacao..",
+					"..oaaaaaao..",
+					".oaabaaaaao.",
+					".oaaaaabaao.",
+					"oaaabaaaaaao",
+					"oaaaaaaabao.",
+					".oaoaaoaaao.",
+					".o.oo.oo.o..",
+					"............"
+				],
+				[
+					"............",
+					"....oooo....",
+					"...oaaaao...",
+					"..oaaaaaao..",
+					"..oaccacao..",
+					"..oaaaaaao..",
+					".oaabaaaaao.",
+					".oaaaaabaao.",
+					"oaaabaaaaaao",
+					".oaoaaaoaao.",
+					"..o.oo.oo.o.",
+					"............"
+				]
+			]
+		},
+		"icon_coin": {
+			"palette": {"o": "#5a3a0a", "a": "#ffd23f", "c": "#fff4b0", "b": "#c99a1a"},
+			"frames": [
+				[
+					"..oooo..",
+					".oaaaao.",
+					"oacabbao",
+					"oacabbao",
+					"oaaabbao",
+					"oaaaabao",
+					".obbbbo.",
+					"..oooo.."
+				]
+			]
+		},
+		"icon_skull": {
+			"palette": {"o": "#14121c", "a": "#e8e4d4", "k": "#14121c", "r": "#ff4040"},
+			"frames": [
+				[
+					"..oooo..",
+					".oaaaao.",
+					"oaaaaaao",
+					"oakaakao",
+					"oakaakao",
+					".oaaaao.",
+					"..oaoao.",
+					"..o.o.o."
+				]
+			]
+		},
+		"icon_relic": {
+			"palette": {"o": "#1e0f3a", "a": "#b388ff", "c": "#efe3ff", "b": "#6a3fc2"},
+			"frames": [
+				[
+					"...oo...",
+					"..ocao..",
+					".ocaaao.",
+					"ocaaaabo",
+					"oaaaabbo",
+					".oaabbo.",
+					"..obbo..",
+					"...oo..."
+				]
+			]
+		},
+		"icon_soul": {
+			"palette": {"o": "#0a2a3a", "a": "#7fe8ff", "c": "#ffffff", "b": "#2a8ab0"},
+			"frames": [
+				[
+					"...o....",
+					"..oao...",
+					"..oaao..",
+					".oacaao.",
+					".oaccao.",
+					"oaaaaabo",
+					".obbbbo.",
+					"..oooo.."
+				]
+			]
+		},
+		"icon_crystal": {
+			"palette": {"o": "#3a0a2a", "a": "#ff7fd1", "c": "#ffe0f4", "b": "#b02a7f"},
+			"frames": [
+				[
+					"...oo...",
+					"..ocao..",
+					".ocaabo.",
+					".ocaabo.",
+					".oaaabo.",
+					".oaabbo.",
+					"..obbo..",
+					"...oo..."
+				]
+			]
+		},
+		"icon_floor": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#7a8494"},
+			"frames": [
+				[
+					"......oo",
+					"......ao",
+					"....oooo",
+					"....aabo",
+					"..oooooo",
+					"..aaaabo",
+					"oooooooo",
+					"aaaaaabo"
+				]
+			]
+		},
+		"icon_sword": {
+			"palette": {"o": "#14121c", "a": "#e0e6ee", "b": "#8a5a33", "c": "#f2c14e"},
+			"frames": [
+				[
+					"......oo",
+					".....oao",
+					"....oao.",
+					"o..oao..",
+					"oooao...",
+					".ocoo...",
+					"obooco..",
+					"oo..oo.."
+				]
+			]
+		}
+	}
+}

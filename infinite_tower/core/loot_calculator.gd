@@ -1,0 +1,143 @@
+extends RefCounted
+## Drop tables: rarity rolls, item generation (affixes, sets), relics and chests.
+## Every roll takes the RNG explicitly so offline simulation stays deterministic.
+
+const DataDB = preload("res://core/data_db.gd")
+
+
+## Weighted rarity roll. drop_bonus shifts weight toward higher tiers.
+static func roll_rarity(rng: RandomNumberGenerator, floor_num: int, min_rarity: String = "common", drop_bonus: float = 0.0, allow_relic: bool = true) -> String:
+	var rarities := DataDB.rarities()
+	var min_order := DataDB.rarity_order(min_rarity)
+	var relic_ok := allow_relic and floor_num >= int(DataDB.balance()["relic_min_floor"])
+	var weights := {}
+	var total := 0.0
+	for key in rarities:
+		var r: Dictionary = rarities[key]
+		var order := int(r["order"])
+		if order < min_order or (key == "relic" and not relic_ok):
+			continue
+		# Higher tiers get a boost from drop bonus and depth into the tower.
+		var w := float(r["weight"]) * pow(1.0 + drop_bonus + floor_num / 400.0, order)
+		weights[key] = w
+		total += w
+	var roll := rng.randf() * total
+	for key in weights:
+		roll -= weights[key]
+		if roll <= 0.0:
+			return key
+	return min_rarity
+
+
+static func new_uid(state: Dictionary) -> int:
+	var uid := int(state["next_uid"])
+	state["next_uid"] = uid + 1
+	return uid
+
+
+## Builds an equipment item. rarity must not be "relic".
+static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, rarity: String, set_bias: String = "") -> Dictionary:
+	var data := DataDB.items()
+	var rdef: Dictionary = data["rarities"][rarity]
+	var bases: Array = data["bases"]
+	var base: Dictionary = bases[rng.randi() % bases.size()]
+	var ilvl := maxi(floor_num, 1)
+	var scale := float(rdef["mult"]) * pow(float(data["item_growth"]), ilvl - 1) * rng.randf_range(0.9, 1.1)
+	var stats := {}
+	for key in base["stats"]:
+		stats[key] = snappedf(float(base["stats"][key]) * scale, 0.1)
+	for key in base.get("fixed", {}):
+		stats[key] = float(base["fixed"][key])
+
+	var suffix := ""
+	var affixes: Array = data["affixes"].duplicate()
+	var quality := 0.8 + 0.1 * int(rdef["order"])
+	for i in int(rdef["affixes"]):
+		if affixes.is_empty():
+			break
+		var a: Dictionary = affixes.pop_at(rng.randi() % affixes.size())
+		var value := rng.randf_range(float(a["min"]), float(a["max"])) * quality
+		stats[a["stat"]] = snappedf(stats.get(a["stat"], 0.0) + value, 0.001)
+		if suffix == "":
+			suffix = a["suffix"]
+
+	var item := {
+		"uid": new_uid(state),
+		"base": base["id"],
+		"name": base["name"] + ((" " + suffix) if suffix != "" else ""),
+		"slot": base["slot"],
+		"class": base["class"],
+		"rarity": rarity,
+		"ilvl": ilvl,
+		"stats": stats,
+		"set": "",
+	}
+
+	# Epic+ items can roll as set pieces.
+	if DataDB.rarity_order(rarity) >= DataDB.rarity_order("epic"):
+		var sets := DataDB.sets()
+		var eligible := []
+		for set_id in sets:
+			if floor_num >= int(sets[set_id]["min_floor"]):
+				eligible.append(set_id)
+		var chance := float(data["set_chance"]) * (2.0 if set_bias != "" else 1.0)
+		if not eligible.is_empty() and rng.randf() < chance:
+			var set_id: String = set_bias if set_bias in eligible else eligible[rng.randi() % eligible.size()]
+			item["set"] = set_id
+			item["name"] = sets[set_id]["pieces"][item["slot"]]
+	return item
+
+
+## Picks an unowned relic, or "" when every relic is already owned.
+static func roll_relic(rng: RandomNumberGenerator, state: Dictionary) -> String:
+	var pool := []
+	for relic_id in DataDB.relics():
+		if not relic_id in state["relics_owned"]:
+			pool.append(relic_id)
+	if pool.is_empty():
+		return ""
+	return pool[rng.randi() % pool.size()]
+
+
+## A drop result is {"item": Dictionary} or {"relic": id} or {"crystals": n}.
+static func roll_drop(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, min_rarity: String, drop_bonus: float, set_bias: String = "") -> Dictionary:
+	var rarity := roll_rarity(rng, floor_num, min_rarity, drop_bonus)
+	if rarity == "relic":
+		var relic_id := roll_relic(rng, state)
+		if relic_id == "":
+			return {"crystals": 3}
+		return {"relic": relic_id}
+	return {"item": generate_item(rng, state, floor_num, rarity, set_bias)}
+
+
+static func enemy_drops(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, enemy_count: int, drop_bonus: float) -> Array:
+	var out := []
+	var chance := float(DataDB.balance()["base_drop_chance"]) * (1.0 + drop_bonus)
+	for i in enemy_count:
+		if rng.randf() < chance:
+			out.append(roll_drop(rng, state, floor_num, "common", drop_bonus))
+	return out
+
+
+static func boss_chest(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, tier: String, drop_bonus: float, set_bias: String) -> Array:
+	var chest: Dictionary = DataDB.balance()["chest"][tier]
+	var out := []
+	for i in int(chest["items"]):
+		var rarity := roll_rarity(rng, floor_num, chest["min_rarity"], drop_bonus, false)
+		out.append({"item": generate_item(rng, state, floor_num, rarity, set_bias)})
+	if floor_num >= int(DataDB.balance()["relic_min_floor"]) and rng.randf() < float(chest["relic_chance"]) * (1.0 + drop_bonus):
+		var relic_id := roll_relic(rng, state)
+		out.append({"relic": relic_id} if relic_id != "" else {"crystals": 3})
+	if int(chest["crystals"]) > 0:
+		out.append({"crystals": int(chest["crystals"])})
+	return out
+
+
+static func can_equip(item: Dictionary, class_id: String) -> bool:
+	return item["class"] == "" or item["class"] == class_id
+
+
+static func salvage_value(item: Dictionary) -> float:
+	var rdef: Dictionary = DataDB.rarities()[item["rarity"]]
+	var gold_growth := float(DataDB.enemy_scaling()["gold_growth"])
+	return float(rdef["salvage"]) * 3.0 * pow(gold_growth, int(item["ilvl"]) - 1)
