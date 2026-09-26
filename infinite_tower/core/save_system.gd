@@ -11,9 +11,9 @@ const GameState = preload("res://core/game_state.gd")
 const Expedition = preload("res://core/expedition.gd")
 const Progression = preload("res://core/progression.gd")
 
-const SAVE_PATH := "user://savegame.dat"
-const BACKUP_PATH := "user://savegame.bak"
-const TEMP_PATH := "user://savegame.tmp"
+const SAVE_PATH := "user://stairborn_v2.dat"
+const BACKUP_PATH := "user://stairborn_v2.bak"
+const TEMP_PATH := "user://stairborn_v2.tmp"
 const SAVE_KEY := "stairborn::v1::a7c3f19e5d"
 
 

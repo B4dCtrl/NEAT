@@ -34,6 +34,11 @@ func _shot(name: String) -> void:
 func _run() -> void:
 	var game = root.get_node("Game")
 	var wm = root.get_node("WindowManager")
+	# Skip the story for these shots (story_shots.gd covers it).
+	game.state["intro_seen"] = true
+	game.state["tutorial_seen"] = true
+	await _wait(5)
+	wm.set_mode("taskbar")
 	await _wait(10)
 	await _shot("01_taskbar_start")
 	game.time_scale = 30.0

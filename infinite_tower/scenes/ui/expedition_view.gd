@@ -20,6 +20,13 @@ var _camp_btn: Button
 func _ready() -> void:
 	%Title.text = ProjectSettings.get_setting("application/config/name", "STAIRBORN")
 	%CollapseButton.pressed.connect(func(): collapse_requested.emit())
+	var help := Button.new()
+	help.text = " ? "
+	help.focus_mode = Control.FOCUS_NONE
+	help.tooltip_text = "How to play"
+	help.pressed.connect(func(): Game.story_requested.emit("tutorial"))
+	%CollapseButton.get_parent().add_child(help)
+	%CollapseButton.get_parent().move_child(help, %CollapseButton.get_index())
 	for c in [["floor", "Max floor"], ["coin", "Gold"], ["soul", "Souls"], ["crystal", "Crystals"]]:
 		var box := HBoxContainer.new()
 		box.add_theme_constant_override("separation", 4)

@@ -27,6 +27,8 @@ signal offline_report_ready(report: Dictionary)
 signal loot_dropped(drop: Dictionary)
 ## The party composition changed (recruit, mint, swap, bench, reset).
 signal party_changed()
+## Asks the root to show the story window: "intro" or "tutorial".
+signal story_requested(what: String)
 
 const AUTOSAVE_INTERVAL := 30.0
 
@@ -59,6 +61,9 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	var dt := delta * time_scale
+	# The climb begins once the Stairborn has been introduced.
+	if not state.get("intro_seen", false):
+		return
 	state["stats"]["play_time"] = float(state["stats"]["play_time"]) + dt
 	expedition.advance(dt)
 	if expedition.combat != null and not expedition.combat.events.is_empty():

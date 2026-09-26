@@ -17,6 +17,7 @@ const TaskbarView = preload("res://scenes/ui/taskbar_view.gd")
 const TRANSITION_TIME := 0.16
 
 var mode := "taskbar"
+var hidden := false
 var _bar_offset_x := -1   # horizontal position of a narrower-than-screen bar
 var _tween: Tween
 var _passthrough := PackedVector2Array()
@@ -26,7 +27,8 @@ func _ready() -> void:
 	Game.settings_changed.connect(_on_settings_changed)
 	get_window().min_size = Vector2i(BAR_MIN_WIDTH, 32)
 	_bar_offset_x = int(Game.state["settings"].get("bar_x", -1))
-	apply_mode.call_deferred("taskbar", false)
+	var first := "story" if not Game.state.get("intro_seen", false) or not Game.state.get("tutorial_seen", false) else "taskbar"
+	apply_mode.call_deferred(first, false)
 
 
 func is_headless() -> bool:
@@ -40,7 +42,31 @@ func set_mode(new_mode: String) -> void:
 
 
 func toggle_mode() -> void:
+	if mode == "story":
+		return
 	set_mode("expedition" if mode == "taskbar" else "taskbar")
+
+
+## "Closing" minimises the game; it keeps climbing (cheaply) with its tray icon.
+## Godot cannot hide the main window itself, so it is minimised instead.
+func hide_to_tray() -> void:
+	hidden = true
+	Engine.max_fps = 5
+	if not is_headless():
+		get_window().mode = Window.MODE_MINIMIZED
+
+
+func _process(_delta: float) -> void:
+	# Restored from the OS taskbar instead of the tray icon: resume normally.
+	if hidden and not is_headless() and get_window().mode != Window.MODE_MINIMIZED:
+		show_from_tray(mode)
+
+
+func show_from_tray(new_mode: String) -> void:
+	hidden = false
+	if not is_headless():
+		get_window().mode = Window.MODE_WINDOWED
+	apply_mode(new_mode, false)
 
 
 func apply_mode(new_mode: String, animate: bool) -> void:
@@ -63,6 +89,7 @@ func apply_mode(new_mode: String, animate: bool) -> void:
 		win.mouse_passthrough_polygon = _passthrough
 		target = bar_rect()
 	else:
+		# "expedition" and "story" (comic intro / tutorial) use a regular window.
 		Engine.max_fps = 60
 		win.unfocusable = false
 		win.mouse_passthrough_polygon = PackedVector2Array()

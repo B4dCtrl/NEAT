@@ -2,6 +2,7 @@ extends MarginContainer
 ## Audio, window behaviour, notifications, hotkeys and save management.
 
 const SaveSystem = preload("res://core/save_system.gd")
+const StoryText = preload("res://scenes/ui/story_text.gd")
 
 var _controls := {}
 var _reset_confirm: ConfirmationDialog
@@ -39,7 +40,20 @@ func _ready() -> void:
 	_section(grid, "Hotkeys")
 	_info(grid, "Tab / F1", "Toggle Taskbar / Expedition")
 	_info(grid, "Esc", "Back to Taskbar")
-	_info(grid, "Click on bar", "Open Expedition (drag to slide the bar)")
+	_info(grid, "Click on the tower", "Open Expedition (drag to slide it along the taskbar)")
+	_info(grid, "Close (X)", "Hides in the system tray; the climb continues")
+
+	_section(grid, "Story")
+	var intro := Button.new()
+	intro.text = StoryText.ui("replay_intro")
+	intro.focus_mode = Control.FOCUS_NONE
+	intro.pressed.connect(func(): Game.story_requested.emit("intro"))
+	grid.add_child(intro)
+	var guide := Button.new()
+	guide.text = StoryText.ui("how_to_play")
+	guide.focus_mode = Control.FOCUS_NONE
+	guide.pressed.connect(func(): Game.story_requested.emit("tutorial"))
+	grid.add_child(guide)
 
 	_section(grid, "Save")
 	var save_now := Button.new()

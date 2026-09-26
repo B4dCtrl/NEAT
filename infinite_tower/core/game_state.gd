@@ -60,6 +60,8 @@ static func new_game(run_seed: int = 0) -> Dictionary:
 		"milestones": [],
 		"floors_cleared_total": 0,
 		"market": {},
+		"intro_seen": false,
+		"tutorial_seen": false,
 		"stats": {
 			"kills": 0, "bosses": 0, "floors_climbed": 0, "fights_won": 0, "fights_lost": 0,
 			"fall_backs": 0, "total_gold": 0.0, "items_found": 0, "relics_found": 0,

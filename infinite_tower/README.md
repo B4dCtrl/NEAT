@@ -6,7 +6,7 @@
 Nome: **STAIRBORN**. O título da UI é lido de `application/config/name` em `project.godot`;
 os nomes dos executáveis ficam em `export_presets.cfg`.
 
-- **Engine:** Godot 4.2+ (GDScript), renderer *GL Compatibility* (leve, suporta janela transparente)
+- **Engine:** Godot 4.3+ (GDScript; 4.3 é necessário para o ícone na bandeja), renderer *GL Compatibility* (leve, suporta janela transparente)
 - **Plataformas:** Windows e Linux (presets em `export_presets.cfg`)
 - **Arte:** 100% procedural a partir de grades de texto em `data/sprites.json` — nenhum asset binário
 
@@ -94,6 +94,19 @@ A **mesma** `Expedition.advance()` é chamada com `delta` do frame (ao vivo) e c
 60s (offline). Não existe um "modo offline" com regras próprias.
 
 ## Decisões de design
+
+### História de abertura (quadrinho)
+Na primeira vez que o jogo abre, uma intro em quadrinho animado conta a origem: a torre
+infinita além da última vila, os heróis que tentaram e nunca voltaram, a terra definhando
+e o nascimento do primeiro **Stairborn** ao pé da torre. Os painéis surgem um a um, com
+legendas digitadas. Clique/Espaço avança e "Skip" pula. Depois vem um tutorial "Como
+jogar". Os dois podem ser revistos em Settings, e o botão **?** abre o tutorial. O texto
+segue o idioma do sistema (português ou inglês). A subida só começa depois da intro.
+
+### Bandeja do sistema
+Fechar a janela não encerra o jogo: ele é minimizado, o ícone fica na **bandeja**
+(Windows/macOS) e a subida continua a 5 FPS. Clique no ícone para mostrar a torre; o menu
+tem "Abrir Expedição" e "Sair". Onde não há bandeja (Linux), fechar salva e sai.
 
 ### Torre helicoidal flutuando sobre a taskbar
 Inspirado em *A Fool's Errand* (Playdate) e *TBH: Task Bar Hero*. A janela da barra é
