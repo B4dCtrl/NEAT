@@ -21,15 +21,17 @@ var _bob_phase := 0.0
 var _tint := Color.WHITE
 
 
-## Text sprites are 12 art pixels tall; bigger PNG art is scaled to the same height.
-const BASE_HEIGHT := 12.0
+## Built-in text sprites are 12 art pixels tall and drawn at px_scale. Imported
+## PNG art (PixelLab) is higher resolution, so it is drawn at px_scale / 2: native
+## size in the taskbar (px 2), 1.5x in the expedition view (px 3).
+const EXTERNAL_MIN_HEIGHT := 17
 
 var _norm := 1.0
 
 
 func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false, unit_id: String = "") -> void:
 	textures = PixelArt.unit_frames(unit_id, sprite_id, palette, mono)
-	_norm = BASE_HEIGHT / maxf(1.0, textures[0].get_height()) if not textures.is_empty() else 1.0
+	_norm = 0.5 if not textures.is_empty() and textures[0].get_height() >= EXTERNAL_MIN_HEIGHT else 1.0
 	px_scale = scale_px
 	face_left = left
 	dead = false
