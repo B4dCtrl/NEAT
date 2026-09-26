@@ -39,6 +39,7 @@ func _ready() -> void:
 	add_child(_tutorial)
 
 	taskbar_view.expand_requested.connect(func(): WindowManager.set_mode("expedition"))
+	taskbar_view.close_requested.connect(_close_to_tray)
 	expedition_view.collapse_requested.connect(func(): WindowManager.set_mode("taskbar"))
 	WindowManager.mode_changed.connect(_on_mode_changed)
 	Game.settings_changed.connect(_apply_audio)
@@ -160,12 +161,17 @@ func _quit() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		Game.save()
-		if tray_supported() and _story_stage == "":
-			# "Closing" keeps climbing in the system tray.
-			WindowManager.hide_to_tray()
-		else:
-			get_tree().quit()
+		_close_to_tray()
+
+
+## Close button / window X: keeps climbing in the system tray when there is
+## one, otherwise saves and quits.
+func _close_to_tray() -> void:
+	Game.save()
+	if tray_supported() and _story_stage == "":
+		WindowManager.hide_to_tray()
+	else:
+		get_tree().quit()
 
 
 func _input(event: InputEvent) -> void:

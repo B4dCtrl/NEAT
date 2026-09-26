@@ -176,8 +176,16 @@ static func skill_rank(hero: Dictionary, node_id: String) -> int:
 	return int(hero.get("skills", {}).get(node_id, 0))
 
 
+## Hero level needed to open a talent row (deeper rows open later).
+static func row_level(row: int) -> int:
+	var gates: Array = DataDB.table("skills").get("row_levels", [1])
+	return int(gates[clampi(row, 0, gates.size() - 1)])
+
+
 static func skill_unlocked(hero: Dictionary, node_id: String) -> bool:
 	var node: Dictionary = DataDB.skill_nodes()[node_id]
+	if int(hero["level"]) < row_level(int(node["row"])):
+		return false
 	for req in node["requires"]:
 		if skill_rank(hero, req) < int(node["requires"][req]):
 			return false
@@ -218,3 +226,38 @@ static func auto_learn(hero: Dictionary) -> int:
 			break
 		learned += 1
 	return learned
+
+
+# ------------------------------------------------------------------ active skills
+
+## Every active skill of a class, in unlock order (level 1, 10, 25).
+static func class_skills(class_id: String) -> Array:
+	var cdef: Dictionary = DataDB.classes()[class_id]
+	return cdef.get("skills", [cdef["skill"]] if cdef.has("skill") else [])
+
+
+static func active_skill_learned(hero: Dictionary, sk: Dictionary) -> bool:
+	return int(hero["level"]) >= int(sk.get("level", 1))
+
+
+static func active_skill_enabled(hero: Dictionary, sk: Dictionary) -> bool:
+	return not String(sk["id"]) in hero.get("skills_off", [])
+
+
+## Turns a learned skill on/off (the party then fights without it).
+static func toggle_active_skill(hero: Dictionary, skill_id: String) -> void:
+	var off: Array = hero.get("skills_off", [])
+	if skill_id in off:
+		off.erase(skill_id)
+	else:
+		off.append(skill_id)
+	hero["skills_off"] = off
+
+
+## What this hero actually casts in a fight.
+static func active_skills(hero: Dictionary) -> Array:
+	var out := []
+	for sk in class_skills(hero["class"]):
+		if active_skill_learned(hero, sk) and active_skill_enabled(hero, sk):
+			out.append(sk)
+	return out

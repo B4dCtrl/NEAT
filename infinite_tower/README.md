@@ -60,6 +60,7 @@ infinite_tower/
 │   ├── platform_services.gd  # Costura para Steamworks (GodotSteam); no-op sem backend
 │   ├── game.gd               # [autoload Game] dirige a Expedition, sinais p/ UI, autosave, ações
 │   ├── audio.gd              # [autoload Audio] SFX e música chiptune sintetizados em código
+│   ├── forge.gd              # Forja: queima itens para subir de raridade (sumidouro)
 │   └── window_manager.gd     # [autoload WindowManager] Taskbar ↔ Expedition, dock, foco
 ├── data/
 │   ├── items.json            # Slots, raridades, bases, afixos, sets e relics
@@ -75,6 +76,7 @@ infinite_tower/
 │   │   ├── expedition_view.tscn # Visão expandida (RPG completo)
 │   │   ├── tower_stage.gd       # O palco da escada infinita (usado nas duas views)
 │   │   ├── combat_fx.gd         # Cortes, flechas, bolas de fogo, crítico, esquiva, efeito por skill
+│   │   ├── menu/                # Painéis ornamentados: moldura, ícones, Status/Talentos/Skills/Inventário
 │   │   └── tabs/                # Party, Inventory, Ascension, Bestiary, History, Stats, Settings
 │   └── entities/
 │       ├── hero_sprite.tscn
@@ -110,6 +112,24 @@ Fechar (X) não encerra o jogo: ele vai para a **bandeja** (Windows/macOS) e a s
 continua a 5 FPS. Clique no ícone para mostrar a torre; o menu tem "Abrir Expedição" e
 "Sair". Onde não há bandeja (Linux), fechar salva e sai. **Minimizar** a janela da
 Expedição volta para o modo Taskbar (a torre no cantinho da barra de tarefas).
+
+### Menu em painéis (sobre a torre)
+Clique na torre (ou nos botões redondos ao lado dos heróis) para abrir painéis
+com moldura ornamentada, como em Tiny Knights / taskbar RPGs: **Status**, **Talentos**
+(árvore por herói com portões de nível 1/8/16/25), **Skills** (3 skills ativas por
+classe, liberadas nos níveis 1/10/25, com cooldown ao vivo e liga/desliga), **Inventário**
+(paper doll, bolsa, consumíveis e Forja) e **Configurações**. Até 3 painéis ficam lado a
+lado; a janela cresce para cima e para a esquerda sem mover a torre. O botão ⤢ abre a
+Expedição completa e o X manda o jogo para a bandeja.
+
+### Bonfires e cura
+Os ferimentos se acumulam entre os andares: a vida só volta na **bonfire** (a cada 10
+andares), com poções ou com skills de cura. Shrines não curam mais.
+
+### Forja (queimar itens)
+`core/forge.gd` queima 3–5 itens de uma raridade e cria 1 da raridade seguinte para o
+herói escolhido (Common→Uncommon→Rare→Epic→Legendary→Mythic), cobrando ouro que cresce
+com o nível do item (e cristais nos tiers altos). É o principal sumidouro da economia.
 
 ### Monstros, afixos e chefes
 28 monstros (variantes de cor com traços próprios: roubo de vida, espinhos, regeneração)

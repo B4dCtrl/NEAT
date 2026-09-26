@@ -146,7 +146,7 @@ func _make_hero(entry: Dictionary) -> Unit:
 	u.pattern = cdef["attack_pattern"]
 	u.aggro = float(cdef["aggro"])
 	u.row = entry.get("row", "front")
-	u.skills = [cdef["skill"]] if cdef.has("skill") else []
+	u.skills = entry.get("skills", [cdef["skill"]] if cdef.has("skill") else [])
 	return u
 
 
@@ -328,6 +328,24 @@ func _use_skill(u: Unit, sk: Dictionary) -> void:
 					_ignite(u, f, dealt * float(sk["burn"]) / float(sk["duration"]), float(sk["duration"]))
 		"self_heal":
 			u.hp = minf(u.max_hp, u.hp + u.max_hp * float(sk["value"]))
+			_emit({"t": "skill", "src": u.uid, "name": sk["name"], "kind": kind})
+		"strike":
+			var foes := alive_units(SIDE_ENEMIES)
+			if foes.is_empty():
+				return
+			_emit({"t": "skill", "src": u.uid, "dst": foes[0].uid, "name": sk["name"], "kind": kind, "id": sk.get("id", "")})
+			_hit(u, foes[0], float(sk["mult"]), "fire" if sk.get("id", "") == "firebolt" else u.element, "skill")
+		"party_heal":
+			for h in alive_units(SIDE_HEROES):
+				h.hp = minf(h.max_hp, h.hp + h.max_hp * float(sk["value"]))
+			_emit({"t": "skill", "src": u.uid, "name": sk["name"], "kind": kind})
+		"war_cry":
+			# Party-wide haste; refreshing an active cry only extends it.
+			for h in alive_units(SIDE_HEROES):
+				if h.haste_time <= 0.0:
+					h.haste_mult = float(sk["value"])
+					h.attack_speed *= h.haste_mult
+				h.haste_time = maxf(h.haste_time, float(sk["duration"]))
 			_emit({"t": "skill", "src": u.uid, "name": sk["name"], "kind": kind})
 		"slam":
 			_emit({"t": "skill", "src": u.uid, "name": sk["name"], "kind": kind})

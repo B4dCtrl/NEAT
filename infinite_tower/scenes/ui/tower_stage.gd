@@ -511,6 +511,33 @@ func _skill_fx(ev: Dictionary, src, su) -> void:
 		"frenzy":
 			_fx.spawn("aura", at, at, Color("#ff5a2a"), 1.4, 1.0)
 			Game.sfx_requested.emit("enrage")
+		"strike":
+			var target := _enemy_center()
+			var dst = _sprite_for(ev.get("dst", ""))
+			if dst != null:
+				target = _center(dst)
+			match String(ev.get("id", "")):
+				"piercing_shot":
+					_fx.spawn("arrow", at, target, Color.WHITE, 1.8, 0.14)
+					_fx.spawn("burst", target, target, Color("#e0e6ee"), 1.4, 0.3, 0.14)
+				"firebolt":
+					_fx.spawn("bolt", at, target, Color("#ff5a1a"), 1.8, 0.2)
+					_fx.spawn("burst", target, target, Color("#ff9d4a"), 1.6, 0.35, 0.2)
+				_:
+					_fx.spawn("slash", at, target, Color("#fff2b0"), 1.8, 0.3)
+					_fx.spawn("crit", target, target, Color("#ffd23f"), 0.9, 0.3, 0.1)
+			_fx.add_shake(0.35)
+			Game.sfx_requested.emit("crit")
+		"party_heal":
+			for h in hero_sprites:
+				_fx.spawn("heal", _center(h), _center(h), Color.WHITE, 1.1, 1.0)
+			_fx.spawn("aura", _party_center(), _party_center(), Color("#5fd35f"), 1.6, 0.9)
+			Game.sfx_requested.emit("heal")
+		"war_cry":
+			for h in hero_sprites:
+				_fx.spawn("aura", _center(h), _center(h), Color("#ffb13d"), 1.2, 0.9)
+			_fx.spawn("shockwave", at, at, Color("#ffd23f"), 0.8, 0.5)
+			Game.sfx_requested.emit("enrage")
 
 
 ## Short floating word ("MISS", "CRIT!") shown even in the small taskbar tower.

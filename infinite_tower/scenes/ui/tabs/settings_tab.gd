@@ -4,15 +4,19 @@ extends MarginContainer
 const SaveSystem = preload("res://core/save_system.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
 
+## Single-column layout for the narrow menu panel.
+var compact := false
 var _controls := {}
 var _reset_confirm: ConfirmationDialog
 
 
 func _ready() -> void:
 	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
 	var grid := GridContainer.new()
-	grid.columns = 2
+	grid.columns = 1 if compact else 2
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid.add_theme_constant_override("h_separation", 24)
 	grid.add_theme_constant_override("v_separation", 8)
 	scroll.add_child(grid)
@@ -42,7 +46,7 @@ func _ready() -> void:
 	_section(grid, "Hotkeys")
 	_info(grid, "Tab / F1", "Toggle Taskbar / Expedition")
 	_info(grid, "Esc", "Back to Taskbar")
-	_info(grid, "Click on the tower", "Open Expedition (drag to slide it along the taskbar)")
+	_info(grid, "Click on the tower", "Open / close the menu (drag to slide it along the taskbar)")
 	_info(grid, "Close (X)", "Hides in the system tray; the climb continues")
 
 	_section(grid, "Story")
@@ -74,6 +78,12 @@ func _ready() -> void:
 	reset.add_theme_color_override("font_color", Color("#ff6b6b"))
 	reset.pressed.connect(func(): _reset_confirm.popup_centered())
 	grid.add_child(reset)
+	var quit := Button.new()
+	quit.text = "Quit game"
+	quit.focus_mode = Control.FOCUS_NONE
+	quit.tooltip_text = "Saves and closes Stairborn completely"
+	quit.pressed.connect(func(): Game.save(); get_tree().quit())
+	grid.add_child(quit)
 	_reset_confirm = ConfirmationDialog.new()
 	_reset_confirm.dialog_text = "Delete the save and start a brand new expedition?\nThis cannot be undone."
 	_reset_confirm.confirmed.connect(func(): Game.reset_save())
@@ -88,12 +98,16 @@ func _section(grid: GridContainer, text: String) -> void:
 	l.text = text
 	l.add_theme_color_override("font_color", Color("#f2c14e"))
 	grid.add_child(l)
-	grid.add_child(Control.new())
+	if not compact:
+		grid.add_child(Control.new())
 
 
 func _label(grid: GridContainer, text: String) -> void:
 	var l := Label.new()
 	l.text = text
+	if compact:
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.add_theme_color_override("font_color", Color("#b39c7c"))
 	grid.add_child(l)
 
 
@@ -102,6 +116,8 @@ func _info(grid: GridContainer, key: String, text: String) -> void:
 	var l := Label.new()
 	l.text = text
 	l.add_theme_color_override("font_color", Color("#9a96a8"))
+	if compact:
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	grid.add_child(l)
 
 
@@ -132,7 +148,8 @@ func _slider(grid: GridContainer, key: String, text: String, lo: float, hi: floa
 	s.min_value = lo
 	s.max_value = hi
 	s.step = step
-	s.custom_minimum_size = Vector2(220, 0)
+	s.custom_minimum_size = Vector2(0 if compact else 220, 0)
+	s.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	s.focus_mode = Control.FOCUS_NONE
 	# Apply on release so the window is not resized on every drag tick.
 	s.drag_ended.connect(func(_changed): Game.set_setting(key, int(s.value) if step >= 1.0 else s.value))

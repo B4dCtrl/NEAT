@@ -36,9 +36,44 @@
 			"type": "self_heal",
 			"cooldown": 14.0,
 			"value": 0.35,
-			"description": "Recovers 35% of max HP. Born on the stairs, hard to put down."
+			"description": "Recovers 35% of max HP. Born on the stairs, hard to put down.",
+			"level": 1,
+			"icon": "heal"
 		},
-		"skill_branch": "guard"
+		"skill_branch": "guard",
+		"skills": [
+			{
+				"id": "second_wind",
+				"name": "Second Wind",
+				"type": "self_heal",
+				"cooldown": 14.0,
+				"value": 0.35,
+				"description": "Recovers 35% of max HP. Born on the stairs, hard to put down.",
+				"level": 1,
+				"icon": "heal"
+			},
+			{
+				"id": "stair_cleaver",
+				"name": "Stair Cleaver",
+				"type": "strike",
+				"cooldown": 9.0,
+				"mult": 2.8,
+				"level": 10,
+				"icon": "axe",
+				"description": "A leaping overhead blow: 280% damage to the first enemy."
+			},
+			{
+				"id": "rallying_cry",
+				"name": "Rallying Cry",
+				"type": "war_cry",
+				"cooldown": 18.0,
+				"value": 1.3,
+				"duration": 5.0,
+				"level": 25,
+				"icon": "horn",
+				"description": "The whole party attacks 30% faster for 5s."
+			}
+		]
 	},
 	"knight": {
 		"name": "Knight",
@@ -73,9 +108,44 @@
 			"cooldown": 10.0,
 			"duration": 4.0,
 			"value": 0.35,
-			"description": "Taunts all enemies and reduces party damage taken by 35% for 4s."
+			"description": "Taunts all enemies and reduces party damage taken by 35% for 4s.",
+			"level": 1,
+			"icon": "shield"
 		},
-		"skill_branch": "guard"
+		"skill_branch": "guard",
+		"skills": [
+			{
+				"id": "shield_wall",
+				"name": "Shield Wall",
+				"type": "party_shield",
+				"cooldown": 10.0,
+				"duration": 4.0,
+				"value": 0.35,
+				"description": "Taunts all enemies and reduces party damage taken by 35% for 4s.",
+				"level": 1,
+				"icon": "shield"
+			},
+			{
+				"id": "shield_bash",
+				"name": "Shield Bash",
+				"type": "strike",
+				"cooldown": 8.0,
+				"mult": 2.2,
+				"level": 10,
+				"icon": "bash",
+				"description": "Slams the shield into the first enemy for 220% damage."
+			},
+			{
+				"id": "last_stand",
+				"name": "Last Stand",
+				"type": "party_heal",
+				"cooldown": 20.0,
+				"value": 0.2,
+				"level": 25,
+				"icon": "banner",
+				"description": "Heals every hero for 20% of their max HP."
+			}
+		]
 	},
 	"ranger": {
 		"name": "Ranger",
@@ -110,9 +180,45 @@
 			"cooldown": 7.0,
 			"hits": 4,
 			"mult": 0.9,
-			"description": "Fires 4 arrows at random enemies for 90% damage each."
+			"description": "Fires 4 arrows at random enemies for 90% damage each.",
+			"level": 1,
+			"icon": "volley"
 		},
-		"skill_branch": "cunning"
+		"skill_branch": "cunning",
+		"skills": [
+			{
+				"id": "volley",
+				"name": "Volley",
+				"type": "multi_shot",
+				"cooldown": 7.0,
+				"hits": 4,
+				"mult": 0.9,
+				"description": "Fires 4 arrows at random enemies for 90% damage each.",
+				"level": 1,
+				"icon": "volley"
+			},
+			{
+				"id": "piercing_shot",
+				"name": "Piercing Shot",
+				"type": "strike",
+				"cooldown": 9.0,
+				"mult": 3.2,
+				"level": 10,
+				"icon": "pierce",
+				"description": "A heavy arrow: 320% damage to the first enemy."
+			},
+			{
+				"id": "wind_step",
+				"name": "Wind Step",
+				"type": "war_cry",
+				"cooldown": 16.0,
+				"value": 1.4,
+				"duration": 4.0,
+				"level": 25,
+				"icon": "wind",
+				"description": "The whole party attacks 40% faster for 4s."
+			}
+		]
 	},
 	"arcanist": {
 		"name": "Arcanist",
@@ -148,8 +254,44 @@
 			"mult": 2.2,
 			"burn": 0.25,
 			"duration": 3.0,
-			"description": "Hits all enemies for 220% magic damage and ignites them."
+			"description": "Hits all enemies for 220% magic damage and ignites them.",
+			"level": 1,
+			"icon": "meteor"
 		},
-		"skill_branch": "might"
+		"skill_branch": "might",
+		"skills": [
+			{
+				"id": "meteor",
+				"name": "Meteor",
+				"type": "meteor",
+				"cooldown": 12.0,
+				"mult": 2.2,
+				"burn": 0.25,
+				"duration": 3.0,
+				"description": "Hits all enemies for 220% magic damage and ignites them.",
+				"level": 1,
+				"icon": "meteor"
+			},
+			{
+				"id": "firebolt",
+				"name": "Firebolt",
+				"type": "strike",
+				"cooldown": 6.0,
+				"mult": 2.5,
+				"level": 10,
+				"icon": "firebolt",
+				"description": "Hurls a firebolt: 250% fire damage to the first enemy."
+			},
+			{
+				"id": "mending_flames",
+				"name": "Mending Flames",
+				"type": "party_heal",
+				"cooldown": 22.0,
+				"value": 0.18,
+				"level": 25,
+				"icon": "mend",
+				"description": "Warm embers heal every hero for 18% of their max HP."
+			}
+		]
 	}
 }

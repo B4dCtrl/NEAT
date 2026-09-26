@@ -210,7 +210,7 @@
 		"bonfire_rest": 4.0,
 		"combat_time_limit": 45.0,
 		"boss_time_limit": 75.0,
-		"heal_per_floor": 0.2,
+		"heal_per_floor": 0.0,
 		"fall_back_min": 5,
 		"fall_back_max": 10,
 		"xp_base": 30,

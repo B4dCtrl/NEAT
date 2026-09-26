@@ -140,6 +140,7 @@ func _start_combat() -> void:
 			"stats": StatCalc.hero_stats(state, hero, mods),
 			"hp_ratio": maxf(float(hero["hp_ratio"]), 0.05),
 			"row": hero["row"],
+			"skills": Heroes.active_skills(hero),
 		})
 	var enemy_entries := []
 	var affixes: Array = floor_info.get("affixes", [])
@@ -322,9 +323,12 @@ func _next_floor() -> void:
 			kept.append(buff)
 	state["buffs"] = kept
 
+	# Wounds carry over between floors: only bonfires (and potions / healing
+	# skills) restore HP. heal_per_floor is 0 by default.
 	var heal := float(bal["heal_per_floor"])
-	for hero in state["heroes"]:
-		hero["hp_ratio"] = minf(1.0, float(hero["hp_ratio"]) + heal)
+	if heal > 0.0:
+		for hero in state["heroes"]:
+			hero["hp_ratio"] = minf(1.0, float(hero["hp_ratio"]) + heal)
 
 	if state["settings"].get("auto_train", true):
 		Progression.auto_train(state, Heroes.gold_reserve(state))
@@ -339,8 +343,6 @@ func _next_floor() -> void:
 
 func _use_shrine(shrine: Dictionary) -> void:
 	events.append({"type": "shrine", "name": shrine["name"], "text": shrine["text"]})
-	for hero in state["heroes"]:
-		hero["hp_ratio"] = 1.0
 	if shrine.has("trade_gold_pct"):
 		var cost := float(state["gold"]) * float(shrine["trade_gold_pct"])
 		if cost >= 1.0:

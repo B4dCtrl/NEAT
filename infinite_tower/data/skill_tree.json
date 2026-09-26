@@ -1,18 +1,19 @@
 {
 	"points_per_level": 1,
+	"row_levels": [1, 8, 16, 25],
 	"branches": {"might": "Might", "guard": "Guard", "cunning": "Cunning"},
 	"nodes": {
-		"power":       {"name": "Power",        "branch": "might",   "row": 0, "max": 10, "stats": {"attack_pct": 0.04, "magic_power_pct": 0.04}, "text": "+4% Attack & Magic",  "requires": {}},
-		"fury":        {"name": "Fury",         "branch": "might",   "row": 1, "max": 5,  "stats": {"crit_damage": 0.08},  "text": "+8% Crit Damage",          "requires": {"power": 3}},
-		"cleave":      {"name": "Cleave",       "branch": "might",   "row": 2, "max": 3,  "stats": {"cleave": 0.15},       "text": "Attacks splash 15% to the next enemy", "requires": {"fury": 2}},
-		"executioner": {"name": "Executioner",  "branch": "might",   "row": 3, "max": 5,  "stats": {"damage_pct": 0.06},   "text": "+6% Damage",               "requires": {"cleave": 1}},
-		"toughness":   {"name": "Toughness",    "branch": "guard",   "row": 0, "max": 10, "stats": {"hp_pct": 0.05},       "text": "+5% HP",                   "requires": {}},
-		"plating":     {"name": "Plating",      "branch": "guard",   "row": 1, "max": 10, "stats": {"defense_pct": 0.06},  "text": "+6% Defense",              "requires": {"toughness": 3}},
-		"leech":       {"name": "Leech",        "branch": "guard",   "row": 2, "max": 5,  "stats": {"lifesteal": 0.02},    "text": "Heal 2% of damage dealt",  "requires": {"plating": 2}},
-		"evasion":     {"name": "Evasion",      "branch": "guard",   "row": 3, "max": 5,  "stats": {"dodge": 0.015},       "text": "+1.5% Dodge",              "requires": {"leech": 1}},
-		"haste":       {"name": "Haste",        "branch": "cunning", "row": 0, "max": 10, "stats": {"attack_speed_pct": 0.03}, "text": "+3% Attack Speed",     "requires": {}},
-		"precision":   {"name": "Precision",    "branch": "cunning", "row": 1, "max": 10, "stats": {"crit_chance": 0.015}, "text": "+1.5% Crit Chance",        "requires": {"haste": 3}},
-		"focus":       {"name": "Focus",        "branch": "cunning", "row": 2, "max": 5,  "stats": {"cdr": 0.05},          "text": "Skill recharges 5% faster", "requires": {"precision": 2}},
-		"pathfinder":  {"name": "Pathfinder",   "branch": "cunning", "row": 3, "max": 5,  "stats": {"move_speed_pct": 0.03}, "text": "+3% party climb speed",  "requires": {"focus": 1}}
+		"power": {"icon": "sword", "name": "Power",        "branch": "might",   "row": 0, "max": 10, "stats": {"attack_pct": 0.04, "magic_power_pct": 0.04}, "text": "+4% Attack & Magic",  "requires": {}},
+		"fury": {"icon": "burst", "name": "Fury",         "branch": "might",   "row": 1, "max": 5,  "stats": {"crit_damage": 0.08},  "text": "+8% Crit Damage",          "requires": {"power": 3}},
+		"cleave": {"icon": "axe", "name": "Cleave",       "branch": "might",   "row": 2, "max": 3,  "stats": {"cleave": 0.15},       "text": "Attacks splash 15% to the next enemy", "requires": {"fury": 2}},
+		"executioner": {"icon": "skull", "name": "Executioner",  "branch": "might",   "row": 3, "max": 5,  "stats": {"damage_pct": 0.06},   "text": "+6% Damage",               "requires": {"cleave": 1}},
+		"toughness": {"icon": "heart", "name": "Toughness",    "branch": "guard",   "row": 0, "max": 10, "stats": {"hp_pct": 0.05},       "text": "+5% HP",                   "requires": {}},
+		"plating": {"icon": "shield", "name": "Plating",      "branch": "guard",   "row": 1, "max": 10, "stats": {"defense_pct": 0.06},  "text": "+6% Defense",              "requires": {"toughness": 3}},
+		"leech": {"icon": "drop", "name": "Leech",        "branch": "guard",   "row": 2, "max": 5,  "stats": {"lifesteal": 0.02},    "text": "Heal 2% of damage dealt",  "requires": {"plating": 2}},
+		"evasion": {"icon": "wind", "name": "Evasion",      "branch": "guard",   "row": 3, "max": 5,  "stats": {"dodge": 0.015},       "text": "+1.5% Dodge",              "requires": {"leech": 1}},
+		"haste": {"icon": "bolt", "name": "Haste",        "branch": "cunning", "row": 0, "max": 10, "stats": {"attack_speed_pct": 0.03}, "text": "+3% Attack Speed",     "requires": {}},
+		"precision": {"icon": "target", "name": "Precision",    "branch": "cunning", "row": 1, "max": 10, "stats": {"crit_chance": 0.015}, "text": "+1.5% Crit Chance",        "requires": {"haste": 3}},
+		"focus": {"icon": "hourglass", "name": "Focus",        "branch": "cunning", "row": 2, "max": 5,  "stats": {"cdr": 0.05},          "text": "Skill recharges 5% faster", "requires": {"precision": 2}},
+		"pathfinder": {"icon": "boot", "name": "Pathfinder",   "branch": "cunning", "row": 3, "max": 5,  "stats": {"move_speed_pct": 0.03}, "text": "+3% party climb speed",  "requires": {"focus": 1}}
 	}
 }

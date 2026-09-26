@@ -62,6 +62,22 @@ func _run() -> void:
 	game.mint_hero()
 	game.mint_hero()
 	await _wait(30)
+	# The in-tower menu: three panels side by side, then the other two.
+	for h in game.state["heroes"]:
+		h["level"] = maxi(int(h["level"]), 27)
+	game.state["heroes"][0]["hp_ratio"] = 0.6
+	var tv = main.get_node("TaskbarView")
+	for id in ["status", "talents", "skills"]:
+		tv.panels.open(id)
+	await _wait(40)
+	await _shot("04_taskbar_menu_a")
+	tv.panels.close_all()
+	for id in ["inventory", "settings"]:
+		tv.panels.open(id)
+	await _wait(40)
+	await _shot("05_taskbar_menu_b")
+	tv.panels.close_all()
+	await _wait(20)
 	wm.set_mode("expedition")
 	await _wait(30)
 	var tabs: TabContainer = main.get_node("ExpeditionView").find_child("Tabs", true, false)

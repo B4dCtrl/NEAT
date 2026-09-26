@@ -8,10 +8,13 @@ extends Control
 ## Notifications are a soft glow plus a line of text, never a popup.
 
 signal expand_requested()
+signal close_requested()
 
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const TowerStage = preload("res://scenes/ui/tower_stage.gd")
+const MenuBarScript = preload("res://scenes/ui/menu/menu_bar.gd")
+const PanelHost = preload("res://scenes/ui/menu/panel_host.gd")
 
 const NOTIFY_COLORS := {
 	"legendary": Color("#ff9d2a"), "relic": Color("#b388ff"), "boss": Color("#ff4f4f"),
@@ -23,6 +26,8 @@ const HUD_H := 40.0
 const HUD_W := 160.0
 ## Room on the right for big bosses standing on the landing.
 const RIGHT_MARGIN := 40.0
+## Row of round menu buttons above the hero icons.
+const MENU_ROW := 30.0
 
 @onready var stage: Control = %Stage
 @onready var hud: HBoxContainer = %Hud
@@ -42,6 +47,8 @@ var _last_size := Vector2.ZERO
 var _hud_alpha := 0.0
 var _hud_hold := 0.0      # keeps the HUD up for a few seconds after a notification
 var _hud_shown := false
+var menu_bar: Control
+var panels: Control
 
 
 func _ready() -> void:
@@ -51,6 +58,17 @@ func _ready() -> void:
 	notify_box.visible = false
 	hud.modulate.a = 0.0
 	hud.visible = false
+	stage.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	panels = PanelHost.new()
+	panels.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	panels.layout_changed.connect(_on_panels_changed)
+	add_child(panels)
+	menu_bar = MenuBarScript.new()
+	menu_bar.visible = false
+	menu_bar.toggled.connect(func(id): panels.toggle(id))
+	menu_bar.expand_requested.connect(func(): expand_requested.emit())
+	menu_bar.close_requested.connect(func(): close_requested.emit())
+	add_child(menu_bar)
 	resized.connect(_layout)
 	_layout()
 	_refresh()
@@ -65,33 +83,73 @@ static func window_width(px: float = 2.0) -> int:
 	return int(HUD_W + (TowerStage.R_OUT * px + 10.0) * 2.0 + RIGHT_MARGIN)
 
 
+func _docked_top() -> bool:
+	return Game.state["settings"].get("dock", "bottom") == "top"
+
+
+## The tower + HUD block (bottom-right corner, or top-right when docked on
+## top); the rest of the window belongs to the open menu panels.
+func _base_rect() -> Rect2:
+	var w := minf(float(window_width()), size.x)
+	var h := minf(float(Game.state["settings"].get("bar_height", 150)), size.y)
+	return Rect2(size.x - w, 0.0 if _docked_top() else size.y - h, w, h)
+
+
 func _tower_rect() -> Rect2:
-	return Rect2(HUD_W, 0, size.x - HUD_W, size.y)
+	var b := _base_rect()
+	return Rect2(b.position.x + HUD_W, b.position.y, b.size.x - HUD_W, b.size.y)
 
 
 func _hud_rect() -> Rect2:
-	return Rect2(0, size.y - HUD_H, HUD_W, HUD_H)
+	var b := _base_rect()
+	return Rect2(b.position.x, b.end.y - HUD_H - MENU_ROW, HUD_W, HUD_H + MENU_ROW)
 
 
 func _layout() -> void:
+	var b := _base_rect()
+	stage.position = b.position
+	stage.size = b.size
 	stage.tower_center = HUD_W + tower_column_width() * 0.5
-	notify_box.offset_top = size.y - HUD_H - 40.0
-	notify_box.offset_bottom = size.y - HUD_H
+	hud.offset_left = b.position.x + 4.0
+	hud.offset_right = b.position.x + HUD_W
+	hud.offset_top = b.end.y - size.y - 34.0
+	hud.offset_bottom = b.end.y - size.y - 4.0
+	notify_box.offset_left = b.position.x + 4.0
+	notify_box.offset_right = b.position.x + HUD_W
+	notify_box.offset_top = b.end.y - HUD_H - MENU_ROW - 40.0
+	notify_box.offset_bottom = b.end.y - HUD_H - MENU_ROW
+	menu_bar.position = Vector2(b.position.x + 4.0, b.end.y - HUD_H - MENU_ROW + 2.0)
+	menu_bar.size = menu_bar.custom_minimum_size
+	var free_h := size.y - b.size.y
+	panels.flip = _docked_top()
+	panels.position = Vector2(0, b.size.y if _docked_top() else 0.0)
+	panels.size = Vector2(size.x, maxf(free_h, 0.0))
 	_update_passthrough()
 	_last_size = size
 
 
+func _on_panels_changed() -> void:
+	menu_bar.open_ids = panels.open_ids()
+	menu_bar.queue_redraw()
+	WindowManager.set_menu_size(Vector2i(panels.needed_size()))
+	_layout()
+
+
 ## Only the tower (and the HUD while it is shown) catch the mouse; the rest of
-## the window is click-through.
+## the window is click-through. With menu panels open the whole window is live.
 func _update_passthrough() -> void:
+	if panels != null and not panels.open_ids().is_empty():
+		WindowManager.set_passthrough(PackedVector2Array([Vector2.ZERO, Vector2(size.x, 0), size, Vector2(0, size.y)]))
+		return
 	var t := _tower_rect()
+	var h := _hud_rect()
 	var poly: PackedVector2Array
 	if _hud_shown:
 		poly = PackedVector2Array([
-			Vector2(t.position.x, 0), Vector2(size.x, 0), Vector2(size.x, size.y),
-			Vector2(0, size.y), Vector2(0, size.y - HUD_H), Vector2(t.position.x, size.y - HUD_H)])
+			Vector2(t.position.x, t.position.y), Vector2(t.end.x, t.position.y), Vector2(t.end.x, t.end.y),
+			Vector2(h.position.x, h.end.y), Vector2(h.position.x, h.position.y), Vector2(t.position.x, h.position.y)])
 	else:
-		poly = PackedVector2Array([Vector2(t.position.x, 0), Vector2(size.x, 0), Vector2(size.x, size.y), Vector2(t.position.x, size.y)])
+		poly = PackedVector2Array([t.position, Vector2(t.end.x, t.position.y), t.end, Vector2(t.position.x, t.end.y)])
 	WindowManager.set_passthrough(poly)
 
 
@@ -102,7 +160,8 @@ func _update_hud(delta: float) -> void:
 	var local := _mouse_local()
 	var over_tower := _tower_rect().has_point(local)
 	var over_hud := _hud_shown and _hud_rect().has_point(local)
-	var want := over_tower or over_hud or _hud_hold > 0.0 or _pressing
+	var menu_open: bool = not panels.open_ids().is_empty()
+	var want := over_tower or over_hud or _hud_hold > 0.0 or _pressing or menu_open
 	_hud_alpha = move_toward(_hud_alpha, 1.0 if want else 0.0, delta * (6.0 if want else 2.5))
 	hud.modulate.a = _hud_alpha
 	notify_box.modulate.a = maxf(_hud_alpha, 1.0 if _notify_left > 0.0 else 0.0)
@@ -110,7 +169,9 @@ func _update_hud(delta: float) -> void:
 	if shown != _hud_shown:
 		_hud_shown = shown
 		hud.visible = shown
+		menu_bar.visible = shown
 		_update_passthrough()
+	menu_bar.modulate.a = _hud_alpha
 
 
 func _mouse_local() -> Vector2:
@@ -175,13 +236,19 @@ func _draw() -> void:
 # Click expands, drag slides the window along the taskbar.
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and not _tower_rect().has_point(event.position):
+			return
 		if event.pressed:
 			_pressing = true
 			_dragging = false
 			_press_pos = event.global_position
 		else:
 			if _pressing and not _dragging:
-				expand_requested.emit()
+				# Click on the tower: open the menu (Status), or close it.
+				if panels.open_ids().is_empty():
+					panels.open("status")
+				else:
+					panels.close_all()
 			_pressing = false
 			_dragging = false
 		accept_event()

@@ -13,6 +13,7 @@ const Progression = preload("res://core/progression.gd")
 const PlatformServices = preload("res://core/platform_services.gd")
 const Heroes = preload("res://core/heroes.gd")
 const Market = preload("res://core/market.gd")
+const Forge = preload("res://core/forge.gd")
 
 ## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
 signal notified(kind: String, text: String)
@@ -188,6 +189,19 @@ func salvage(uid: int) -> void:
 	inventory_changed.emit()
 
 
+## Burns items of `rarity` into one of the next rarity, made for that hero.
+func forge(rarity: String, hero_idx: int) -> Dictionary:
+	var hero: Dictionary = state["heroes"][clampi(hero_idx, 0, state["heroes"].size() - 1)]
+	var item := Forge.forge(state, rarity, hero["class"])
+	if item.is_empty():
+		return {}
+	sfx_requested.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") else "loot")
+	notified.emit("legendary" if item["rarity"] in ["legendary", "mythic"] else "info", "Forged: %s" % item["name"])
+	inventory_changed.emit()
+	state_changed.emit()
+	return item
+
+
 func salvage_below(rarity: String) -> void:
 	Inventory.salvage_below(state, rarity)
 	inventory_changed.emit()
@@ -293,6 +307,11 @@ func bench_hero(party_idx: int) -> void:
 func learn_skill(hero_idx: int, node_id: String) -> void:
 	if Heroes.learn_skill(state["heroes"][hero_idx], node_id):
 		state_changed.emit()
+
+
+func toggle_active_skill(hero_idx: int, skill_id: String) -> void:
+	Heroes.toggle_active_skill(state["heroes"][hero_idx], skill_id)
+	state_changed.emit()
 
 
 func reset_skills(hero_idx: int) -> void:

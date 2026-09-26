@@ -21,6 +21,8 @@ var hidden := false
 var _bar_offset_x := -1   # horizontal position of a narrower-than-screen bar
 var _tween: Tween
 var _passthrough := PackedVector2Array()
+## Extra room requested by open menu panels (the window grows up and left).
+var menu_size := Vector2i.ZERO
 
 
 func _ready() -> void:
@@ -123,14 +125,20 @@ func apply_mode(new_mode: String, animate: bool) -> void:
 func bar_rect() -> Rect2i:
 	var settings: Dictionary = Game.state["settings"]
 	var screen := DisplayServer.screen_get_usable_rect(get_window().current_screen)
-	var height := int(settings.get("bar_height", 54))
+	var base_h := int(settings.get("bar_height", 54))
 	# Compact: just the HUD column + the tower, so it fits the taskbar corner.
-	var width := mini(TaskbarView.window_width(), screen.size.x)
-	if _bar_offset_x < 0 or _bar_offset_x + width > screen.size.x:
+	var base_w := mini(TaskbarView.window_width(), screen.size.x)
+	if _bar_offset_x < 0 or _bar_offset_x + base_w > screen.size.x:
 		# Default: flush with the bottom-right corner, next to the system tray.
-		_bar_offset_x = maxi(0, screen.size.x - width)
+		_bar_offset_x = maxi(0, screen.size.x - base_w)
+	# Open menu panels widen the window to the left and raise its top edge;
+	# the tower itself never moves.
+	var width := mini(maxi(base_w, menu_size.x), screen.size.x)
+	var height := mini(base_h + menu_size.y, screen.size.y)
+	var right := screen.position.x + _bar_offset_x + base_w
+	var x := maxi(screen.position.x, right - width)
 	var y := screen.position.y if settings.get("dock", "bottom") == "top" else screen.end.y - height
-	return Rect2i(screen.position.x + _bar_offset_x, y, width, height)
+	return Rect2i(x, y, width, height)
 
 
 func expedition_rect() -> Rect2i:
@@ -144,10 +152,18 @@ func nudge_bar(dx: int) -> void:
 	if mode != "taskbar" or is_headless():
 		return
 	var screen := DisplayServer.screen_get_usable_rect(get_window().current_screen)
-	var win := get_window()
-	_bar_offset_x = clampi(_bar_offset_x + dx, 0, maxi(0, screen.size.x - win.size.x))
-	win.position = Vector2i(screen.position.x + _bar_offset_x, win.position.y)
+	var base_w := mini(TaskbarView.window_width(), screen.size.x)
+	_bar_offset_x = clampi(_bar_offset_x + dx, 0, maxi(0, screen.size.x - base_w))
+	_set_rect(bar_rect())
 	Game.state["settings"]["bar_x"] = _bar_offset_x
+
+
+func set_menu_size(sz: Vector2i) -> void:
+	if sz == menu_size:
+		return
+	menu_size = sz
+	if mode == "taskbar" and not is_headless():
+		_set_rect(bar_rect())
 
 
 ## Region of the taskbar window that captures the mouse; everything else is
