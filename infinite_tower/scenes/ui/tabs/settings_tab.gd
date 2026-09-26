@@ -24,7 +24,13 @@ func _ready() -> void:
 	_section(grid, "Taskbar window")
 	_option(grid, "art_style", "Art style", [["1-bit (monochrome)", "mono"], ["Color (biome palettes)", "color"]])
 	_check(grid, "always_on_top", "Always on top")
-	_option(grid, "dock", "Dock position", [["Bottom of screen", "bottom"], ["Top of screen", "top"]])
+	_label(grid, "Window position")
+	var reset_pos := Button.new()
+	reset_pos.text = "Back to the taskbar corner"
+	reset_pos.focus_mode = Control.FOCUS_NONE
+	reset_pos.tooltip_text = "Drag the tower to move it anywhere (any monitor); this puts it back in the corner."
+	reset_pos.pressed.connect(func(): WindowManager.reset_bar_position())
+	grid.add_child(reset_pos)
 	_slider(grid, "bar_height", "Window height", 110, 260, 10)
 	_slider(grid, "bar_opacity", "HUD backdrop opacity", 0.0, 1.0, 0.05)
 	_option(grid, "fps_taskbar", "Taskbar FPS (battery)", [["15", 15], ["30", 30], ["60", 60]])
@@ -46,7 +52,7 @@ func _ready() -> void:
 	_section(grid, "Hotkeys")
 	_info(grid, "Tab / F1", "Toggle Taskbar / Expedition")
 	_info(grid, "Esc", "Back to Taskbar")
-	_info(grid, "Click on the tower", "Open / close the menu (drag to slide it along the taskbar)")
+	_info(grid, "Click on the tower", "Open / close the menu (drag it anywhere, even to another monitor)")
 	_info(grid, "Close (X)", "Hides in the system tray; the climb continues")
 
 	_section(grid, "Story")

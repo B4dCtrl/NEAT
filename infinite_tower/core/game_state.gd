@@ -14,7 +14,7 @@ const DEFAULT_SETTINGS := {
 	"bar_width": 640,          # 0 = full usable screen width
 	"bar_height": 150,
 	"bar_opacity": 0.0,        # 0 = fully transparent, only the tower floats on the desktop
-	"bar_x": -1,               # remembered horizontal position (-1 = near the tray)
+	"bar_x": -1,               # legacy (the tower window now stores "win_pos")
 	"art_style": "mono",       # "mono" (1-bit) | "color" (biome palettes)
 	"fps_taskbar": 30,
 	"master_volume": 0.8,

@@ -1,6 +1,7 @@
 extends Control
-## Opens the menu panels above the tower (up to MAX_OPEN side by side, newest
-## closest to the tower) and tells the taskbar view how much room they need.
+## Opens the menu panels as their own floating OS windows (up to MAX_OPEN).
+## They first appear next to the tower; drag one by its title to move it
+## anywhere, even to another monitor. Positions are remembered per panel.
 
 signal layout_changed()
 
@@ -25,6 +26,8 @@ var hero_idx := 0
 var flip := false
 var _open: Array = []   # panel ids, oldest first
 var _panels := {}       # id -> GamePanel
+var _windows := {}      # id -> Window hosting that panel
+var _shown := true
 
 
 func _ready() -> void:
@@ -53,22 +56,39 @@ func open(id: String) -> void:
 	if _open.size() >= MAX_OPEN:
 		close(_open[0])
 	var p = GamePanel.new()
-	p.setup(id, TITLES[id], _make_page(id), Vector2(WIDTHS[id], PANEL_H))
+	var sz := Vector2(WIDTHS[id], PANEL_H)
+	p.setup(id, TITLES[id], _make_page(id), sz)
 	p.close_requested.connect(close)
-	add_child(p)
+	p.dragged.connect(_on_panel_dragged)
+	var w := Window.new()
+	w.title = "Stairborn · " + TITLES[id].capitalize()
+	w.borderless = true
+	w.transparent = true
+	w.transparent_bg = true
+	w.unresizable = true
+	w.always_on_top = bool(Game.state["settings"].get("always_on_top", true))
+	w.size = Vector2i(sz)
+	w.theme = Ornate.theme()
+	w.visible = false
+	w.add_child(p)
+	add_child(w)
 	_panels[id] = p
+	_windows[id] = w
 	_open.append(id)
-	_layout()
+	w.position = _start_position(id)
+	w.visible = _shown
+	layout_changed.emit()
 
 
 func close(id: String) -> void:
 	if not is_open(id):
 		return
 	_open.erase(id)
-	var p = _panels[id]
+	var w = _windows[id]
 	_panels.erase(id)
-	p.queue_free()
-	_layout()
+	_windows.erase(id)
+	w.queue_free()
+	layout_changed.emit()
 
 
 func close_all() -> void:
@@ -95,39 +115,55 @@ func _make_page(id: String) -> Control:
 	return page
 
 
-## Room the open panels need (0 when none are open).
-func needed_size() -> Vector2:
-	if _open.is_empty():
-		return Vector2.ZERO
-	var w := 0.0
-	for id in _open:
-		w += WIDTHS[id]
-	return Vector2(w + GAP * (_open.size() - 1), PANEL_H + GAP)
+## Where a panel opens: where the player last left it, else beside the
+## tower window (above it, or below when the tower sits near the top).
+func _start_position(id: String) -> Vector2i:
+	var saved = Game.state["settings"].get("panel_pos", {}).get(id, null)
+	if saved is Array and saved.size() == 2:
+		var r := Rect2i(Vector2i(int(saved[0]), int(saved[1])), Vector2i(int(WIDTHS[id]), int(PANEL_H)))
+		for i in DisplayServer.get_screen_count():
+			if DisplayServer.screen_get_usable_rect(i).intersection(r).size.x >= 80:
+				return r.position
+	var main := get_window()
+	var screen := DisplayServer.screen_get_usable_rect(main.current_screen)
+	# First panel: right edge on the tower's right edge; each next one opens
+	# just left of the panels already on screen.
+	var x: float = float(main.position.x + main.size.x) - float(WIDTHS[id])
+	for other in _windows:
+		if other != id:
+			x = minf(x, float(_windows[other].position.x) - GAP - float(WIDTHS[id]))
+	var y := main.position.y - int(PANEL_H) - int(GAP)
+	for other in _windows:
+		if other != id:
+			y = _windows[other].position.y
+			break
+	if y < screen.position.y:
+		y = main.position.y + main.size.y + int(GAP)
+	var px := clampi(int(x), screen.position.x, screen.end.x - int(WIDTHS[id]))
+	var py := clampi(y, screen.position.y, screen.end.y - int(PANEL_H))
+	return Vector2i(px, py)
 
 
-## Panels line up right-aligned in menu order, bottoms resting on `bottom`.
-func _layout() -> void:
-	var ids := ORDER.filter(func(i): return i in _open)
-	var x := size.x
-	for i in range(ids.size() - 1, -1, -1):
-		var p = _panels[ids[i]]
-		x -= WIDTHS[ids[i]]
-		p.position = Vector2(x, GAP if flip else size.y - PANEL_H)
-		x -= GAP
-	layout_changed.emit()
+func _on_panel_dragged(id: String, pos: Vector2i) -> void:
+	if not _windows.has(id):
+		return
+	_windows[id].position = pos
+	var saved: Dictionary = Game.state["settings"].get("panel_pos", {})
+	saved[id] = [pos.x, pos.y]
+	Game.state["settings"]["panel_pos"] = saved
 
 
-func panel_rects() -> Array:
-	var out := []
-	for id in _open:
-		var p = _panels[id]
-		out.append(Rect2(p.position + position, p.size))
-	return out
+func window_of(id: String) -> Window:
+	return _windows.get(id)
 
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED:
-		_layout()
+## Panels follow the tower: hidden in Expedition mode and in the tray.
+func set_shown(on: bool) -> void:
+	if on == _shown:
+		return
+	_shown = on
+	for id in _windows:
+		_windows[id].visible = on
 
 
 ## Pages call this so every hero-centric page follows the same hero.

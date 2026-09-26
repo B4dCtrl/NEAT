@@ -70,12 +70,16 @@ func _run() -> void:
 	for id in ["status", "talents", "skills"]:
 		tv.panels.open(id)
 	await _wait(40)
-	await _shot("04_taskbar_menu_a")
+	await _shot_desktop("04_taskbar_menu_a", tv)
 	tv.panels.close_all()
 	for id in ["inventory", "settings"]:
 		tv.panels.open(id)
 	await _wait(40)
-	await _shot("05_taskbar_menu_b")
+	# Drag one panel somewhere else, like a player would.
+	var inv: Window = tv.panels.window_of("inventory")
+	inv.position -= Vector2i(80, 30)
+	await _wait(10)
+	await _shot_desktop("05_taskbar_menu_b", tv)
 	tv.panels.close_all()
 	await _wait(20)
 	wm.set_mode("expedition")
@@ -97,6 +101,31 @@ func _run() -> void:
 	await _wait(60)
 	await _shot("03_taskbar_boss")
 	quit()
+
+
+## The tower and every open panel are separate OS windows: paint them onto
+## a fake desktop at their real screen positions.
+func _shot_desktop(name: String, tv) -> void:
+	await process_frame
+	await process_frame
+	var wins: Array = [root]
+	for id in tv.panels.open_ids():
+		wins.append(tv.panels.window_of(id))
+	var box := Rect2i(root.position, root.size)
+	for w in wins:
+		box = box.merge(Rect2i(w.position, w.size))
+	box = box.grow(16)
+	var out := Image.create(box.size.x, box.size.y + 48, false, Image.FORMAT_RGBA8)
+	for y in out.get_height():
+		var c: Color = Color("#202226") if y >= box.size.y else Color("#2b5d8a").lerp(Color("#7fb2d9"), float(y) / box.size.y)
+		for x in out.get_width():
+			out.set_pixel(x, y, c)
+	for w in wins:
+		var img: Image = w.get_texture().get_image()
+		img.convert(Image.FORMAT_RGBA8)
+		out.blend_rect(img, Rect2i(Vector2i.ZERO, img.get_size()), w.position - box.position)
+	out.save_png(out_dir.path_join(name + ".png"))
+	print("saved ", name, " ", out.get_size())
 
 
 ## Transparent pixels would show the real desktop: fake a wallpaper + taskbar

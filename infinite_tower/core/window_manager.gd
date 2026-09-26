@@ -9,6 +9,8 @@ extends Node
 ## EXPEDITION regular decorated window, centered, focusable (the user asked for it).
 
 signal mode_changed(mode: String)
+## The tower window was dragged somewhere else.
+signal bar_moved()
 
 const EXPEDITION_SIZE := Vector2i(1100, 780)
 const EXPEDITION_MIN := Vector2i(960, 700)
@@ -18,17 +20,13 @@ const TRANSITION_TIME := 0.16
 
 var mode := "taskbar"
 var hidden := false
-var _bar_offset_x := -1   # horizontal position of a narrower-than-screen bar
 var _tween: Tween
 var _passthrough := PackedVector2Array()
-## Extra room requested by open menu panels (the window grows up and left).
-var menu_size := Vector2i.ZERO
 
 
 func _ready() -> void:
 	Game.settings_changed.connect(_on_settings_changed)
 	get_window().min_size = Vector2i(BAR_MIN_WIDTH, 32)
-	_bar_offset_x = int(Game.state["settings"].get("bar_x", -1))
 	var first := "story" if not Game.state.get("intro_seen", false) or not Game.state.get("tutorial_seen", false) else "taskbar"
 	apply_mode.call_deferred(first, false)
 
@@ -122,23 +120,27 @@ func apply_mode(new_mode: String, animate: bool) -> void:
 	mode_changed.emit(mode)
 
 
+## The tower window floats freely: wherever the player dropped it (any
+## monitor), or by default in the bottom-right corner above the taskbar.
 func bar_rect() -> Rect2i:
 	var settings: Dictionary = Game.state["settings"]
-	var screen := DisplayServer.screen_get_usable_rect(get_window().current_screen)
-	var base_h := int(settings.get("bar_height", 54))
-	# Compact: just the HUD column + the tower, so it fits the taskbar corner.
-	var base_w := mini(TaskbarView.window_width(), screen.size.x)
-	if _bar_offset_x < 0 or _bar_offset_x + base_w > screen.size.x:
-		# Default: flush with the bottom-right corner, next to the system tray.
-		_bar_offset_x = maxi(0, screen.size.x - base_w)
-	# Open menu panels widen the window to the left and raise its top edge;
-	# the tower itself never moves.
-	var width := mini(maxi(base_w, menu_size.x), screen.size.x)
-	var height := mini(base_h + menu_size.y, screen.size.y)
-	var right := screen.position.x + _bar_offset_x + base_w
-	var x := maxi(screen.position.x, right - width)
-	var y := screen.position.y if settings.get("dock", "bottom") == "top" else screen.end.y - height
-	return Rect2i(x, y, width, height)
+	var size := Vector2i(TaskbarView.window_width(), int(settings.get("bar_height", 150)))
+	var saved = settings.get("win_pos", null)
+	if saved is Array and saved.size() == 2:
+		var r := Rect2i(Vector2i(int(saved[0]), int(saved[1])), size)
+		if _on_some_screen(r):
+			return r
+	var screen := DisplayServer.screen_get_usable_rect(DisplayServer.get_primary_screen())
+	return Rect2i(screen.end - size, size)
+
+
+## True when enough of the window is on a connected monitor to grab it.
+static func _on_some_screen(r: Rect2i) -> bool:
+	for i in DisplayServer.get_screen_count():
+		var inter := DisplayServer.screen_get_usable_rect(i).intersection(r)
+		if inter.size.x >= 60 and inter.size.y >= 40:
+			return true
+	return false
 
 
 func expedition_rect() -> Rect2i:
@@ -147,23 +149,20 @@ func expedition_rect() -> Rect2i:
 	return Rect2i(screen.position + (screen.size - sz) / 2, sz)
 
 
-## Slides a narrower bar horizontally along its dock edge (mouse drag).
-func nudge_bar(dx: int) -> void:
+## Drag: puts the tower window at `pos` (screen coordinates, any monitor).
+func move_bar_to(pos: Vector2i) -> void:
 	if mode != "taskbar" or is_headless():
 		return
-	var screen := DisplayServer.screen_get_usable_rect(get_window().current_screen)
-	var base_w := mini(TaskbarView.window_width(), screen.size.x)
-	_bar_offset_x = clampi(_bar_offset_x + dx, 0, maxi(0, screen.size.x - base_w))
-	_set_rect(bar_rect())
-	Game.state["settings"]["bar_x"] = _bar_offset_x
+	get_window().position = pos
+	Game.state["settings"]["win_pos"] = [pos.x, pos.y]
+	bar_moved.emit()
 
 
-func set_menu_size(sz: Vector2i) -> void:
-	if sz == menu_size:
-		return
-	menu_size = sz
-	if mode == "taskbar" and not is_headless():
-		_set_rect(bar_rect())
+func reset_bar_position() -> void:
+	Game.state["settings"].erase("win_pos")
+	if mode == "taskbar":
+		apply_mode("taskbar", false)
+	bar_moved.emit()
 
 
 ## Region of the taskbar window that captures the mouse; everything else is

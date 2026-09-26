@@ -42,6 +42,8 @@ var _notify_left := 0.0
 var _press_pos := Vector2.ZERO
 var _pressing := false
 var _dragging := false
+var _drag_mouse := Vector2i.ZERO
+var _drag_win := Vector2i.ZERO
 var _t := 0.0
 var _last_size := Vector2.ZERO
 var _hud_alpha := 0.0
@@ -83,16 +85,10 @@ static func window_width(px: float = 2.0) -> int:
 	return int(HUD_W + (TowerStage.R_OUT * px + 10.0) * 2.0 + RIGHT_MARGIN)
 
 
-func _docked_top() -> bool:
-	return Game.state["settings"].get("dock", "bottom") == "top"
-
-
-## The tower + HUD block (bottom-right corner, or top-right when docked on
-## top); the rest of the window belongs to the open menu panels.
+## The tower + HUD block fills the whole (free-floating) window; the menu
+## panels live in windows of their own.
 func _base_rect() -> Rect2:
-	var w := minf(float(window_width()), size.x)
-	var h := minf(float(Game.state["settings"].get("bar_height", 150)), size.y)
-	return Rect2(size.x - w, 0.0 if _docked_top() else size.y - h, w, h)
+	return Rect2(Vector2.ZERO, size)
 
 
 func _tower_rect() -> Rect2:
@@ -120,10 +116,6 @@ func _layout() -> void:
 	notify_box.offset_bottom = b.end.y - HUD_H - MENU_ROW
 	menu_bar.position = Vector2(b.position.x + 4.0, b.end.y - HUD_H - MENU_ROW + 2.0)
 	menu_bar.size = menu_bar.custom_minimum_size
-	var free_h := size.y - b.size.y
-	panels.flip = _docked_top()
-	panels.position = Vector2(0, b.size.y if _docked_top() else 0.0)
-	panels.size = Vector2(size.x, maxf(free_h, 0.0))
 	_update_passthrough()
 	_last_size = size
 
@@ -131,16 +123,11 @@ func _layout() -> void:
 func _on_panels_changed() -> void:
 	menu_bar.open_ids = panels.open_ids()
 	menu_bar.queue_redraw()
-	WindowManager.set_menu_size(Vector2i(panels.needed_size()))
-	_layout()
 
 
 ## Only the tower (and the HUD while it is shown) catch the mouse; the rest of
 ## the window is click-through. With menu panels open the whole window is live.
 func _update_passthrough() -> void:
-	if panels != null and not panels.open_ids().is_empty():
-		WindowManager.set_passthrough(PackedVector2Array([Vector2.ZERO, Vector2(size.x, 0), size, Vector2(0, size.y)]))
-		return
 	var t := _tower_rect()
 	var h := _hud_rect()
 	var poly: PackedVector2Array
@@ -183,6 +170,7 @@ func _mouse_local() -> Vector2:
 
 func _process(delta: float) -> void:
 	_t += delta
+	panels.set_shown(is_visible_in_tree() and not WindowManager.hidden)
 	_update_hud(delta)
 	_glow_left = maxf(0.0, _glow_left - delta)
 	if _notify_left > 0.0:
@@ -242,6 +230,8 @@ func _gui_input(event: InputEvent) -> void:
 			_pressing = true
 			_dragging = false
 			_press_pos = event.global_position
+			_drag_mouse = DisplayServer.mouse_get_position()
+			_drag_win = get_window().position
 		else:
 			if _pressing and not _dragging:
 				# Click on the tower: open the menu (Status), or close it.
@@ -256,5 +246,6 @@ func _gui_input(event: InputEvent) -> void:
 		if not _dragging and event.global_position.distance_to(_press_pos) > DRAG_THRESHOLD:
 			_dragging = true
 		if _dragging:
-			WindowManager.nudge_bar(int(event.relative.x))
+			# Free drag in screen space: anywhere, across monitors.
+			WindowManager.move_bar_to(_drag_win + DisplayServer.mouse_get_position() - _drag_mouse)
 		accept_event()
