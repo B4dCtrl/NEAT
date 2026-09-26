@@ -14,6 +14,7 @@ const UiUtil = preload("res://scenes/ui/ui_util.gd")
 @onready var offline_dialog: AcceptDialog = %OfflineDialog
 
 var _currency_labels := {}
+var _camp_btn: Button
 
 
 func _ready() -> void:
@@ -35,6 +36,16 @@ func _ready() -> void:
 		box.add_child(lbl)
 		currencies.add_child(box)
 		_currency_labels[c[0]] = lbl
+	# Bonfire camping: stop at the next bonfire to rearrange gear, then move on.
+	_camp_btn = Button.new()
+	_camp_btn.focus_mode = Control.FOCUS_NONE
+	_camp_btn.pressed.connect(func():
+		if Game.expedition.is_camping():
+			Game.leave_camp()
+		else:
+			Game.camp_at_next_bonfire(not Game.state["settings"].get("camp_at_bonfire", false))
+		_refresh())
+	%StatusLabel.get_parent().add_child(_camp_btn)
 	Game.state_changed.connect(_refresh)
 	_refresh()
 
@@ -57,10 +68,11 @@ func _refresh() -> void:
 	var exp = Game.expedition
 	var info: Dictionary = exp.floor_info
 	var biome: String = info.get("biome_name", "")
-	var phase_text := {"walk": "Climbing", "intro": "A Guardian appears!", "combat": "Fighting", "pause": "Catching breath"}
+	var phase_text := {"walk": "Climbing", "intro": "A Guardian appears!", "combat": "Fighting", "pause": "Catching breath", "camp": "Camping at the bonfire"}
 	var line := "Floor %d  ·  %s  ·  %s" % [s["floor"], biome, phase_text.get(exp.phase, "")]
 	if exp.phase == "pause" and exp.after_pause == "walk":
-		line = "Floor %d  ·  FALL BACK! Regrouping..." % s["floor"]
+		line = "FALL BACK! Tumbling down to the bonfire on floor %d..." % s["floor"]
+	line += "   |   Checkpoint: floor %d" % int(s.get("checkpoint", 1))
 	if int(s["wall_floor"]) > 0:
 		line += "   |   Wall: floor %d (x%d)" % [s["wall_floor"], s["wall_attempts"]]
 	status_label.text = line
@@ -68,6 +80,12 @@ func _refresh() -> void:
 	for b in s["buffs"]:
 		buffs.append("%s (%d)" % [b["name"], b["floors_left"]])
 	buffs_label.text = "  ".join(buffs)
+	if exp.is_camping():
+		_camp_btn.text = "Leave camp ▶"
+	elif s["settings"].get("camp_at_bonfire", false):
+		_camp_btn.text = "Will camp at next bonfire ✓"
+	else:
+		_camp_btn.text = "Camp at next bonfire"
 
 
 func _show_offline_report(r: Dictionary) -> void:

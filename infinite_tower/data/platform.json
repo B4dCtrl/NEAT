@@ -1,0 +1,11 @@
+{
+	"steam_app_id": 0,
+	"steam_market_url": "https://steamcommunity.com/market/search?appid=%d",
+	"steam_inventory": {
+		"enabled": true,
+		"itemdef_base": 1000,
+		"playtime_drop_itemdef": 900,
+		"tradable_rarities": ["legendary", "mythic"],
+		"note": "Set steam_app_id once the Steamworks app exists; generate itemdefs with tools/export_steam_itemdefs.gd"
+	}
+}

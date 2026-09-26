@@ -1,16 +1,22 @@
 extends MarginContainer
-## Party management: hero cards (row, stats, gear, sets), training and relic slots.
+## Party: hero cards (row, stats, skill), recruiting (mint / bench), training
+## and the relic collection. Gear lives in the Equipment tab, skills in Skills.
 
 const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
 const Progression = preload("res://core/progression.gd")
+const Heroes = preload("res://core/heroes.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 
-var _cards: Array = []       # per hero: {level, xp, row_btn, stats, slots:{slot:Button}, sets, skill}
+var _cards_row: HBoxContainer
+var _cards: Array = []
+var _recruit_box: VBoxContainer
+var _mint_btn: Button
 var _train_buttons := {}
-var _relic_box: HBoxContainer
 var _auto_train: CheckBox
+var _relic_box: HFlowContainer
+var _dirty := true
 
 
 func _ready() -> void:
@@ -21,13 +27,15 @@ func _ready() -> void:
 	root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(root)
 
-	var cards_row := HBoxContainer.new()
-	cards_row.add_theme_constant_override("separation", 10)
-	root.add_child(cards_row)
-	for i in Game.state["heroes"].size():
-		cards_row.add_child(_build_card(i))
+	_cards_row = HBoxContainer.new()
+	_cards_row.add_theme_constant_override("separation", 10)
+	root.add_child(_cards_row)
 
-	# Training
+	var recruit_panel := PanelContainer.new()
+	root.add_child(recruit_panel)
+	_recruit_box = VBoxContainer.new()
+	recruit_panel.add_child(_recruit_box)
+
 	var train_panel := PanelContainer.new()
 	root.add_child(train_panel)
 	var train_row := HBoxContainer.new()
@@ -42,21 +50,46 @@ func _ready() -> void:
 		train_row.add_child(b)
 		_train_buttons[key] = b
 	_auto_train = CheckBox.new()
-	_auto_train.text = "Auto-train"
+	_auto_train.text = "Auto-train (saves for the next hero)"
 	_auto_train.focus_mode = Control.FOCUS_NONE
 	_auto_train.toggled.connect(func(on): Game.set_setting("auto_train", on))
 	train_row.add_child(_auto_train)
 
-	# Relics
 	var relic_panel := PanelContainer.new()
 	root.add_child(relic_panel)
-	_relic_box = HBoxContainer.new()
+	_relic_box = HFlowContainer.new()
 	relic_panel.add_child(_relic_box)
 
 	Game.state_changed.connect(_refresh)
-	Game.inventory_changed.connect(_refresh_gear)
-	visibility_changed.connect(func(): if is_visible_in_tree(): _refresh_gear())
-	_refresh_gear()
+	Game.party_changed.connect(func(): _dirty = true)
+	Game.inventory_changed.connect(func(): _dirty = true)
+	visibility_changed.connect(func(): _dirty = true)
+
+
+func _process(_delta: float) -> void:
+	if _dirty and is_visible_in_tree():
+		_dirty = false
+		_rebuild()
+
+
+func _rebuild() -> void:
+	for c in _cards_row.get_children():
+		c.queue_free()
+	_cards.clear()
+	for i in Game.state["heroes"].size():
+		_cards_row.add_child(_build_card(i))
+	for i in range(Game.state["heroes"].size(), Heroes.party_slots()):
+		var empty := PanelContainer.new()
+		empty.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var l := Label.new()
+		l.text = "\n\nEmpty slot\n\nMint a hero below\nor buy one in the Market"
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.add_theme_color_override("font_color", Color("#5a566a"))
+		empty.add_child(l)
+		_cards_row.add_child(empty)
+	_rebuild_recruit()
+	_rebuild_relics()
+	_refresh()
 
 
 func _build_card(i: int) -> Control:
@@ -66,11 +99,10 @@ func _build_card(i: int) -> Control:
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var v := VBoxContainer.new()
 	panel.add_child(v)
-
 	var top := HBoxContainer.new()
 	v.add_child(top)
 	var portrait := TextureRect.new()
-	portrait.texture = PixelArt.frames(cdef["sprite"])[0]
+	portrait.texture = PixelArt.unit_frames(hero["class"], cdef["sprite"], {}, false)[0]
 	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	portrait.custom_minimum_size = Vector2(40, 40)
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -81,10 +113,12 @@ func _build_card(i: int) -> Control:
 	name_box.add_theme_constant_override("separation", 0)
 	top.add_child(name_box)
 	var name_lbl := Label.new()
-	name_lbl.text = "%s the %s" % [hero["name"], cdef["name"]]
+	name_lbl.text = "%s · %s" % [hero["name"], cdef["name"]]
+	name_lbl.add_theme_color_override("font_color", UiUtil.rarity_color(hero.get("rarity", "common")))
 	name_box.add_child(name_lbl)
 	var level_lbl := Label.new()
 	level_lbl.add_theme_color_override("font_color", Color("#9a96a8"))
+	level_lbl.add_theme_font_size_override("font_size", 12)
 	name_box.add_child(level_lbl)
 	var row_btn := Button.new()
 	row_btn.focus_mode = Control.FOCUS_NONE
@@ -121,37 +155,64 @@ func _build_card(i: int) -> Control:
 	skill.add_theme_font_size_override("font_size", 12)
 	skill.add_theme_color_override("font_color", Color("#7fe0ff"))
 	v.add_child(skill)
-
-	v.add_child(HSeparator.new())
-	var slots := {}
-	for slot in DataDB.items()["slots"]:
-		var b := Button.new()
-		b.focus_mode = Control.FOCUS_NONE
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 12)
-		b.pressed.connect(func(): Game.unequip(i, slot))
-		v.add_child(b)
-		slots[slot] = b
-	var sets_lbl := Label.new()
-	sets_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	sets_lbl.add_theme_font_size_override("font_size", 12)
-	sets_lbl.add_theme_color_override("font_color", Color("#5fd35f"))
-	v.add_child(sets_lbl)
-
-	_cards.append({"level": level_lbl, "xp": xp, "row_btn": row_btn, "stats": stat_labels, "slots": slots, "sets": sets_lbl})
+	if Game.state["heroes"].size() > 1:
+		var bench := Button.new()
+		bench.focus_mode = Control.FOCUS_NONE
+		bench.text = "Send to bench"
+		bench.add_theme_font_size_override("font_size", 12)
+		bench.pressed.connect(func(): Game.bench_hero(i))
+		v.add_child(bench)
+	_cards.append({"level": level_lbl, "xp": xp, "row_btn": row_btn, "stats": stat_labels})
 	return panel
 
 
+func _rebuild_recruit() -> void:
+	for c in _recruit_box.get_children():
+		c.queue_free()
+	var head := HBoxContainer.new()
+	_recruit_box.add_child(head)
+	var t := Label.new()
+	t.text = "Heroes: %d/%d in party · %d on the bench" % [Game.state["heroes"].size(), Heroes.party_slots(), Game.state["bench"].size()]
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(t)
+	_mint_btn = Button.new()
+	_mint_btn.focus_mode = Control.FOCUS_NONE
+	_mint_btn.tooltip_text = "Mint a brand-new hero: random class, name and rarity (potential)."
+	_mint_btn.pressed.connect(func(): Game.mint_hero())
+	head.add_child(_mint_btn)
+	for b in Game.state["bench"].size():
+		var hero: Dictionary = Game.state["bench"][b]
+		var row := HBoxContainer.new()
+		var l := Label.new()
+		l.text = "%s · %s · Lv %d" % [hero["name"], DataDB.classes()[hero["class"]]["name"], hero["level"]]
+		l.add_theme_color_override("font_color", UiUtil.rarity_color(hero.get("rarity", "common")))
+		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(l)
+		for p in Game.state["heroes"].size():
+			var sb := Button.new()
+			sb.focus_mode = Control.FOCUS_NONE
+			sb.add_theme_font_size_override("font_size", 12)
+			sb.text = "Swap with " + Game.state["heroes"][p]["name"]
+			sb.pressed.connect(func(): Game.swap_hero(p, b))
+			row.add_child(sb)
+		if Game.state["heroes"].size() < Heroes.party_slots():
+			var jb := Button.new()
+			jb.focus_mode = Control.FOCUS_NONE
+			jb.text = "Join party"
+			jb.pressed.connect(func(): Game.swap_hero(Game.state["heroes"].size(), b))
+			row.add_child(jb)
+		_recruit_box.add_child(row)
+
+
 func _refresh() -> void:
-	if not is_visible_in_tree():
+	if not is_visible_in_tree() or _cards.size() != Game.state["heroes"].size():
 		return
 	var mods := StatCalc.party_mods(Game.state)
 	for i in _cards.size():
 		var hero: Dictionary = Game.state["heroes"][i]
 		var card: Dictionary = _cards[i]
 		var st := StatCalc.hero_stats(Game.state, hero, mods)
-		card["level"].text = "Level %d" % hero["level"]
+		card["level"].text = "Level %d · %s potential · %d skill pts" % [hero["level"], hero.get("rarity", "common").capitalize(), Heroes.skill_points_free(hero)]
 		card["xp"].max_value = Progression.xp_to_next(int(hero["level"]))
 		card["xp"].value = float(hero["xp"])
 		card["row_btn"].text = "Front" if hero["row"] == "front" else "Back"
@@ -169,6 +230,10 @@ func _refresh() -> void:
 		for key in values:
 			card["stats"][key][0].text = values[key][0]
 			card["stats"][key][1].text = values[key][1]
+	if _mint_btn != null:
+		var cost := Heroes.mint_cost(Game.state)
+		_mint_btn.text = "  Mint hero (%s gold)  " % UiUtil.num(cost)
+		_mint_btn.disabled = Game.state["gold"] < cost
 	for key in _train_buttons:
 		var t: Dictionary = DataDB.balance()["training"][key]
 		var cost := Progression.training_cost(Game.state, key)
@@ -178,58 +243,35 @@ func _refresh() -> void:
 	_auto_train.set_pressed_no_signal(Game.state["settings"].get("auto_train", true))
 
 
-func _refresh_gear() -> void:
-	if not is_visible_in_tree():
-		return
-	var sets := DataDB.sets()
-	for i in _cards.size():
-		var hero: Dictionary = Game.state["heroes"][i]
-		var card: Dictionary = _cards[i]
-		for slot in card["slots"]:
-			var b: Button = card["slots"][slot]
-			var item = hero["equipment"][slot]
-			if item == null:
-				b.text = "%s: —" % slot.capitalize()
-				b.tooltip_text = "Empty"
-				b.remove_theme_color_override("font_color")
-			else:
-				b.text = "%s: %s" % [slot.capitalize(), item["name"]]
-				b.tooltip_text = item_tooltip(item) + "\n\n(click to unequip)"
-				b.add_theme_color_override("font_color", UiUtil.rarity_color(item["rarity"]))
-		var lines := []
-		var active := StatCalc.active_sets(hero)
-		for set_id in active:
-			var parts := []
-			for threshold in sets[set_id]["bonuses"]:
-				var on: bool = active[set_id] >= int(threshold)
-				parts.append(("[%s] " % threshold) + sets[set_id]["bonuses"][threshold]["text"] + ("" if on else " (inactive)"))
-			lines.append("%s (%d/6): %s" % [sets[set_id]["name"], active[set_id], "; ".join(parts)])
-		card["sets"].text = "\n".join(lines)
-	_refresh_relics()
-	_refresh()
-
-
-func _refresh_relics() -> void:
+func _rebuild_relics() -> void:
 	for c in _relic_box.get_children():
 		c.queue_free()
 	var slots := StatCalc.relic_slots(Game.state)
 	var lbl := Label.new()
-	lbl.text = "Relics (%d/%d):" % [Game.state["relics_equipped"].size(), slots]
+	lbl.text = "Relics %d/%d equipped:" % [Game.state["relics_equipped"].size(), slots]
 	_relic_box.add_child(lbl)
 	var relics := DataDB.relics()
-	for relic_id in Game.state["relics_equipped"]:
+	for relic_id in relics:
+		var owned: bool = relic_id in Game.state["relics_owned"]
 		var b := Button.new()
 		b.focus_mode = Control.FOCUS_NONE
-		b.text = relics[relic_id]["name"]
-		b.tooltip_text = relics[relic_id]["description"] + "\n\n(click to unequip)"
-		b.add_theme_color_override("font_color", UiUtil.rarity_color("relic"))
-		b.pressed.connect(func(): Game.unequip_relic(relic_id))
+		b.add_theme_font_size_override("font_size", 12)
+		if not owned:
+			b.text = "???"
+			b.disabled = true
+			b.tooltip_text = "Undiscovered relic"
+		else:
+			var equipped: bool = relic_id in Game.state["relics_equipped"]
+			b.text = ("● " if equipped else "○ ") + relics[relic_id]["name"]
+			b.tooltip_text = relics[relic_id]["description"] + ("\n\n(click to unequip)" if equipped else "\n\n(click to equip)")
+			b.add_theme_color_override("font_color", UiUtil.rarity_color("relic"))
+			b.disabled = not equipped and Game.state["relics_equipped"].size() >= slots
+			b.pressed.connect(func():
+				if equipped:
+					Game.unequip_relic(relic_id)
+				else:
+					Game.equip_relic(relic_id))
 		_relic_box.add_child(b)
-	for i in slots - Game.state["relics_equipped"].size():
-		var empty := Label.new()
-		empty.text = "[ empty ]"
-		empty.add_theme_color_override("font_color", Color("#5a566a"))
-		_relic_box.add_child(empty)
 
 
 static func item_tooltip(item: Dictionary) -> String:
@@ -237,7 +279,7 @@ static func item_tooltip(item: Dictionary) -> String:
 	lines.append("%s" % item["name"])
 	var rarity_name: String = DataDB.rarities()[item["rarity"]]["name"]
 	var cls: String = item["class"]
-	lines.append("%s %s  ·  iLvl %d%s" % [rarity_name, item["slot"].capitalize(), item["ilvl"], ("  ·  " + DataDB.classes()[cls]["name"] + " only") if cls != "" else ""])
+	lines.append("%s %s  ·  iLvl %d%s" % [rarity_name, item["slot"].capitalize(), item["ilvl"], ("  ·  " + DataDB.classes()[cls]["name"] + " weapon") if cls != "" else ""])
 	for key in item["stats"]:
 		lines.append("  " + UiUtil.stat_line(key, float(item["stats"][key])))
 	if item.get("set", "") != "":

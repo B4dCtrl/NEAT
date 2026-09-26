@@ -20,6 +20,17 @@ static func biome_for(floor_num: int) -> Dictionary:
 
 
 ## "" for a normal floor, otherwise "guardian", "elite" or "lord".
+static func is_bonfire(floor_num: int) -> bool:
+	var every := int(DataDB.floor_rules()["archetypes"].get("bonfire_every", 10))
+	return floor_num % every == 1 or every == 1
+
+
+## Last bonfire at or below this floor.
+static func bonfire_below(floor_num: int) -> int:
+	var every := int(DataDB.floor_rules()["archetypes"].get("bonfire_every", 10))
+	return maxi(1, floor_num - ((floor_num - 1) % every))
+
+
 static func boss_tier(floor_num: int) -> String:
 	var arch: Dictionary = DataDB.floor_rules()["archetypes"]
 	if floor_num % int(arch["lord_every"]) == 0:
@@ -32,7 +43,8 @@ static func boss_tier(floor_num: int) -> String:
 
 
 ## Describes a floor: {floor, type, biome, tier, enemies, shrine}.
-## type is one of "standard", "shrine", "vault", "guardian".
+## type is one of "standard", "shrine", "vault", "guardian", "bonfire".
+## Bonfires sit on floors 1, 11, 21...: the checkpoint the party returns to.
 static func generate(run_seed: int, floor_num: int) -> Dictionary:
 	var rules := DataDB.floor_rules()
 	var rng := floor_rng(run_seed, floor_num)
@@ -46,6 +58,9 @@ static func generate(run_seed: int, floor_num: int) -> Dictionary:
 		"enemies": [],
 		"shrine": {},
 	}
+	if is_bonfire(floor_num):
+		info["type"] = "bonfire"
+		return info
 	if info["tier"] != "":
 		info["type"] = "guardian"
 		var tier_def: Dictionary = DataDB.enemy_scaling()["boss_tiers"][info["tier"]]

@@ -533,6 +533,244 @@
 					"oo..oo.."
 				]
 			]
+		},
+		"item_sword": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"..........oo",
+					".........oao",
+					".......ooao.",
+					"......oaao..",
+					".....oaao...",
+					"..o.oaao....",
+					"..ooaao.....",
+					"...oco......",
+					"..obooo.....",
+					".obo..o.....",
+					"obo.........",
+					"oo.........."
+				]
+			]
+		},
+		"item_axe": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					".....oooo...",
+					"....oaaaao..",
+					"...oaaddao..",
+					"...oaadao...",
+					"....oobo....",
+					"....obo.....",
+					"...obo......",
+					"..obo.......",
+					".obo........",
+					"obo.........",
+					"oo..........",
+					"............"
+				]
+			]
+		},
+		"item_bow": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"....ooo.....",
+					"...obbbo....",
+					"..obo..o....",
+					".obo...d....",
+					".bo....d....",
+					"obo....d....",
+					"obo....d....",
+					".bo....d....",
+					".obo...d....",
+					"..obo..o....",
+					"...obbbo....",
+					"....ooo....."
+				]
+			]
+		},
+		"item_staff": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"........ooo.",
+					".......oeceo",
+					".......oeeeo",
+					"........obo.",
+					".......obo..",
+					"......obo...",
+					".....obo....",
+					"....obo.....",
+					"...obo......",
+					"..obo.......",
+					".obo........",
+					".oo........."
+				]
+			]
+		},
+		"item_helm": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"............",
+					"....oooo....",
+					"...oaaaao...",
+					"..oaacaaao..",
+					"..oaaaaaao..",
+					".oaaaaaaaao.",
+					".oaoooooaao.",
+					".oao.e..oao.",
+					".oao....oao.",
+					".ooo....ooo.",
+					"............",
+					"............"
+				]
+			]
+		},
+		"item_chest": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"............",
+					".oo......oo.",
+					"oaaoooooaao.",
+					"oaaacaaaaao.",
+					".oaaaaaaao..",
+					"..oaaaaao...",
+					"..oaacaao...",
+					"..oaaaaao...",
+					"..oadddao...",
+					"..oaaaaao...",
+					"..ooooooo...",
+					"............"
+				]
+			]
+		},
+		"item_gloves": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"............",
+					"..oo........",
+					".oaoo.oo....",
+					".oaoaoaoo...",
+					".oaoaoaoao..",
+					".oaaaaaaao..",
+					".oaaaaaaao..",
+					"..oaaaaao...",
+					"..oddddo....",
+					"..oaaaao....",
+					"..oooooo....",
+					"............"
+				]
+			]
+		},
+		"item_boots": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"............",
+					"..oooo......",
+					"..obbo......",
+					"..obbo......",
+					"..obbo......",
+					"..obbo......",
+					"..obbboooo..",
+					"..obbbbbbbo.",
+					"..obbbbbbbo.",
+					"..oddddddo..",
+					"..ooooooooo.",
+					"............"
+				]
+			]
+		},
+		"item_ring": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"............",
+					"....oooo....",
+					"...oecceo...",
+					"....oooo....",
+					"...oo..oo...",
+					"..oc....co..",
+					"..oc....co..",
+					"..oc....co..",
+					"...oc..co...",
+					"....occo....",
+					".....oo.....",
+					"............"
+				]
+			]
+		},
+		"item_tome": {
+			"palette": {"o": "#14121c", "a": "#c9d1d9", "b": "#8a5a33", "c": "#f2c14e", "d": "#7a8494", "e": "#5fb0ff"},
+			"frames": [
+				[
+					"............",
+					"..oooooooo..",
+					".obbbbbbbbo.",
+					".obccbbbbao.",
+					".obcbbbbbao.",
+					".obbbbbbbao.",
+					".obbbbbbbao.",
+					".obbbbbbbao.",
+					".obbbbbbbao.",
+					".oooooooooo.",
+					"..aaaaaaaa..",
+					"............"
+				]
+			]
+		},
+		"icon_market": {
+			"palette": {"o": "#14121c", "a": "#d9574a", "b": "#f2e6c9", "c": "#8a5a33"},
+			"frames": [
+				[
+					"oooooooo",
+					"abababao",
+					"oooooooo",
+					".obbbbo.",
+					".obccbo.",
+					".obccbo.",
+					".obccbo.",
+					"oooooooo"
+				]
+			]
+		},
+		"stairborn": {
+			"palette": {"o": "#14121c", "c": "#6b4f8c", "s": "#f0c8a0", "e": "#1a1a1a", "b": "#c9a36b", "a": "#9e3b3b", "k": "#3b2a20", "w": "#d0d6de"},
+			"frames": [
+				[
+					"....oooo....",
+					"...occcco...",
+					"..occcccco..",
+					"..ocsssseo..",
+					"..ocsesso.w.",
+					"...obbbbo.w.",
+					"..obaaaaboow",
+					"..obaaaabo.w",
+					"..osaaaaso.k",
+					"...okkkko...",
+					"...obo.obo..",
+					"...oo...oo.."
+				],
+				[
+					"....oooo....",
+					"...occcco...",
+					"..occcccco..",
+					"..ocsssseo..",
+					"..ocsesso.w.",
+					"...obbbbo.w.",
+					"..obaaaaboow",
+					"..obaaaabo.w",
+					"..osaaaaso.k",
+					"...okkkko...",
+					"....oboobo..",
+					"....oooo...."
+				]
+			]
 		}
 	}
 }

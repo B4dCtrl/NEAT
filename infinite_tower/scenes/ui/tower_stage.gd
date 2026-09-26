@@ -15,6 +15,7 @@ const TowerGen = preload("res://core/tower_generator.gd")
 const HeroSprite = preload("res://scenes/entities/hero_sprite.tscn")
 const EnemySprite = preload("res://scenes/entities/enemy_sprite.tscn")
 const UiNum = preload("res://scenes/ui/ui_util.gd")
+const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 
 ## Size of one art pixel on screen.
 @export var px := 2.0
@@ -49,6 +50,7 @@ var _cam_t := 0.0          # which part of the tower faces the viewer
 var _cam_h := 0.0          # camera height
 var _fall := 0.0
 var _floaters: Array = []
+var _drops: Array = []     # {tex, color, age, t, rank}
 var _pal := {}
 var _pal_key := ""
 var _time := 0.0
@@ -59,13 +61,11 @@ var _tower_tex_key := ""
 func _ready() -> void:
 	clip_contents = true
 	mouse_filter = Control.MOUSE_FILTER_PASS
-	for i in 3:
-		var sp = HeroSprite.instantiate()
-		add_child(sp)
-		hero_sprites.append(sp)
 	_rebuild_heroes()
 	_snap_camera()
 	Game.settings_changed.connect(_on_style_changed)
+	Game.loot_dropped.connect(_on_loot)
+	Game.party_changed.connect(_rebuild_heroes)
 
 
 func is_mono() -> bool:
@@ -80,9 +80,15 @@ func _on_style_changed() -> void:
 
 func _rebuild_heroes() -> void:
 	var classes := DataDB.classes()
+	while hero_sprites.size() < Game.state["heroes"].size():
+		var sp = HeroSprite.instantiate()
+		add_child(sp)
+		hero_sprites.append(sp)
+	while hero_sprites.size() > Game.state["heroes"].size():
+		hero_sprites.pop_back().queue_free()
 	for i in hero_sprites.size():
 		var hero: Dictionary = Game.state["heroes"][i]
-		hero_sprites[i].configure(classes[hero["class"]]["sprite"], {}, px, false, is_mono())
+		hero_sprites[i].configure(classes[hero["class"]]["sprite"], {}, px, false, is_mono(), hero["class"])
 		hero_sprites[i].unit_uid = "h%d" % i
 
 
@@ -126,7 +132,16 @@ func party_t() -> float:
 	var f := int(Game.state["floor"])
 	if exp.phase == "walk":
 		return lerpf(rest_t(f - 1), rest_t(f), exp.walk_progress())
+	if _is_falling(exp) and not exp.last_fall.is_empty():
+		# Fall Back: the party tumbles down the helix to the bonfire.
+		var k: float = 1.0 - exp.phase_left / maxf(exp.phase_total, 0.001)
+		k = k * k * (3.0 - 2.0 * k)
+		return lerpf(rest_t(int(exp.last_fall["from"])), rest_t(int(exp.last_fall["to"])), k)
 	return rest_t(f)
+
+
+func _is_falling(exp) -> bool:
+	return exp.phase == "pause" and exp.after_pause == "walk"
 
 
 ## The camera frames the whole fight when there is one.
@@ -151,15 +166,14 @@ func _process(delta: float) -> void:
 	var exp = Game.expedition
 	_update_palette()
 
-	var falling: bool = exp.phase == "pause" and exp.after_pause == "walk"
-	_fall = minf(_fall + delta * 1.4, 1.0) if falling else maxf(_fall - delta * 3.0, 0.0)
+	_fall = 1.0 if _is_falling(exp) else 0.0
 
 	var target_t := _target_cam_t()
 	var target_h := smooth_h(party_t())
-	if absf(target_t - _cam_t) > 25.0:
+	if absf(target_t - _cam_t) > 40.0:
 		_snap_camera()
-	# After a Fall Back the tower visibly unwinds downwards instead of snapping.
-	var rate := 2.5 if absf(target_t - _cam_t) > 1.0 else 8.0
+	# During a Fall Back the camera rides along the tumbling party.
+	var rate := 12.0 if _fall > 0.0 else (2.5 if absf(target_t - _cam_t) > 1.0 else 8.0)
 	_cam_t = lerpf(_cam_t, target_t, minf(1.0, delta * rate))
 	_cam_h = lerpf(_cam_h, target_h, minf(1.0, delta * rate))
 
@@ -167,6 +181,9 @@ func _process(delta: float) -> void:
 	_place_heroes(exp)
 	_place_enemies(exp)
 	_consume_combat_events()
+	for d in _drops:
+		d["age"] += delta
+	_drops = _drops.filter(func(d): return d["age"] < DROP_LIFE)
 	for f in _floaters:
 		f["t"] += delta
 	_floaters = _floaters.filter(func(f): return f["t"] < 1.1)
@@ -225,8 +242,8 @@ func _build_tower_texture() -> void:
 
 func _hero_order() -> Array:
 	# Back-row heroes walk behind, front-row heroes lead the climb.
-	var idx := [0, 1, 2]
 	var heroes: Array = Game.state["heroes"]
+	var idx := range(mini(heroes.size(), hero_sprites.size()))
 	idx.sort_custom(func(a, b):
 		var ra := 1 if heroes[a]["row"] == "front" else 0
 		var rb := 1 if heroes[b]["row"] == "front" else 0
@@ -238,19 +255,21 @@ func _place_heroes(exp) -> void:
 	var base_t := party_t()
 	var order := _hero_order()
 	var walking: bool = exp.phase == "walk"
+	var centre := (order.size() - 1) * 0.5
 	for slot in order.size():
 		var i: int = order[slot]
 		var sp = hero_sprites[i]
-		var t := base_t + (slot - 1) * SLOT
+		var t := base_t + (slot - centre) * SLOT
 		var p := project(t, R_WALK, ground_h(t))
 		var pos := Vector2(p.x, p.y)
 		if _fall > 0.0:
-			pos.y += _fall * _fall * size.y * 1.4
+			# Tumbling: little hops as they roll down the steps.
+			pos.y -= absf(sin(_time * 14.0 + slot)) * 3.0 * px
 		sp.position = pos.round()
 		sp.visible = p.z > 0.05
-		sp.walking = walking
-		sp.modulate.a = 1.0 - _fall
-		var u = exp.combat.heroes[i] if exp.combat != null and exp.phase == "combat" else null
+		sp.walking = walking or _fall > 0.0
+		sp.modulate.a = 1.0
+		var u = exp.combat.heroes[i] if exp.combat != null and exp.phase == "combat" and i < exp.combat.heroes.size() else null
 		if u != null:
 			sp.hp_ratio = u.hp_ratio()
 			sp.set_dead(not u.alive)
@@ -273,7 +292,7 @@ func _sync_enemies(exp) -> void:
 	for u in c.enemies:
 		var def := DataDB.unit_def(u.def_id)
 		var sp = EnemySprite.instantiate()
-		sp.configure(def["sprite"], def.get("palette", {}), px * (BOSS_SCALE if u.is_boss else 1.0), true, is_mono())
+		sp.configure(def["sprite"], def.get("palette", {}), px * (BOSS_SCALE if u.is_boss else 1.0), true, is_mono(), u.def_id)
 		sp.unit_uid = u.uid
 		add_child(sp)
 		enemy_sprites.append(sp)
@@ -340,6 +359,101 @@ func _consume_combat_events() -> void:
 					_float_at(src, "ENRAGE", Color("#ff4f4f"), true)
 
 
+## Flickering pixel campfire on every bonfire landing in view.
+func _draw_bonfires() -> void:
+	var every := int(DataDB.floor_rules()["archetypes"].get("bonfire_every", 10))
+	var k0 := int(floorf(_cam_t)) - 3
+	for k in range(k0, k0 + 7):
+		if k < 1 or not TowerGen.is_bonfire(k):
+			continue
+		var t := rest_t(k) + SLOT * 1.6
+		var p := project(t, R_WALK, ground_h(t))
+		if p.z < 0.2 or p.y < -20 or p.y > size.y + 20:
+			continue
+		var base := Vector2(p.x, p.y)
+		var ink: Color = _pal["ink"]
+		# Logs
+		draw_rect(Rect2(base + Vector2(-5, -2) * px, Vector2(10, 2) * px), ink)
+		draw_rect(Rect2(base + Vector2(-3, -3) * px, Vector2(6, 1) * px), _pal["mid"])
+		# Flames: three flickering layers.
+		var fl := [Color("#ff6a1a"), Color("#ffb13d"), Color("#fff1a8")]
+		if is_mono():
+			fl = [ink, _pal["mid"], _pal["paper"]]
+		for layer in 3:
+			var h := (7.0 - layer * 2.0 + sin(_time * 9.0 + layer * 1.7) * 1.2) * px
+			var w := (6.0 - layer * 1.6) * px
+			var c: Color = fl[layer]
+			var pts := PackedVector2Array([base + Vector2(-w * 0.5, -2 * px), base + Vector2(w * 0.5, -2 * px),
+				base + Vector2(sin(_time * 7.0 + layer) * px, -2 * px - h)])
+			draw_colored_polygon(pts, c)
+		if not is_mono():
+			var glow := Color(1.0, 0.6, 0.2, 0.12 + 0.05 * sin(_time * 5.0))
+			draw_circle(base + Vector2(0, -4) * px, 12.0 * px, glow)
+		if k == int(Game.state.get("checkpoint", 1)):
+			var font := get_theme_default_font()
+			var fs := int(maxf(8.0, px * 3.5))
+			draw_string_outline(font, base + Vector2(-30, 6 * px), "checkpoint", HORIZONTAL_ALIGNMENT_CENTER, 60, fs, 3, ink)
+			draw_string(font, base + Vector2(-30, 6 * px), "checkpoint", HORIZONTAL_ALIGNMENT_CENTER, 60, fs, Color("#ffb13d"))
+
+
+const DROP_LIFE := 2.6
+
+
+## Loot pops out where the enemies stood, lands on the step glowing in its
+## rarity colour, then flies to the party.
+func _on_loot(drop: Dictionary) -> void:
+	var tex: Texture2D
+	var color: Color
+	var rank := 0
+	if drop.has("relic"):
+		tex = PixelArt.icon("relic")
+		color = UiNum.rarity_color("relic")
+		rank = 6
+	else:
+		tex = PixelArt.item_icon(drop, is_mono())
+		color = UiNum.rarity_color(drop["rarity"])
+		rank = DataDB.rarity_order(drop["rarity"])
+	var land := rest_t(int(Game.state["floor"]))
+	var n := _drops.size()
+	_drops.append({"tex": tex, "color": color, "age": -0.2 * n, "t": land + SLOT * (2.2 + 0.5 * (n % 4)), "rank": rank})
+
+
+func _draw_drops() -> void:
+	var party := project(party_t(), R_WALK, ground_h(party_t()))
+	for d in _drops:
+		var age: float = d["age"]
+		if age < 0.0 or d["tex"] == null:
+			continue
+		var p := project(d["t"], R_WALK, ground_h(d["t"]))
+		if p.z < 0.05:
+			continue
+		var pos := Vector2(p.x, p.y)
+		var hop := 0.0
+		if age < 0.5:
+			hop = sin(age / 0.5 * PI) * 10.0 * px
+		elif age > 1.6:
+			var k := clampf((age - 1.6) / 0.8, 0.0, 1.0)
+			pos = pos.lerp(Vector2(party.x, party.y), k * k)
+			hop = sin(k * PI) * 8.0 * px
+		pos.y -= hop
+		var alpha := clampf((DROP_LIFE - age) / 0.3, 0.0, 1.0)
+		var col: Color = d["color"]
+		var tex: Texture2D = d["tex"]
+		var sz := Vector2(8.0, 8.0) * px
+		var center := pos - Vector2(0, sz.y * 0.6)
+		if d["rank"] >= 4:
+			# Legendary+ : spinning light rays.
+			for i in 6:
+				var a := _time * 2.0 + i * TAU / 6.0
+				var ray := col
+				ray.a = 0.35 * alpha
+				draw_line(center, center + Vector2(cos(a), sin(a)) * 11.0 * px, ray, px)
+		var glow := col
+		glow.a = (0.25 + 0.15 * sin(_time * 8.0)) * alpha
+		draw_circle(center, 6.0 * px, glow)
+		draw_texture_rect(tex, Rect2(center - sz * 0.5, sz), false, Color(1, 1, 1, alpha))
+
+
 func _float_at(sp, text: String, color: Color, big: bool) -> void:
 	# The tiny taskbar tower stays clean: floating text only in the big view.
 	if not show_numbers:
@@ -368,6 +482,8 @@ func _draw() -> void:
 	_draw_tower()
 	for s in front:
 		_draw_segment(s, true)
+	_draw_bonfires()
+	_draw_drops()
 	_draw_floaters()
 
 
@@ -492,5 +608,5 @@ func _draw_floaters() -> void:
 		c.a = 1.0 - t / 1.1
 		var fs := int(maxf(9.0, px * (5.0 if f["big"] else 4.0)))
 		var p: Vector2 = f["pos"] - Vector2(0, t * 10.0 * px)
-		draw_string_outline(font, p + Vector2(-30, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 60, fs, 3, Color(0, 0, 0, c.a))
-		draw_string(font, p + Vector2(-30, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 60, fs, c)
+		draw_string_outline(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, 3, Color(0, 0, 0, c.a))
+		draw_string(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, c)

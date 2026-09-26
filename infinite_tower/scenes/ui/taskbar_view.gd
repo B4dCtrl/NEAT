@@ -2,7 +2,7 @@ extends Control
 ## TASKBAR MODE: a transparent window resting on the taskbar. Only the spiral
 ## tower and a floating HUD are visible; the rest of the window is
 ## click-through, like a desktop pet.
-##   [tower]  [party] FLOOR 382  Slime  18.2k  [»]
+##   [tower]  [party] FLOOR 382  Slime  18.2k  [»]   <- HUD only on mouse hover
 ## Focus safety: nothing here ever grabs keyboard focus or raises the window.
 ## Notifications are a soft glow plus a line of text, never a popup.
 
@@ -37,6 +37,9 @@ var _pressing := false
 var _dragging := false
 var _t := 0.0
 var _last_size := Vector2.ZERO
+var _hud_alpha := 0.0
+var _hud_hold := 0.0      # keeps the HUD up for a few seconds after a notification
+var _hud_shown := false
 
 
 func _ready() -> void:
@@ -47,6 +50,8 @@ func _ready() -> void:
 	expand_button.pressed.connect(func(): expand_requested.emit())
 	Game.notified.connect(_on_notified)
 	notify_box.visible = false
+	hud.modulate.a = 0.0
+	hud.visible = false
 	resized.connect(_layout)
 	_layout()
 	_refresh()
@@ -64,16 +69,53 @@ func _layout() -> void:
 	notify_box.offset_left = col
 	notify_box.offset_top = size.y - HUD_H - 26.0
 	notify_box.offset_bottom = size.y - HUD_H
-	# Only the tower column and the HUD strip catch the mouse.
-	var poly := PackedVector2Array([
-		Vector2(0, 0), Vector2(col, 0), Vector2(col, size.y - HUD_H),
-		Vector2(size.x, size.y - HUD_H), Vector2(size.x, size.y), Vector2(0, size.y)])
-	WindowManager.set_passthrough(poly)
+	_update_passthrough()
 	_last_size = size
+
+
+## Only the tower (and the HUD while it is shown) catch the mouse; the rest of
+## the window is click-through.
+func _update_passthrough() -> void:
+	var col := tower_column_width()
+	var poly: PackedVector2Array
+	if _hud_shown:
+		poly = PackedVector2Array([
+			Vector2(0, 0), Vector2(col, 0), Vector2(col, size.y - HUD_H),
+			Vector2(size.x, size.y - HUD_H), Vector2(size.x, size.y), Vector2(0, size.y)])
+	else:
+		poly = PackedVector2Array([Vector2(0, 0), Vector2(col, 0), Vector2(col, size.y), Vector2(0, size.y)])
+	WindowManager.set_passthrough(poly)
+
+
+## The HUD strip stays hidden while you work: it fades in when the mouse is over
+## the tower (or the HUD itself) and for a moment after an important event.
+func _update_hud(delta: float) -> void:
+	_hud_hold = maxf(0.0, _hud_hold - delta)
+	var local := _mouse_local()
+	var col := tower_column_width()
+	var over_tower := Rect2(0, 0, col, size.y).has_point(local)
+	var over_hud := _hud_shown and Rect2(col, size.y - HUD_H, size.x - col, HUD_H).has_point(local)
+	var want := over_tower or over_hud or _hud_hold > 0.0 or _pressing
+	_hud_alpha = move_toward(_hud_alpha, 1.0 if want else 0.0, delta * (6.0 if want else 2.5))
+	hud.modulate.a = _hud_alpha
+	notify_box.modulate.a = maxf(_hud_alpha, 1.0 if _notify_left > 0.0 else 0.0)
+	var shown := _hud_alpha > 0.01
+	if shown != _hud_shown:
+		_hud_shown = shown
+		hud.visible = shown
+		_update_passthrough()
+
+
+func _mouse_local() -> Vector2:
+	if WindowManager.is_headless():
+		return Vector2(-1, -1)
+	# Screen-space query: works even while the pointer is over a click-through area.
+	return Vector2(DisplayServer.mouse_get_position() - get_window().position)
 
 
 func _process(delta: float) -> void:
 	_t += delta
+	_update_hud(delta)
 	_glow_left = maxf(0.0, _glow_left - delta)
 	if _notify_left > 0.0:
 		_notify_left -= delta
@@ -100,22 +142,24 @@ func _on_notified(kind: String, text: String) -> void:
 	notify_icon.texture = PixelArt.icon(icon_id)
 	_notify_left = 8.0
 	notify_box.visible = true
+	if kind in ["relic", "legendary", "boss", "milestone"]:
+		_hud_hold = 4.0
 
 
 func _draw() -> void:
 	var col := tower_column_width()
 	var strip := Rect2(col - 4.0, size.y - HUD_H, size.x - col + 4.0, HUD_H)
-	var opacity := float(Game.state["settings"].get("bar_opacity", 0.0))
+	var opacity := float(Game.state["settings"].get("bar_opacity", 0.0)) * _hud_alpha
 	if opacity > 0.0:
 		var sb := StyleBoxFlat.new()
 		sb.bg_color = Color(0.06, 0.06, 0.09, opacity)
 		sb.set_corner_radius_all(8)
 		draw_style_box(sb, strip)
-	if _glow_left > 0.0:
+	if _glow_left > 0.0 and _hud_alpha > 0.01:
 		# Soft pulsing halo around the tower top: visible, never intrusive.
 		var pulse := 0.5 + 0.5 * sin(_t * 6.0)
 		var c := _glow_color
-		c.a = clampf(_glow_left / 2.0, 0.0, 1.0) * (0.35 + 0.35 * pulse)
+		c.a = clampf(_glow_left / 2.0, 0.0, 1.0) * (0.35 + 0.35 * pulse) * _hud_alpha
 		var sb := StyleBoxFlat.new()
 		sb.bg_color = Color(c.r, c.g, c.b, c.a * 0.25)
 		sb.border_color = c

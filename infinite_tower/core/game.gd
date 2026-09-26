@@ -11,6 +11,8 @@ const StatCalc = preload("res://core/stat_calculator.gd")
 const Inventory = preload("res://core/inventory.gd")
 const Progression = preload("res://core/progression.gd")
 const PlatformServices = preload("res://core/platform_services.gd")
+const Heroes = preload("res://core/heroes.gd")
+const Market = preload("res://core/market.gd")
 
 ## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
 signal notified(kind: String, text: String)
@@ -21,6 +23,10 @@ signal inventory_changed()
 signal state_changed()
 signal settings_changed()
 signal offline_report_ready(report: Dictionary)
+## Any loot the party picks up (item dict, or {"relic": id} / {"crystals": n}).
+signal loot_dropped(drop: Dictionary)
+## The party composition changed (recruit, mint, swap, bench, reset).
+signal party_changed()
 
 const AUTOSAVE_INTERVAL := 30.0
 
@@ -103,12 +109,14 @@ func _drain_events() -> void:
 			"loot":
 				var item: Dictionary = ev["item"]
 				inventory_changed.emit()
+				loot_dropped.emit(item)
 				if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary"):
 					notified.emit("legendary", item["name"])
 				elif item.get("set", "") != "":
 					notified.emit("set", item["name"])
 			"relic":
 				inventory_changed.emit()
+				loot_dropped.emit({"relic": ev["id"]})
 				if ev["new"]:
 					notified.emit("relic", "+1 Relic: " + DataDB.relics()[ev["id"]]["name"])
 			"milestone":
@@ -118,6 +126,8 @@ func _drain_events() -> void:
 				notified.emit("info", ev["name"])
 			"vault":
 				notified.emit("info", "Treasure Vault!")
+			"bonfire":
+				notified.emit("info", "Resting at the bonfire")
 			"wall_broken":
 				notified.emit("info", "Broke through floor %d!" % ev["floor"])
 			"level_up":
@@ -139,6 +149,8 @@ func current_enemy_name() -> String:
 			return info["shrine"]["name"]
 		"vault":
 			return "Treasure Vault"
+		"bonfire":
+			return "Bonfire (camping)" if expedition.is_camping() else "Bonfire"
 	if expedition.combat != null:
 		for u in expedition.combat.enemies:
 			if u.alive:
@@ -201,8 +213,67 @@ func ascend() -> void:
 		expedition = Expedition.new(state)
 		notified.emit("milestone", "Ascended! +%d Souls" % souls)
 		inventory_changed.emit()
+		party_changed.emit()
 		state_changed.emit()
 		save()
+
+
+func mint_hero() -> void:
+	var hero := Heroes.mint(state)
+	if not hero.is_empty():
+		GameState.add_history(state, "info", "Minted %s the %s [%s]" % [hero["name"], DataDB.classes()[hero["class"]]["name"], hero["rarity"]])
+		notified.emit("milestone", "Minted %s the %s" % [hero["name"], DataDB.classes()[hero["class"]]["name"]])
+		party_changed.emit()
+		state_changed.emit()
+
+
+func swap_hero(party_idx: int, bench_idx: int) -> void:
+	if Heroes.swap(state, party_idx, bench_idx):
+		party_changed.emit()
+
+
+func bench_hero(party_idx: int) -> void:
+	if Heroes.bench_hero(state, party_idx):
+		party_changed.emit()
+
+
+func learn_skill(hero_idx: int, node_id: String) -> void:
+	if Heroes.learn_skill(state["heroes"][hero_idx], node_id):
+		state_changed.emit()
+
+
+func reset_skills(hero_idx: int) -> void:
+	Heroes.reset_skills(state["heroes"][hero_idx])
+	state_changed.emit()
+
+
+func market_offers() -> Array:
+	Market.ensure_stock(state, int(Time.get_unix_time_from_system()))
+	return state["market"]["offers"]
+
+
+func market_buy(index: int) -> void:
+	var had: int = state["heroes"].size() + state["bench"].size()
+	if Market.buy(state, index):
+		inventory_changed.emit()
+		state_changed.emit()
+		if state["heroes"].size() + state["bench"].size() != had:
+			party_changed.emit()
+
+
+func market_reroll() -> void:
+	if Market.reroll(state, int(Time.get_unix_time_from_system())):
+		state_changed.emit()
+
+
+func camp_at_next_bonfire(on: bool) -> void:
+	state["settings"]["camp_at_bonfire"] = on
+	state_changed.emit()
+
+
+func leave_camp() -> void:
+	expedition.leave_camp()
+	state_changed.emit()
 
 
 func set_setting(key: String, value) -> void:
@@ -216,6 +287,7 @@ func reset_save() -> void:
 	GameState.add_history(state, "info", "A new expedition begins.")
 	expedition = Expedition.new(state)
 	inventory_changed.emit()
+	party_changed.emit()
 	settings_changed.emit()
 	state_changed.emit()
 	save()

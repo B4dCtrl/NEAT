@@ -21,8 +21,15 @@ var _bob_phase := 0.0
 var _tint := Color.WHITE
 
 
-func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false) -> void:
-	textures = PixelArt.frames(sprite_id, palette, mono)
+## Text sprites are 12 art pixels tall; bigger PNG art is scaled to the same height.
+const BASE_HEIGHT := 12.0
+
+var _norm := 1.0
+
+
+func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false, unit_id: String = "") -> void:
+	textures = PixelArt.unit_frames(unit_id, sprite_id, palette, mono)
+	_norm = BASE_HEIGHT / maxf(1.0, textures[0].get_height()) if not textures.is_empty() else 1.0
 	px_scale = scale_px
 	face_left = left
 	dead = false
@@ -35,7 +42,7 @@ func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.
 func size_px() -> Vector2:
 	if textures.is_empty():
 		return Vector2.ZERO
-	return Vector2(textures[0].get_width(), textures[0].get_height()) * px_scale
+	return Vector2(textures[0].get_width(), textures[0].get_height()) * px_scale * _norm
 
 
 func lunge() -> void:
@@ -74,7 +81,7 @@ func _draw() -> void:
 		var speed := 6.0 if walking else 2.0
 		frame_idx = int(_anim_t * speed + _bob_phase) % textures.size()
 	var tex: Texture2D = textures[frame_idx]
-	var sz := Vector2(tex.get_width(), tex.get_height()) * px_scale
+	var sz := Vector2(tex.get_width(), tex.get_height()) * px_scale * _norm
 	var bob: float = 0.0 if walking else round(sin(_anim_t * 3.0 + _bob_phase)) * 0.5 * px_scale
 	var dir := -1.0 if face_left else 1.0
 	var offset := Vector2(dir * sin(_lunge * PI) * 4.0 * px_scale, bob)

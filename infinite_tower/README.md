@@ -35,7 +35,7 @@ godot --headless --path . -s res://tests/run_tests.gd -- --balance   # + simula�
 xvfb-run -s "-screen 0 1920x1080x24" godot --path . -s res://tests/screenshot.gd -- /tmp/shots
 ```
 
-Os testes cobrem: integridade dos JSONs, determinismo da torre e do combate, raridades e
+Os testes (106) cobrem: integridade dos JSONs, determinismo da torre e do combate, raridades e
 auto-equip, Fall Back, save criptografado (incluindo arquivo adulterado → backup),
 progresso offline determinístico e rápido, e Ascension.
 
@@ -116,11 +116,29 @@ No Taskbar Mode a janela é `unfocusable` (`WINDOW_FLAG_NO_FOCUS`): recebe cliqu
 brilho pulsante na borda da barra + texto no HUD. O relatório de progresso offline também
 não abre janela: ele espera você abrir o Expedition Mode.
 
-### Fall Back (sem Game Over)
-Derrota → o grupo despenca 5–10 andares, cura total, e continua farmando. O andar que
-barrou o grupo vira a **Wall** (exibida na UI com o número de tentativas). Treino
-automático, XP e loot eventualmente quebram a parede; quando não quebram mais, é hora da
-**Ascension**.
+### Fogueiras e Fall Back (sem Game Over)
+Os andares 1, 11, 21… têm uma **fogueira**. Nela o grupo descansa (cura total), equipa o
+que houver de melhor na mochila, gasta pontos de habilidade e registra o **checkpoint**.
+Se o grupo inteiro cair, ele rola escada abaixo pela espiral até a última fogueira (morreu
+no 37 → volta ao 31) e continua farmando. O botão **"Camp at next bonfire"** faz o grupo
+parar na próxima fogueira e esperar enquanto você mexe nos equipamentos.
+
+### Heróis: o fundador e os recrutas
+Todo jogo começa com **The Stairborn** sozinho. Há mais 2 vagas na party, preenchidas por
+heróis **comprados no Mercado** ou **mintados**: gerados do zero, com classe, nome e raridade
+(potencial ×1.0 a ×1.42 nos atributos base) aleatórios. Heróis a mais ficam no banco. Cada
+herói tem sua **árvore de habilidades** (1 ponto por nível, ramos Might / Guard / Cunning).
+
+### Mercado e Steam
+O **Tower Market** troca o estoque a cada 15 min (determinístico por save): equipamentos
+em ouro, heróis, um Lendário em destaque e relics em Crystals. A seção Steam abre o
+Community Market no overlay. `tools/export_steam_itemdefs.gd` gera as item definitions do
+Steam Inventory Service (relics e peças de set, negociáveis) a partir dos JSONs. Para
+ativar: defina `steam_app_id` em `data/platform.json` e instale o GodotSteam.
+
+### Arte do PixelLab
+PNGs em `assets/sprites/` substituem a pixel art em texto automaticamente (heróis por
+classe, inimigos por id, ícones de item). Veja `assets/sprites/README.md`.
 
 ### Progresso offline determinístico
 O save guarda a posição do RNG (como string — 64 bits não cabem em float JSON). Ao abrir o
@@ -135,8 +153,8 @@ MD5: arquivo adulterado não abre e o loader cai para o `.bak`. A escrita é at�
 
 ### Balance (data-driven)
 Todos os números estão nos JSONs. Curva atual (sem Ascension, `--balance`):
-andar ~100 em 30 min, ~140 em 1h, ~200 em 3h e depois avanço lento com Fall Backs
-frequentes (~290 em 8h) — o ponto natural para ascender. Inimigos crescem ~5.6%/andar (HP) e itens ~4.2%/ilvl; a
+com um jogador que só minta heróis quando tem ouro: ~25 andares em 30 min,
+~50 em 1h (primeira Ascension) e ~100 em 5h, com Fall Backs frequentes depois disso. Inimigos crescem ~5.6%/andar (HP) e itens ~4.2%/ilvl; a
 diferença é coberta por níveis, treino, raridade, sets, relics e Souls.
 
 ## Conteúdo do MVP

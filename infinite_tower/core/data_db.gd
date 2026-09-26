@@ -9,6 +9,8 @@ const FILES := {
 	"floor_rules": "res://data/floor_rules.json",
 	"ascension": "res://data/ascension_tree.json",
 	"sprites": "res://data/sprites.json",
+	"skills": "res://data/skill_tree.json",
+	"platform": "res://data/platform.json",
 }
 
 static var _cache: Dictionary = {}
@@ -62,6 +64,14 @@ static func balance() -> Dictionary:
 
 static func ascension_nodes() -> Dictionary:
 	return table("ascension")["nodes"]
+
+
+static func skill_nodes() -> Dictionary:
+	return table("skills")["nodes"]
+
+
+static func platform() -> Dictionary:
+	return table("platform")
 
 
 static func sprites() -> Dictionary:

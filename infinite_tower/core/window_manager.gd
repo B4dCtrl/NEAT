@@ -10,8 +10,8 @@ extends Node
 
 signal mode_changed(mode: String)
 
-const EXPEDITION_SIZE := Vector2i(1100, 680)
-const EXPEDITION_MIN := Vector2i(960, 600)
+const EXPEDITION_SIZE := Vector2i(1100, 780)
+const EXPEDITION_MIN := Vector2i(960, 700)
 const BAR_MIN_WIDTH := 360
 const TRANSITION_TIME := 0.16
 

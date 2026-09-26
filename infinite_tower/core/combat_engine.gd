@@ -26,6 +26,8 @@ class Unit:
 	var crit_damage := 1.5
 	var dodge := 0.0
 	var damage_pct := 0.0
+	var lifesteal := 0.0
+	var cleave := 0.0
 	var fire_damage_pct := 0.0
 	var damage_type := "physical"
 	var element := ""
@@ -109,6 +111,8 @@ func _make_hero(entry: Dictionary) -> Unit:
 	u.dodge = st["dodge"]
 	u.damage_pct = st["damage_pct"]
 	u.fire_damage_pct = st["fire_damage_pct"]
+	u.lifesteal = st.get("lifesteal", 0.0)
+	u.cleave = st.get("cleave", 0.0)
 	u.damage_type = st["damage_type"]
 	u.element = st["element"]
 	u.cdr = st.get("cdr", 0.0)
@@ -222,6 +226,8 @@ func _basic_attack(u: Unit) -> void:
 		if u.pattern == "aoe":
 			for f in foes.slice(1):
 				_hit(u, f, 0.5, u.element, "splash")
+		elif u.cleave > 0.0 and foes.size() > 1 and foes[1].alive:
+			_hit(u, foes[1], u.cleave, u.element, "splash")
 	else:
 		var target := _enemy_target()
 		if target != null:
@@ -272,6 +278,9 @@ func _use_skill(u: Unit) -> void:
 				var dealt := _hit(u, f, float(sk["mult"]), "fire", "skill")
 				if dealt > 0.0 and f.alive:
 					_ignite(u, f, dealt * float(sk["burn"]) / float(sk["duration"]), float(sk["duration"]))
+		"self_heal":
+			u.hp = minf(u.max_hp, u.hp + u.max_hp * float(sk["value"]))
+			_emit({"t": "skill", "src": u.uid, "name": sk["name"]})
 		"slam":
 			_emit({"t": "skill", "src": u.uid, "name": sk["name"]})
 			for h in alive_units(SIDE_HEROES):
@@ -297,6 +306,8 @@ func _hit(src: Unit, dst: Unit, mult: float, element: String, tag: String) -> fl
 	_apply_damage(src, dst, dmg, crit, tag)
 
 	if src.side == SIDE_HEROES:
+		if src.lifesteal > 0.0 and src.alive:
+			src.hp = minf(src.max_hp, src.hp + dmg * src.lifesteal)
 		if crit and "blood_crown" in party_specials:
 			for h in alive_units(SIDE_HEROES):
 				h.hp = minf(h.max_hp, h.hp + dmg * 0.05)

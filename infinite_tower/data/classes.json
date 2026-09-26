@@ -1,4 +1,45 @@
 {
+	"stairborn": {
+		"name": "Stairborn",
+		"default_name": "The Stairborn",
+		"starter_weapon": "iron_sword",
+		"uses": [
+			"knight",
+			"ranger"
+		],
+		"role": "Founder / All-rounder",
+		"default_row": "front",
+		"aggro": 3.0,
+		"damage_type": "physical",
+		"attack_pattern": "single",
+		"element": "",
+		"sprite": "stairborn",
+		"founder": true,
+		"base": {
+			"hp": 340,
+			"attack": 22,
+			"defense": 15,
+			"magic_power": 0,
+			"attack_speed": 0.9,
+			"crit_chance": 0.08,
+			"crit_damage": 1.6,
+			"dodge": 0.05
+		},
+		"growth": {
+			"hp": 32,
+			"attack": 2.4,
+			"defense": 1.6
+		},
+		"skill": {
+			"id": "second_wind",
+			"name": "Second Wind",
+			"type": "self_heal",
+			"cooldown": 14.0,
+			"value": 0.35,
+			"description": "Recovers 35% of max HP. Born on the stairs, hard to put down."
+		},
+		"skill_branch": "guard"
+	},
 	"knight": {
 		"name": "Knight",
 		"default_name": "Aldric",
@@ -10,9 +51,31 @@
 		"attack_pattern": "single",
 		"element": "",
 		"sprite": "knight",
-		"base": {"hp": 260, "attack": 15, "defense": 16, "magic_power": 0, "attack_speed": 0.75, "crit_chance": 0.05, "crit_damage": 1.5, "dodge": 0.03},
-		"growth": {"hp": 28, "attack": 1.6, "defense": 1.7},
-		"skill": {"id": "shield_wall", "name": "Shield Wall", "type": "party_shield", "cooldown": 10.0, "duration": 4.0, "value": 0.35, "description": "Taunts all enemies and reduces party damage taken by 35% for 4s."}
+		"base": {
+			"hp": 260,
+			"attack": 15,
+			"defense": 16,
+			"magic_power": 0,
+			"attack_speed": 0.75,
+			"crit_chance": 0.05,
+			"crit_damage": 1.5,
+			"dodge": 0.03
+		},
+		"growth": {
+			"hp": 28,
+			"attack": 1.6,
+			"defense": 1.7
+		},
+		"skill": {
+			"id": "shield_wall",
+			"name": "Shield Wall",
+			"type": "party_shield",
+			"cooldown": 10.0,
+			"duration": 4.0,
+			"value": 0.35,
+			"description": "Taunts all enemies and reduces party damage taken by 35% for 4s."
+		},
+		"skill_branch": "guard"
 	},
 	"ranger": {
 		"name": "Ranger",
@@ -25,9 +88,31 @@
 		"attack_pattern": "single",
 		"element": "",
 		"sprite": "ranger",
-		"base": {"hp": 150, "attack": 20, "defense": 7, "magic_power": 0, "attack_speed": 1.25, "crit_chance": 0.15, "crit_damage": 1.75, "dodge": 0.10},
-		"growth": {"hp": 15, "attack": 2.3, "defense": 0.7},
-		"skill": {"id": "volley", "name": "Volley", "type": "multi_shot", "cooldown": 7.0, "hits": 4, "mult": 0.9, "description": "Fires 4 arrows at random enemies for 90% damage each."}
+		"base": {
+			"hp": 150,
+			"attack": 20,
+			"defense": 7,
+			"magic_power": 0,
+			"attack_speed": 1.25,
+			"crit_chance": 0.15,
+			"crit_damage": 1.75,
+			"dodge": 0.1
+		},
+		"growth": {
+			"hp": 15,
+			"attack": 2.3,
+			"defense": 0.7
+		},
+		"skill": {
+			"id": "volley",
+			"name": "Volley",
+			"type": "multi_shot",
+			"cooldown": 7.0,
+			"hits": 4,
+			"mult": 0.9,
+			"description": "Fires 4 arrows at random enemies for 90% damage each."
+		},
+		"skill_branch": "cunning"
 	},
 	"arcanist": {
 		"name": "Arcanist",
@@ -40,8 +125,31 @@
 		"attack_pattern": "aoe",
 		"element": "fire",
 		"sprite": "arcanist",
-		"base": {"hp": 125, "attack": 0, "defense": 5, "magic_power": 24, "attack_speed": 0.6, "crit_chance": 0.08, "crit_damage": 1.6, "dodge": 0.05},
-		"growth": {"hp": 12, "magic_power": 2.8, "defense": 0.5},
-		"skill": {"id": "meteor", "name": "Meteor", "type": "meteor", "cooldown": 12.0, "mult": 2.2, "burn": 0.25, "duration": 3.0, "description": "Hits all enemies for 220% magic damage and ignites them."}
+		"base": {
+			"hp": 125,
+			"attack": 0,
+			"defense": 5,
+			"magic_power": 24,
+			"attack_speed": 0.6,
+			"crit_chance": 0.08,
+			"crit_damage": 1.6,
+			"dodge": 0.05
+		},
+		"growth": {
+			"hp": 12,
+			"magic_power": 2.8,
+			"defense": 0.5
+		},
+		"skill": {
+			"id": "meteor",
+			"name": "Meteor",
+			"type": "meteor",
+			"cooldown": 12.0,
+			"mult": 2.2,
+			"burn": 0.25,
+			"duration": 3.0,
+			"description": "Hits all enemies for 220% magic damage and ignites them."
+		},
+		"skill_branch": "might"
 	}
 }

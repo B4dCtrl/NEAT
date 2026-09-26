@@ -18,7 +18,8 @@
 		"min_floor_for_events": 3,
 		"guardian_every": 10,
 		"elite_every": 25,
-		"lord_every": 100
+		"lord_every": 100,
+		"bonfire_every": 10
 	},
 	"enemy_count": {"base_min": 1, "base_max": 2, "extra_every": 20, "cap": 4},
 	"shrines": [
@@ -30,14 +31,15 @@
 	],
 	"balance": {
 		"tick": 0.1,
-		"travel_time": 2.4,
+		"travel_time": 15.0,
 		"boss_intro_time": 1.6,
 		"event_pause": 1.2,
 		"chest_pause": 1.6,
-		"fallback_pause": 2.0,
+		"fallback_pause": 3.2,
+		"bonfire_rest": 4.0,
 		"combat_time_limit": 45.0,
 		"boss_time_limit": 75.0,
-		"heal_per_floor": 0.3,
+		"heal_per_floor": 0.2,
 		"fall_back_min": 5,
 		"fall_back_max": 10,
 		"xp_base": 30,
@@ -63,6 +65,28 @@
 		"ascension_min_floor": 50,
 		"soul_divisor": 10.0,
 		"soul_exponent": 1.6,
+		"party_slots": 3,
+		"hire": {"gold_base": 150, "gold_growth": 3.0, "mint_gold_base": 120, "mint_gold_growth": 2.6, "mint_crystals": 0},
+		"hero_rarities": {
+			"common":    {"potential": 1.0,  "weight": 55},
+			"uncommon":  {"potential": 1.08, "weight": 28},
+			"rare":      {"potential": 1.17, "weight": 12},
+			"epic":      {"potential": 1.28, "weight": 4},
+			"legendary": {"potential": 1.42, "weight": 1}
+		},
+		"hero_names": ["Aldric", "Wren", "Mira", "Tobin", "Sable", "Kestrel", "Iona", "Bram", "Lark", "Oswin", "Nyx", "Corin", "Elsa", "Juno", "Rook", "Tamsin", "Vale", "Hale", "Pip", "Quill"],
+		"market": {
+			"rotation_minutes": 15,
+			"stock": 8,
+			"min_rarity": "uncommon",
+			"rarity_bonus": 0.6,
+			"gold_price_mult": 7.0,
+			"reroll_crystals": 2,
+			"featured_rarity": "legendary",
+			"featured_crystals": 12,
+			"relic_crystals": 60,
+			"hero_offers": 2
+		},
 		"offline_max_hours": 12.0,
 		"offline_sim_cap_seconds": 7200.0
 	},

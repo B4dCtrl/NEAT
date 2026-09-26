@@ -133,8 +133,11 @@ static func boss_chest(rng: RandomNumberGenerator, state: Dictionary, floor_num:
 	return out
 
 
+## Class-locked items (weapons) fit their class, plus classes that list it in "uses".
 static func can_equip(item: Dictionary, class_id: String) -> bool:
-	return item["class"] == "" or item["class"] == class_id
+	if item["class"] == "" or item["class"] == class_id:
+		return true
+	return item["class"] in DataDB.classes().get(class_id, {}).get("uses", [])
 
 
 static func salvage_value(item: Dictionary) -> float:

@@ -4,7 +4,7 @@ extends MarginContainer
 const DataDB = preload("res://core/data_db.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 
-const HERO_COLORS := [Color("#3d6fd1"), Color("#3f8f4a"), Color("#7a3fc2")]
+const HERO_COLORS := [Color("#c9a36b"), Color("#3f8f4a"), Color("#7a3fc2"), Color("#3d6fd1")]
 
 var _meter: Control
 var _totals: Label
@@ -65,10 +65,13 @@ func _process(delta: float) -> void:
 ## DPS of the live fight when there is one, otherwise the last finished fight.
 func _dps() -> Array:
 	var exp = Game.expedition
-	var out := [0.0, 0.0, 0.0]
+	var out := []
+	out.resize(Game.state["heroes"].size())
+	out.fill(0.0)
 	if exp.combat != null and exp.phase == "combat" and exp.combat.time > 0.5:
 		for u in exp.combat.heroes:
-			out[u.index] = u.damage_dealt / exp.combat.time
+			if u.index < out.size():
+				out[u.index] = u.damage_dealt / exp.combat.time
 	else:
 		var lf: Dictionary = exp.last_fight
 		var t := maxf(float(lf.get("time", 0.0)), 0.1)
@@ -80,14 +83,16 @@ func _dps() -> Array:
 func _draw_meter() -> void:
 	var dps := _dps()
 	var top: float = maxf(dps.max(), 1.0)
-	var total: float = dps[0] + dps[1] + dps[2]
+	var total := 0.0
+	for d in dps:
+		total += float(d)
 	var font := get_theme_default_font()
 	var row_h := _meter.size.y / 3.0
-	for i in 3:
+	for i in dps.size():
 		var y := i * row_h + 4.0
 		var w: float = (_meter.size.x - 160.0) * dps[i] / top
 		_meter.draw_rect(Rect2(120, y, _meter.size.x - 160.0, row_h - 10.0), Color(1, 1, 1, 0.05))
-		_meter.draw_rect(Rect2(120, y, w, row_h - 10.0), HERO_COLORS[i])
+		_meter.draw_rect(Rect2(120, y, w, row_h - 10.0), HERO_COLORS[i % HERO_COLORS.size()])
 		var hero: Dictionary = Game.state["heroes"][i]
 		_meter.draw_string(font, Vector2(0, y + row_h * 0.55), hero["name"], HORIZONTAL_ALIGNMENT_LEFT, 110, 14)
 		var share: float = dps[i] / total if total > 0.0 else 0.0

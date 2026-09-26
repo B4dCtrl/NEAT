@@ -13,6 +13,8 @@ const Inventory = preload("res://core/inventory.gd")
 const Progression = preload("res://core/progression.gd")
 const Expedition = preload("res://core/expedition.gd")
 const SaveSystem = preload("res://core/save_system.gd")
+const Heroes = preload("res://core/heroes.gd")
+const Market = preload("res://core/market.gd")
 
 var failures := 0
 var passes := 0
@@ -29,6 +31,8 @@ func _init() -> void:
 	test_save_roundtrip()
 	test_offline_progress()
 	test_ascension()
+	test_roster_and_skills()
+	test_bonfire_and_market()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -86,7 +90,7 @@ func test_combat_determinism() -> void:
 	var c2 := _fight(99, 4)
 	check(c1.finished and c2.finished, "combat finishes")
 	check(c1.victory == c2.victory and is_equal_approx(c1.time, c2.time), "combat is deterministic")
-	check(_fight(99, 1).victory, "fresh party beats floor 1")
+	check(_fight(99, 2).victory, "fresh founder beats floor 2")
 	check(not _fight(99, 150).victory, "fresh party loses on floor 150")
 
 
@@ -132,7 +136,7 @@ func test_expedition_determinism() -> void:
 	var a := _run(1234, 900.0, 5.0)
 	var b := _run(1234, 900.0, 5.0)
 	check(a["floor"] == b["floor"] and is_equal_approx(a["gold"], b["gold"]), "expedition deterministic")
-	check(int(a["max_floor"]) > 20, "party climbs past floor 20 in 15 min (got %d)" % a["max_floor"])
+	check(int(a["max_floor"]) > 8, "solo founder climbs past floor 8 in 15 min (got %d)" % a["max_floor"])
 	var live := _run(1234, 900.0, 1.0 / 30.0)
 	check(absi(int(live["max_floor"]) - int(a["max_floor"])) <= 10, "live stepping matches chunked stepping (%d vs %d)" % [live["max_floor"], a["max_floor"]])
 
@@ -141,6 +145,7 @@ func test_fall_back() -> void:
 	var state := GameState.new_game(77)
 	state["floor"] = 120
 	state["max_floor"] = 120
+	state["checkpoint"] = 111
 	var sim := Expedition.new(state)
 	sim.record_combat_events = false
 	var fell := false
@@ -149,7 +154,7 @@ func test_fall_back() -> void:
 		for ev in sim.events:
 			if ev["type"] == "fall_back":
 				fell = true
-				check(int(ev["from"]) - int(ev["to"]) >= 5 and int(ev["from"]) - int(ev["to"]) <= 10, "fall back drops 5-10 floors")
+				check(int(ev["to"]) == 111, "fall back returns to the last bonfire (got %d)" % ev["to"])
 		sim.events.clear()
 		if fell:
 			break
@@ -208,6 +213,56 @@ func test_ascension() -> void:
 	check(not Progression.buy_node(state, "relic_vault"), "locked node cannot be bought")
 
 
+func test_roster_and_skills() -> void:
+	var state := GameState.new_game(11)
+	check(state["heroes"].size() == 1 and state["heroes"][0]["class"] == "stairborn", "the Stairborn starts alone")
+	check(not Heroes.can_mint(state), "minting costs gold")
+	state["gold"] = 1e9
+	var h1 := Heroes.mint(state)
+	var h2 := Heroes.mint(state)
+	var h3 := Heroes.mint(state)
+	check(not h1.is_empty() and h1["class"] != "stairborn", "mint creates a hireable hero")
+	check(state["heroes"].size() == 3 and state["bench"].size() == 1, "two extra slots, then the bench")
+	check(h1["id"] != h2["id"] and h2["id"] != h3["id"], "hero ids are unique")
+	check(Heroes.swap(state, 1, 0) and state["heroes"][1]["id"] == h3["id"], "bench swap")
+	var hero: Dictionary = state["heroes"][0]
+	hero["level"] = 6
+	check(Heroes.skill_points_free(hero) == 5, "one skill point per level")
+	check(not Heroes.learn_skill(hero, "fury"), "locked skill node")
+	var before: float = StatCalc.hero_stats(state, hero)["hp"]
+	for i in 3:
+		Heroes.learn_skill(hero, "toughness")
+	check(StatCalc.hero_stats(state, hero)["hp"] > before, "skills raise stats")
+	check(Heroes.learn_skill(hero, "plating"), "prerequisite unlocks next node")
+	Heroes.auto_learn(hero)
+	check(Heroes.skill_points_free(hero) == 0, "auto-learn spends every point")
+
+
+func test_bonfire_and_market() -> void:
+	check(TowerGen.generate(1, 21)["type"] == "bonfire", "floor 21 is a bonfire")
+	check(TowerGen.bonfire_below(37) == 31, "checkpoint below 37 is 31")
+	var state := GameState.new_game(12)
+	state["max_floor"] = 30
+	var now := 1_800_000_000
+	Market.ensure_stock(state, now)
+	var offers: Array = state["market"]["offers"]
+	check(offers.size() >= 9, "market has stock (%d)" % offers.size())
+	var copy := GameState.new_game(12)
+	copy["max_floor"] = 30
+	Market.ensure_stock(copy, now)
+	check(str(copy["market"]["offers"][0]["item"]["name"]) == str(offers[0]["item"]["name"]), "market stock is deterministic")
+	var hero_idx := -1
+	for i in offers.size():
+		if offers[i].has("hero"):
+			hero_idx = i
+	check(hero_idx >= 0, "market sells heroes")
+	state["gold"] = 1e12
+	check(Market.buy(state, hero_idx) and state["heroes"].size() == 2, "buying a hero adds it to the party")
+	check(not Market.buy(state, hero_idx), "an offer sells once")
+	check(not Market.ensure_stock(state, now + 60), "stock stays within a rotation")
+	check(Market.ensure_stock(state, now + 3600), "stock rotates")
+
+
 ## Long run with no player input: how far does the idle loop get?
 func balance_report() -> void:
 	print("\n== Balance simulation (no ascension) ==")
@@ -219,10 +274,13 @@ func balance_report() -> void:
 		for i in 1800:
 			sim.advance(1.0)
 			sim.events.clear()
+			# A light-touch player: recruits a hero whenever the gold allows.
+			if i % 30 == 0 and state["heroes"].size() < 3 and Heroes.can_mint(state):
+				Heroes.mint(state)
 		var h: Array = state["heroes"]
 		var mods := StatCalc.party_mods(state)
-		print("t=%4.1fh floor %4d max %4d | lvl %d/%d/%d | gold %.0f | train %s | falls %d | power %.0f" % [
-			(half_hour + 1) * 0.5, state["floor"], state["max_floor"], h[0]["level"], h[1]["level"], h[2]["level"],
-			state["gold"], str(state["training"]), state["stats"]["fall_backs"],
-			StatCalc.power_rating(StatCalc.hero_stats(state, h[1], mods))])
+		print("t=%4.1fh floor %4d max %4d | party %d lvl %d | gold %.0f | train %d | falls %d | power %.0f" % [
+			(half_hour + 1) * 0.5, state["floor"], state["max_floor"], h.size(), h[0]["level"],
+			state["gold"], state["training"]["attack"], state["stats"]["fall_backs"],
+			StatCalc.power_rating(StatCalc.hero_stats(state, h[0], mods))])
 	print("souls available: %d  (%d ms)" % [Progression.souls_for_ascension(state), Time.get_ticks_msec() - t0])

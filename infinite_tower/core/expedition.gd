@@ -13,10 +13,11 @@ const Loot = preload("res://core/loot_calculator.gd")
 const Inventory = preload("res://core/inventory.gd")
 const Progression = preload("res://core/progression.gd")
 const GameState = preload("res://core/game_state.gd")
+const Heroes = preload("res://core/heroes.gd")
 
 var state: Dictionary
 var rng := RandomNumberGenerator.new()
-var phase := "walk"          # walk | intro | combat | pause
+var phase := "walk"          # walk | intro | combat | pause | camp
 var phase_left := 0.0
 var phase_total := 1.0
 var after_pause := ""        # next_floor | walk
@@ -25,6 +26,8 @@ var combat = null            # CombatEngine while fighting
 var tick_acc := 0.0
 var record_combat_events := true
 var events: Array = []
+## The last Fall Back, for the tumble-down animation: {from, to}.
+var last_fall := {}
 ## Damage per hero over the last finished fight, for the DPS panel.
 var last_fight := {"time": 0.0, "damage": {}}
 
@@ -62,6 +65,9 @@ func advance(dt: float) -> void:
 				budget = tick_acc
 				tick_acc = 0.0
 				_end_combat()
+		elif phase == "camp":
+			# Camping at a bonfire: time passes, the party waits for the player.
+			budget = 0.0
 		else:
 			var used := minf(budget, phase_left)
 			phase_left -= used
@@ -113,6 +119,8 @@ func _arrive_floor() -> void:
 			_open_vault()
 			after_pause = "next_floor"
 			_set_phase("pause", float(bal["event_pause"]))
+		"bonfire":
+			_rest_at_bonfire()
 		_:
 			_start_combat()
 
@@ -159,6 +167,8 @@ func _end_combat() -> void:
 	var stats: Dictionary = state["stats"]
 	var fight_damage := {}
 	for u in combat.heroes:
+		if u.index >= state["heroes"].size():
+			continue
 		var hero: Dictionary = state["heroes"][u.index]
 		hero["hp_ratio"] = u.hp_ratio() if u.alive else 0.0
 		fight_damage[hero["id"]] = u.damage_dealt
@@ -190,6 +200,9 @@ func _end_combat() -> void:
 	_add_gold(gold)
 	for hero_name in Progression.grant_xp(state, xp):
 		events.append({"type": "level_up", "name": hero_name})
+	if state["settings"].get("auto_skills", true):
+		for hero in state["heroes"]:
+			Heroes.auto_learn(hero)
 	# Fallen heroes get back up once the floor is won.
 	for hero in state["heroes"]:
 		hero["hp_ratio"] = maxf(float(hero["hp_ratio"]), 0.1)
@@ -212,11 +225,14 @@ func _end_combat() -> void:
 		_grant_drop(d)
 
 
+## Wiped out: the party wakes up at the last bonfire, fully healed.
 func _fall_back() -> void:
 	var bal := DataDB.balance()
 	var from := int(state["floor"])
-	var drop := rng.randi_range(int(bal["fall_back_min"]), int(bal["fall_back_max"]))
-	state["floor"] = maxi(1, from - drop)
+	var to := mini(int(state.get("checkpoint", 1)), from)
+	if to == from:
+		to = maxi(1, TowerGen.bonfire_below(from - 1))
+	state["floor"] = to
 	if int(state["wall_floor"]) == from:
 		state["wall_attempts"] = int(state["wall_attempts"]) + 1
 	else:
@@ -225,10 +241,47 @@ func _fall_back() -> void:
 	state["stats"]["fall_backs"] += 1
 	for hero in state["heroes"]:
 		hero["hp_ratio"] = 1.0
-	GameState.add_history(state, "fall", "Fell back from floor %d to %d" % [from, state["floor"]])
-	events.append({"type": "fall_back", "from": from, "to": state["floor"]})
+	last_fall = {"from": from, "to": to}
+	GameState.add_history(state, "fall", "Fell from floor %d back to the bonfire on %d" % [from, to])
+	events.append({"type": "fall_back", "from": from, "to": to})
 	after_pause = "walk"
 	_set_phase("pause", float(bal["fallback_pause"]))
+
+
+## Bonfire: rest (full heal), tidy up gear, learn skills, set the checkpoint.
+func _rest_at_bonfire() -> void:
+	var bal := DataDB.balance()
+	var f := int(state["floor"])
+	state["checkpoint"] = f
+	for hero in state["heroes"]:
+		hero["hp_ratio"] = 1.0
+	if state["settings"].get("auto_equip", true):
+		for item in state["inventory"].duplicate():
+			var idx := Inventory.best_hero_for(state, item)
+			if idx >= 0:
+				Inventory.equip(state, idx, item)
+	if state["settings"].get("auto_skills", true):
+		for hero in state["heroes"]:
+			Heroes.auto_learn(hero)
+	events.append({"type": "bonfire", "floor": f})
+	after_pause = "next_floor"
+	if state["settings"].get("camp_at_bonfire", false):
+		GameState.add_history(state, "info", "Camping at the bonfire on floor %d" % f)
+		phase = "camp"
+		phase_left = 0.0
+		phase_total = 1.0
+	else:
+		_set_phase("pause", float(bal["bonfire_rest"]))
+
+
+func is_camping() -> bool:
+	return phase == "camp"
+
+
+func leave_camp() -> void:
+	if phase == "camp":
+		state["settings"]["camp_at_bonfire"] = false
+		_next_floor()
 
 
 func _next_floor() -> void:
@@ -258,7 +311,7 @@ func _next_floor() -> void:
 		hero["hp_ratio"] = minf(1.0, float(hero["hp_ratio"]) + heal)
 
 	if state["settings"].get("auto_train", true):
-		Progression.auto_train(state)
+		Progression.auto_train(state, Heroes.gold_reserve(state))
 
 	var mods := StatCalc.party_mods(state)
 	var interval := int(bal["merchants_eye_interval"])

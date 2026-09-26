@@ -1,5 +1,6 @@
 extends RefCounted
-## Turns heroes + gear + sets + training + ascension + buffs + relics into final numbers.
+## Turns heroes + potential + skill tree + gear + sets + training + ascension +
+## buffs + relics into final numbers.
 ## Flat stats add up; every "<stat>_pct" key multiplies the matching flat stat.
 
 const DataDB = preload("res://core/data_db.gd")
@@ -10,6 +11,7 @@ const PARTY_KEYS := ["gold_pct", "drop_pct", "move_speed_pct", "xp_pct", "soul_p
 const CRIT_CAP := 0.75
 const DODGE_CAP := 0.5
 const CDR_CAP := 0.5
+const POTENTIAL_STATS := ["hp", "attack", "defense", "magic_power"]
 
 
 ## Modifiers that apply to every hero: training, ascension tree, shrine buffs, relics,
@@ -42,7 +44,22 @@ static func party_mods(state: Dictionary) -> Dictionary:
 			for key in item["stats"]:
 				if key in PARTY_KEYS:
 					mods[key] = mods.get(key, 0.0) + float(item["stats"][key])
+		# Skill nodes with party-wide effects (climb speed...). CDR stays personal.
+		for key in skill_stats(hero):
+			if key in PARTY_KEYS and key != "cdr":
+				mods[key] = mods.get(key, 0.0) + float(skill_stats(hero)[key])
 	return mods
+
+
+## Summed stats from a hero's skill tree ranks.
+static func skill_stats(hero: Dictionary) -> Dictionary:
+	var out := {}
+	var nodes := DataDB.skill_nodes()
+	var skills: Dictionary = hero.get("skills", {})
+	for node_id in skills:
+		if nodes.has(node_id):
+			_add_stats(out, nodes[node_id]["stats"], int(skills[node_id]))
+	return out
 
 
 static func relic_slots(state: Dictionary) -> int:
@@ -69,7 +86,20 @@ static func hero_stats(state: Dictionary, hero: Dictionary, mods: Dictionary = {
 	var flat := {}
 	for key in CORE_STATS:
 		flat[key] = float(cdef["base"].get(key, 0.0)) + float(cdef["growth"].get(key, 0.0)) * (lvl - 1)
+	# Rarer heroes have a higher potential on their innate stats.
+	var potential := float(hero.get("potential", 1.0))
+	for key in POTENTIAL_STATS:
+		flat[key] *= potential
 	var pct := {}
+	var hero_cdr := 0.0
+	var tree := skill_stats(hero)
+	for key in tree:
+		if key == "cdr":
+			hero_cdr += float(tree[key])
+		elif key in CORE_STATS:
+			flat[key] += float(tree[key])
+		elif not key in PARTY_KEYS:
+			pct[key] = pct.get(key, 0.0) + float(tree[key])
 	var specials: Array = mods.get("specials", []).duplicate()
 
 	for slot in hero["equipment"]:
@@ -113,7 +143,9 @@ static func hero_stats(state: Dictionary, hero: Dictionary, mods: Dictionary = {
 		"dodge": minf(flat["dodge"], DODGE_CAP),
 		"damage_pct": pct.get("damage_pct", 0.0),
 		"fire_damage_pct": pct.get("fire_damage_pct", 0.0),
-		"cdr": minf(float(mods.get("cdr", 0.0)), CDR_CAP),
+		"cdr": minf(float(mods.get("cdr", 0.0)) + hero_cdr, CDR_CAP),
+		"lifesteal": pct.get("lifesteal", 0.0),
+		"cleave": pct.get("cleave", 0.0),
 		"specials": specials,
 		"damage_type": cdef["damage_type"],
 		"element": "fire" if "fire_imbue" in specials else cdef["element"],

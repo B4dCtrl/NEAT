@@ -9,6 +9,12 @@ var _textures: Array = []
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
+	Game.party_changed.connect(_rebuild)
+	_rebuild()
+
+
+func _rebuild() -> void:
+	_textures.clear()
 	for hero in Game.state["heroes"]:
 		var f := PixelArt.frames(DataDB.classes()[hero["class"]]["sprite"], {}, Game.state["settings"].get("art_style", "mono") == "mono")
 		_textures.append(f[0] if not f.is_empty() else null)
@@ -29,7 +35,9 @@ func _draw() -> void:
 		var tex: Texture2D = _textures[i]
 		var ratio := float(Game.state["heroes"][i]["hp_ratio"])
 		var alive := true
-		if exp != null and exp.combat != null and exp.phase == "combat":
+		if i >= Game.state["heroes"].size():
+			break
+		if exp != null and exp.combat != null and exp.phase == "combat" and i < exp.combat.heroes.size():
 			ratio = exp.combat.heroes[i].hp_ratio()
 			alive = exp.combat.heroes[i].alive
 		var y := (size.y - 12.0 * scale - bar_h - 2.0) * 0.5

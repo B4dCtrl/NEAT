@@ -35,6 +35,7 @@ func _ready() -> void:
 	_section(grid, "Loot")
 	_check(grid, "auto_equip", "Auto-equip upgrades")
 	_check(grid, "auto_train", "Auto-train with spare gold")
+	_check(grid, "auto_skills", "Auto-spend skill points")
 
 	_section(grid, "Hotkeys")
 	_info(grid, "Tab / F1", "Toggle Taskbar / Expedition")

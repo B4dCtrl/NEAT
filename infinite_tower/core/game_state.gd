@@ -3,6 +3,7 @@ extends RefCounted
 ## without adapters. This script only builds and migrates that dictionary.
 
 const DataDB = preload("res://core/data_db.gd")
+const Heroes = preload("res://core/heroes.gd")
 
 const VERSION := 1
 const HISTORY_CAP := 150
@@ -22,37 +23,32 @@ const DEFAULT_SETTINGS := {
 	"auto_train": true,
 	"auto_salvage_below": "uncommon",  # items below this rarity are salvaged on drop
 	"show_damage_numbers": true,
+	"auto_skills": true,
+	"camp_at_bonfire": false,   # stop at the next bonfire to manage gear
 }
 
 
 static func new_game(run_seed: int = 0) -> Dictionary:
 	if run_seed == 0:
 		run_seed = randi()
-	var heroes := []
-	var classes := DataDB.classes()
-	var uid := 1
-	for class_id in ["knight", "ranger", "arcanist"]:
-		var hero := new_hero(class_id, classes[class_id])
-		var weapon := starter_item(classes[class_id].get("starter_weapon", ""), uid)
-		if not weapon.is_empty():
-			hero["equipment"]["weapon"] = weapon
-			uid += 1
-		heroes.append(hero)
-	return {
+	var state := {
 		"version": VERSION,
 		"seed": run_seed,
 		"rng_state": "",
 		"floor": 1,
 		"max_floor": 1,
 		"best_floor_ever": 1,
+		"checkpoint": 1,
 		"wall_floor": 0,
 		"wall_attempts": 0,
 		"gold": 0.0,
 		"souls": 0,
 		"crystals": 0,
-		"heroes": heroes,
+		"heroes": [],
+		"bench": [],
+		"mints": 0,
 		"inventory": [],
-		"next_uid": uid,
+		"next_uid": 1,
 		"relics_owned": [],
 		"relics_equipped": [],
 		"training": {"attack": 0, "hp": 0, "defense": 0},
@@ -63,6 +59,7 @@ static func new_game(run_seed: int = 0) -> Dictionary:
 		"history": [],
 		"milestones": [],
 		"floors_cleared_total": 0,
+		"market": {},
 		"stats": {
 			"kills": 0, "bosses": 0, "floors_climbed": 0, "fights_won": 0, "fights_lost": 0,
 			"fall_backs": 0, "total_gold": 0.0, "items_found": 0, "relics_found": 0,
@@ -71,22 +68,17 @@ static func new_game(run_seed: int = 0) -> Dictionary:
 		"settings": DEFAULT_SETTINGS.duplicate(true),
 		"saved_at": 0,
 	}
+	# The first Stairborn climbs alone. Two more slots open for bought or minted heroes.
+	var founder := Heroes.make_hero(state, Heroes.FOUNDER_CLASS, DataDB.classes()[Heroes.FOUNDER_CLASS]["default_name"], "rare")
+	give_starter_weapon(state, founder)
+	state["heroes"].append(founder)
+	return state
 
 
-static func new_hero(class_id: String, class_def: Dictionary) -> Dictionary:
-	var equipment := {}
-	for slot in DataDB.items()["slots"]:
-		equipment[slot] = null
-	return {
-		"id": class_id,
-		"class": class_id,
-		"name": class_def["default_name"],
-		"level": 1,
-		"xp": 0.0,
-		"row": class_def["default_row"],
-		"hp_ratio": 1.0,
-		"equipment": equipment,
-	}
+static func give_starter_weapon(state: Dictionary, hero: Dictionary) -> void:
+	var weapon := starter_item(DataDB.classes()[hero["class"]].get("starter_weapon", ""), Heroes.new_uid(state))
+	if not weapon.is_empty():
+		hero["equipment"]["weapon"] = weapon
 
 
 ## A plain common item built straight from a base definition.
@@ -117,10 +109,18 @@ static func migrate(state: Dictionary) -> Dictionary:
 			state["settings"][key] = DEFAULT_SETTINGS[key]
 	# JSON turns ints into floats: normalise the counters we index with.
 	for key in ["seed", "floor", "max_floor", "best_floor_ever", "wall_floor",
-			"wall_attempts", "souls", "crystals", "next_uid", "ascensions", "floors_cleared_total"]:
+			"wall_attempts", "souls", "crystals", "next_uid", "ascensions", "floors_cleared_total",
+			"checkpoint", "mints"]:
 		state[key] = int(state[key])
-	for hero in state["heroes"]:
+	for hero in state["heroes"] + state["bench"]:
 		hero["level"] = int(hero["level"])
+		if not hero.has("skills"):
+			hero["skills"] = {}
+		if not hero.has("potential"):
+			hero["potential"] = 1.0
+			hero["rarity"] = "common"
+		for k in hero["skills"]:
+			hero["skills"][k] = int(hero["skills"][k])
 		for slot in DataDB.items()["slots"]:
 			if not hero["equipment"].has(slot):
 				hero["equipment"][slot] = null

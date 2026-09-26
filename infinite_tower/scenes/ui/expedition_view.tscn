@@ -1,9 +1,11 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/expedition_view.gd" id="1"]
 [ext_resource type="Script" path="res://scenes/ui/tower_stage.gd" id="2"]
 [ext_resource type="Script" path="res://scenes/ui/tabs/party_tab.gd" id="3"]
-[ext_resource type="Script" path="res://scenes/ui/tabs/inventory_tab.gd" id="4"]
+[ext_resource type="Script" path="res://scenes/ui/tabs/equipment_tab.gd" id="4"]
+[ext_resource type="Script" path="res://scenes/ui/tabs/skills_tab.gd" id="10"]
+[ext_resource type="Script" path="res://scenes/ui/tabs/market_tab.gd" id="11"]
 [ext_resource type="Script" path="res://scenes/ui/tabs/ascension_tab.gd" id="5"]
 [ext_resource type="Script" path="res://scenes/ui/tabs/bestiary_tab.gd" id="6"]
 [ext_resource type="Script" path="res://scenes/ui/tabs/history_tab.gd" id="7"]
@@ -80,7 +82,7 @@ tooltip_text = "Back to the taskbar (Esc / Tab)"
 text = "  Taskbar Mode  "
 
 [node name="StageFrame" type="PanelContainer" parent="Margin/VBox"]
-custom_minimum_size = Vector2(0, 230)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 
 [node name="Stage" type="Control" parent="Margin/VBox/StageFrame"]
@@ -118,10 +120,20 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("3")
 
-[node name="Inventory" type="MarginContainer" parent="Margin/VBox/Tabs"]
+[node name="Equipment" type="MarginContainer" parent="Margin/VBox/Tabs"]
 visible = false
 layout_mode = 2
 script = ExtResource("4")
+
+[node name="Skills" type="MarginContainer" parent="Margin/VBox/Tabs"]
+visible = false
+layout_mode = 2
+script = ExtResource("10")
+
+[node name="Market" type="MarginContainer" parent="Margin/VBox/Tabs"]
+visible = false
+layout_mode = 2
+script = ExtResource("11")
 
 [node name="Ascension" type="MarginContainer" parent="Margin/VBox/Tabs"]
 visible = false

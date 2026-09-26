@@ -50,10 +50,15 @@ func _run() -> void:
 			break
 		await process_frame
 	await _shot("02_taskbar_combat")
+	# Recruit two heroes so the party screens are full.
+	game.state["gold"] = float(game.state["gold"]) + 5000.0
+	game.mint_hero()
+	game.mint_hero()
+	await _wait(30)
 	wm.set_mode("expedition")
 	await _wait(30)
 	var tabs: TabContainer = main.get_node("ExpeditionView").find_child("Tabs", true, false)
-	var names := ["party", "inventory", "ascension", "bestiary", "history", "stats", "settings"]
+	var names := ["party", "equipment", "skills", "market", "ascension", "bestiary", "history", "stats", "settings"]
 	for i in names.size():
 		tabs.current_tab = i
 		await _wait(12)

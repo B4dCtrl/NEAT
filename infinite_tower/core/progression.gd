@@ -4,6 +4,7 @@ extends RefCounted
 const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
 const GameState = preload("res://core/game_state.gd")
+const Heroes = preload("res://core/heroes.gd")
 
 
 static func xp_to_next(level: int) -> float:
@@ -41,8 +42,9 @@ static func buy_training(state: Dictionary, key: String) -> bool:
 	return true
 
 
-## Buys the cheapest training repeatedly while affordable. Returns purchases made.
-static func auto_train(state: Dictionary) -> int:
+## Buys the cheapest training repeatedly while affordable, keeping `reserve`
+## gold untouched (e.g. saving for the next hero). Returns purchases made.
+static func auto_train(state: Dictionary, reserve: float = 0.0) -> int:
 	var bought := 0
 	while bought < 50:
 		var best_key := ""
@@ -52,7 +54,7 @@ static func auto_train(state: Dictionary) -> int:
 			if c < best_cost:
 				best_cost = c
 				best_key = key
-		if best_key == "" or not buy_training(state, best_key):
+		if best_key == "" or float(state["gold"]) - best_cost < reserve or not buy_training(state, best_key):
 			break
 		bought += 1
 	return bought
@@ -80,7 +82,15 @@ static func ascend(state: Dictionary) -> int:
 	state["souls"] = int(state["souls"]) + souls
 	state["ascensions"] = int(state["ascensions"]) + 1
 	state["seed"] = fresh["seed"]
-	state["heroes"] = fresh["heroes"]
+	# The roster is kept, but every hero starts over: level 1, no gear, no skills.
+	for hero in state["heroes"] + state["bench"]:
+		hero["level"] = 1
+		hero["xp"] = 0.0
+		hero["hp_ratio"] = 1.0
+		hero["skills"] = {}
+		for slot in hero["equipment"]:
+			hero["equipment"][slot] = null
+		GameState.give_starter_weapon(state, hero)
 	state["inventory"] = []
 	state["gold"] = 0.0
 	state["training"] = fresh["training"]
@@ -91,6 +101,7 @@ static func ascend(state: Dictionary) -> int:
 	var start := 1 + int(mods.get("start_floor", 0))
 	state["floor"] = start
 	state["max_floor"] = start
+	state["checkpoint"] = start
 	GameState.add_history(state, "ascension", "Ascended (#%d) for %d Souls" % [state["ascensions"], souls])
 	return souls
 
