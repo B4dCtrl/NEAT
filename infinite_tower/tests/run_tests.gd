@@ -38,6 +38,7 @@ func _init() -> void:
 	test_variety_and_supplies()
 	test_forge()
 	test_mana_bonfire_danger()
+	test_accounts()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -374,6 +375,37 @@ func test_mana_bonfire_danger() -> void:
 	var fresh := GameState.new_game(31)
 	check(int(Danger.assess(fresh, 150)["level"]) == 3, "floor 150 is Deadly for a new party")
 	check(int(Danger.assess(fresh, 2)["level"]) <= 1, "floor 2 is Easy or Fair for a new party")
+
+func test_accounts() -> void:
+	var Accounts = load("res://core/accounts.gd")
+	var a := "zz_test_alice"
+	var b := "zz_test_bob"
+	Accounts.delete_account(a)
+	Accounts.delete_account(b)
+	check(Accounts.register("ab", "secret1") == "name_length", "names need 3+ characters")
+	check(Accounts.register("bad name!", "secret1") == "name_chars", "names are letters, numbers and _")
+	check(Accounts.register(a, "123") == "password_length", "passwords need 6+ characters")
+	check(Accounts.register(a, "alice-pass") == "", "account created")
+	check(Accounts.register(a.to_upper(), "other-pass") == "name_taken", "names are unique, case-insensitive")
+	check(Accounts.verify(a, "alice-pass") and not Accounts.verify(a, "wrong-pass"), "password check")
+	var reg_text := FileAccess.get_file_as_string("user://accounts.json")
+	check(not reg_text.contains("alice-pass"), "the password itself is never stored")
+	Accounts.register(b, "bob-pass-1")
+	# Each account has its own save, locked with its own password-derived key.
+	var sa := GameState.new_game(1)
+	sa["floor"] = 42
+	check(SaveSystem.save_game(sa, Accounts.save_path(a), Accounts.save_key(a, "alice-pass")), "alice's save written")
+	check(int(SaveSystem.load_game(Accounts.save_path(a), Accounts.save_key(a, "alice-pass"))["floor"]) == 42, "alice loads her own save")
+	check(SaveSystem.load_game(Accounts.save_path(b), Accounts.save_key(b, "bob-pass-1")).is_empty(), "bob starts from zero")
+	check(SaveSystem.load_game(Accounts.save_path(a), Accounts.save_key(a, "wrong-pass")).is_empty(), "a wrong key cannot open alice's save")
+	Accounts.remember(a, Accounts.save_key(a, "alice-pass"))
+	check(Accounts.remembered().get("user", "") == a, "remember me")
+	Accounts.forget()
+	check(Accounts.remembered().is_empty(), "forget on logout")
+	Accounts.delete_account(a)
+	Accounts.delete_account(b)
+	check(not Accounts.exists(a), "account deleted")
+
 
 ## Long run with no player input: how far does the idle loop get?
 func balance_report() -> void:

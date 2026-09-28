@@ -7,6 +7,7 @@ const ThemeBuilder = preload("res://scenes/ui/theme_builder.gd")
 const ComicIntro = preload("res://scenes/ui/comic_intro.gd")
 const TutorialView = preload("res://scenes/ui/tutorial_view.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
+const LoginView = preload("res://scenes/ui/login_view.gd")
 
 @onready var taskbar_view: Control = $TaskbarView
 @onready var expedition_view: Control = $ExpeditionView
@@ -19,7 +20,8 @@ const TRAY_QUIT := 2
 var _debug_speed_idx := 0
 var _comic: Control
 var _tutorial: Control
-var _story_stage := ""           # "intro" | "tutorial" while the story window is up
+var _story_stage := ""           # "login" | "intro" | "tutorial" while the story window is up
+var _login: Control
 var _tray: Node = null
 var _tray_menu: PopupMenu
 
@@ -37,6 +39,19 @@ func _ready() -> void:
 	_tutorial.visible = false
 	_tutorial.finished.connect(_on_tutorial_done)
 	add_child(_tutorial)
+	_login = LoginView.new()
+	_login.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_login.visible = false
+	_login.logged_in.connect(_after_login)
+	add_child(_login)
+	Game.account_changed.connect(func():
+		if not Game.logged_in():
+			# Logged out: back to the login screen.
+			_story_stage = "login"
+			if WindowManager.mode == "story":
+				_on_mode_changed("story")
+			else:
+				WindowManager.set_mode("story"))
 
 	taskbar_view.expand_requested.connect(func(): WindowManager.set_mode("expedition"))
 	taskbar_view.close_requested.connect(_close_to_tray)
@@ -47,11 +62,28 @@ func _ready() -> void:
 	Game.story_requested.connect(_on_story_requested)
 	_apply_audio()
 	_setup_tray()
-	if not Game.state.get("intro_seen", false):
-		_story_stage = "intro"
-	elif not Game.state.get("tutorial_seen", false):
-		_story_stage = "tutorial"
+	if not Game.logged_in():
+		_story_stage = "login"
+	else:
+		_story_stage = _next_story_stage()
 	_on_mode_changed(WindowManager.mode)
+
+
+## What still has to be shown after logging in: the comic, the guide, or nothing.
+func _next_story_stage() -> String:
+	if not Game.state.get("intro_seen", false):
+		return "intro"
+	if not Game.state.get("tutorial_seen", false):
+		return "tutorial"
+	return ""
+
+
+func _after_login() -> void:
+	_story_stage = _next_story_stage()
+	if _story_stage == "":
+		_end_story()
+	else:
+		_on_mode_changed("story")
 
 
 # ------------------------------------------------------------------ story
@@ -90,6 +122,9 @@ func _on_mode_changed(mode: String) -> void:
 	expedition_view.visible = mode == "expedition"
 	_comic.visible = story and _story_stage == "intro"
 	_tutorial.visible = story and _story_stage == "tutorial"
+	_login.visible = story and _story_stage == "login"
+	if _login.visible:
+		_login.start()
 	if _comic.visible:
 		_comic.start()
 	if _tutorial.visible:
@@ -151,7 +186,8 @@ func _on_tray_menu(id: int) -> void:
 
 
 func _show_from_tray(mode: String) -> void:
-	WindowManager.show_from_tray(mode)
+	# Nobody logged in yet: the tray can only bring back the login screen.
+	WindowManager.show_from_tray(mode if Game.logged_in() else "story")
 
 
 func _quit() -> void:

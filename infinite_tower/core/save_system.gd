@@ -17,10 +17,11 @@ const TEMP_PATH := "user://stairborn_v2.tmp"
 const SAVE_KEY := "stairborn::v1::a7c3f19e5d"
 
 
-static func save_game(state: Dictionary, path: String = SAVE_PATH) -> bool:
+static func save_game(state: Dictionary, path: String = SAVE_PATH, key: String = SAVE_KEY) -> bool:
 	state["saved_at"] = int(Time.get_unix_time_from_system())
 	var tmp := path.get_basename() + ".tmp"
-	var file := FileAccess.open_encrypted_with_pass(tmp, FileAccess.WRITE, SAVE_KEY)
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var file := FileAccess.open_encrypted_with_pass(tmp, FileAccess.WRITE, key)
 	if file == null:
 		push_error("SaveSystem: cannot write %s (%s)" % [tmp, error_string(FileAccess.get_open_error())])
 		return false
@@ -38,11 +39,11 @@ static func save_game(state: Dictionary, path: String = SAVE_PATH) -> bool:
 
 
 ## Returns the migrated state, or {} when no valid save exists (falls back to the .bak).
-static func load_game(path: String = SAVE_PATH) -> Dictionary:
+static func load_game(path: String = SAVE_PATH, key: String = SAVE_KEY) -> Dictionary:
 	for candidate in [path, path.get_basename() + ".bak"]:
 		if not FileAccess.file_exists(candidate):
 			continue
-		var file := FileAccess.open_encrypted_with_pass(candidate, FileAccess.READ, SAVE_KEY)
+		var file := FileAccess.open_encrypted_with_pass(candidate, FileAccess.READ, key)
 		if file == null:
 			push_warning("SaveSystem: %s is unreadable or tampered" % candidate)
 			continue

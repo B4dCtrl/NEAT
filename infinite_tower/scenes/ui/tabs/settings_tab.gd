@@ -3,6 +3,7 @@ extends MarginContainer
 
 const SaveSystem = preload("res://core/save_system.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
+const Accounts = preload("res://core/accounts.gd")
 
 ## Single-column layout for the narrow menu panel.
 var compact := false
@@ -65,6 +66,19 @@ func _ready() -> void:
 	guide.focus_mode = Control.FOCUS_NONE
 	guide.pressed.connect(func(): Game.story_requested.emit("tutorial"))
 	grid.add_child(guide)
+
+	_section(grid, "Account")
+	var who := Label.new()
+	who.text = "Signed in as " + Accounts.display_name(Game.account)
+	who.add_theme_color_override("font_color", Color("#9a96a8"))
+	Game.account_changed.connect(func(): who.text = "Signed in as " + Accounts.display_name(Game.account))
+	grid.add_child(who)
+	var logout := Button.new()
+	logout.text = "Log out"
+	logout.focus_mode = Control.FOCUS_NONE
+	logout.tooltip_text = "Saves and returns to the login screen (another player can sign in)"
+	logout.pressed.connect(func(): Game.logout())
+	grid.add_child(logout)
 
 	_section(grid, "Save")
 	var save_now := Button.new()

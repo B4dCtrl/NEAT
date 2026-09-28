@@ -37,6 +37,13 @@ func _run() -> void:
 	# Skip the story for these shots (story_shots.gd covers it). Wait for the
 	# Game autoload to finish loading its state first.
 	await _wait(2)
+	# The login screen comes first; then sign in with a throwaway account.
+	await _wait(20)
+	await _shot("00_login")
+	var Accounts = load("res://core/accounts.gd")
+	Accounts.delete_account("screenshot_bot")
+	game.create_account("screenshot_bot", "screenshot-pass", false)
+	await _wait(2)
 	game.state["intro_seen"] = true
 	game.state["tutorial_seen"] = true
 	await _wait(5)

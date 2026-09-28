@@ -16,6 +16,7 @@ const Market = preload("res://core/market.gd")
 const Forge = preload("res://core/forge.gd")
 const UiNum = preload("res://scenes/ui/ui_util.gd")
 const Danger = preload("res://core/danger.gd")
+const Accounts = preload("res://core/accounts.gd")
 
 ## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
 signal notified(kind: String, text: String)
@@ -34,6 +35,8 @@ signal party_changed()
 signal story_requested(what: String)
 ## Sound cue name for the audio manager (hit, crit, loot, level...).
 signal sfx_requested(cue: String)
+## A player logged in or out.
+signal account_changed()
 
 const AUTOSAVE_INTERVAL := 30.0
 
@@ -49,21 +52,97 @@ var combat_events: Array = []
 
 func _ready() -> void:
 	process_priority = -10
-	state = SaveSystem.load_game()
+	# Nothing is loaded until a player logs in: a blank placeholder state keeps
+	# the views happy behind the login screen.
+	state = GameState.new_game()
+	expedition = Expedition.new(state)
+	party_changed.connect(func(): _danger_dirty = true)
+	inventory_changed.connect(func(): _danger_dirty = true)
+	PlatformServices.init()
+	# "Remember me": log straight in, like a saved Steam login.
+	var r := Accounts.remembered()
+	if not r.is_empty():
+		_open_account(r["user"], r["key"])
+
+
+# ------------------------------------------------------------------ accounts
+
+## Logged-in account name ("" = on the login screen).
+var account := ""
+var _save_key := ""
+var _save_path := ""
+
+
+func logged_in() -> bool:
+	return account != ""
+
+
+## Returns "" on success or an error code (see Accounts.check_*).
+func create_account(user: String, password: String, remember_me: bool) -> String:
+	var err := Accounts.register(user, password)
+	if err != "":
+		return err
+	return sign_in(user, password, remember_me)
+
+
+func sign_in(user: String, password: String, remember_me: bool) -> String:
+	if not Accounts.exists(user):
+		return "no_account"
+	if not Accounts.verify(user, password):
+		return "wrong_password"
+	var key := Accounts.save_key(user, password)
+	if remember_me:
+		Accounts.remember(user, key)
+	else:
+		Accounts.forget()
+	Accounts.set_last_user(Accounts.display_name(user))
+	_open_account(Accounts.normalize(user), key)
+	return ""
+
+
+## Loads (or starts) the account's own save, with offline progress.
+func _open_account(user: String, key: String) -> void:
+	account = user
+	_save_key = key
+	_save_path = Accounts.save_path(user)
+	offline_report = {}
+	state = SaveSystem.load_game(_save_path, _save_key)
 	if state.is_empty():
 		state = GameState.new_game()
-		GameState.add_history(state, "info", "The expedition begins.")
+		GameState.add_history(state, "info", "The expedition of %s begins." % Accounts.display_name(user))
 	else:
 		var away := SaveSystem.offline_seconds(state, int(Time.get_unix_time_from_system()))
 		if away >= 60.0:
 			offline_report = SaveSystem.simulate_offline(state, away)
 			GameState.add_history(state, "offline", "Climbed while away: floor %d -> %d" % [offline_report["floor_start"], offline_report["floor_end"]])
 	expedition = Expedition.new(state)
-	party_changed.connect(func(): _danger_dirty = true)
-	inventory_changed.connect(func(): _danger_dirty = true)
-	PlatformServices.init()
+	_danger_dirty = true
+	inventory_changed.emit()
+	party_changed.emit()
+	settings_changed.emit()
+	state_changed.emit()
+	account_changed.emit()
+	save()
 	if not offline_report.is_empty():
 		call_deferred("emit_signal", "offline_report_ready", offline_report)
+
+
+## Saves and returns to the login screen (also forgets "remember me").
+func logout() -> void:
+	if not logged_in():
+		return
+	save()
+	Accounts.forget()
+	account = ""
+	_save_key = ""
+	_save_path = ""
+	state = GameState.new_game()
+	expedition = Expedition.new(state)
+	offline_report = {}
+	inventory_changed.emit()
+	party_changed.emit()
+	state_changed.emit()
+	account_changed.emit()
 
 
 ## Danger of the next floor and of the next Guardian (see core/danger.gd).
@@ -86,6 +165,8 @@ func _update_danger(delta: float) -> void:
 
 
 func _process(delta: float) -> void:
+	if not logged_in():
+		return
 	_update_danger(delta)
 	var dt := delta * time_scale
 	# The climb begins once the Stairborn has been introduced.
@@ -116,8 +197,10 @@ func _notification(what: int) -> void:
 
 func save() -> void:
 	_autosave_left = AUTOSAVE_INTERVAL
+	if not logged_in():
+		return
 	expedition.sync_to_state()
-	SaveSystem.save_game(state)
+	SaveSystem.save_game(state, _save_path, _save_key)
 
 
 func _drain_events() -> void:
@@ -407,7 +490,9 @@ func set_setting(key: String, value) -> void:
 
 
 func reset_save() -> void:
-	SaveSystem.delete_save()
+	if not logged_in():
+		return
+	SaveSystem.delete_save(_save_path)
 	state = GameState.new_game()
 	GameState.add_history(state, "info", "A new expedition begins.")
 	expedition = Expedition.new(state)

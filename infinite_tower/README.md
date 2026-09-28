@@ -134,6 +134,14 @@ simulação da próxima luta (`core/danger.gd`).
 O painel **HEROES** concentra a party (3 vagas), a reserva e o **mint** (com as chances
 de raridade à vista). O painel **SOULS** traz a Ascensão e a árvore permanente.
 
+### Login e contas
+O jogo abre numa tela de **login** (como a da Steam): entrar com nome e senha ou criar
+uma conta. Cada conta tem seu próprio save em `user://accounts/`, criptografado com uma
+chave derivada da senha; a senha nunca é gravada (só um hash SHA-256 iterado com salt, em
+`user://accounts.json`). "Lembrar de mim" entra direto na próxima vez; **Log out** fica em
+Configurações. As contas são locais (deste computador); contas online exigem um servidor
+— na Steam, o login da Steam pode assumir esse papel.
+
 ### Progressão (Tibia) e árvore de skills (Ragnarok)
 - **XP estilo Tibia:** o nível L custa `50·(L² − 3L + 4)` XP (100 no nível 1, 2 200 no 8,
   485 200 no 100); a XP dos monstros cresce de forma polinomial com o andar.
