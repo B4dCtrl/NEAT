@@ -133,7 +133,8 @@ static func enemy_stats(unit_id: String, floor_num: int, tier: String = "", affi
 	var atk_mult := pow(float(sc["attack_growth"]), n)
 	var def_mult := pow(float(sc["defense_growth"]), n)
 	var gold_mult := pow(float(sc["gold_growth"]), n)
-	var xp_mult := pow(float(sc["xp_growth"]), n)
+	# XP grows polynomially with depth to match the Tibia-style level curve.
+	var xp_mult := float(sc.get("xp_scale", 1.0)) * pow(1.0 + n * float(sc.get("xp_linear", 0.0)), float(sc.get("xp_power", 1.0))) if sc.has("xp_linear") else pow(float(sc["xp_growth"]), n)
 	if tier != "" and DataDB.bosses().has(unit_id):
 		var t: Dictionary = sc["boss_tiers"][tier]
 		hp_mult *= float(t["hp_mult"])

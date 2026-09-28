@@ -32,14 +32,10 @@ static func best_hero_for(state: Dictionary, item: Dictionary) -> int:
 	return best
 
 
-## Adds a freshly dropped item. Returns "equipped:<hero name>", "stored" or "salvaged:<gold>".
+## Adds a freshly dropped item. Returns "stored" or "salvaged:<gold>".
+## Nothing is equipped automatically: gear is always the player's choice.
 static func receive_item(state: Dictionary, item: Dictionary) -> String:
 	var settings: Dictionary = state["settings"]
-	if settings.get("auto_equip", true):
-		var idx := best_hero_for(state, item)
-		if idx >= 0:
-			equip(state, idx, item)
-			return "equipped:" + state["heroes"][idx]["name"]
 	var threshold := DataDB.rarity_order(settings.get("auto_salvage_below", "common"))
 	if DataDB.rarity_order(item["rarity"]) < threshold and item.get("set", "") == "":
 		var gold := Loot.salvage_value(item)
@@ -57,6 +53,8 @@ static func equip(state: Dictionary, hero_idx: int, item: Dictionary) -> bool:
 		return false
 	_remove_from_inventory(state, int(item["uid"]))
 	var old = hero["equipment"][item["slot"]]
+	# Equipping binds the item to the account: it can no longer be traded.
+	item["bound"] = true
 	hero["equipment"][item["slot"]] = item
 	if old != null:
 		state["inventory"].append(old)

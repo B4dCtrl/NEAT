@@ -36,10 +36,14 @@ static func new_uid(state: Dictionary) -> int:
 
 
 ## Builds an equipment item. rarity must not be "relic".
-static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, rarity: String, set_bias: String = "") -> Dictionary:
+static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, rarity: String, set_bias: String = "", base_filter: Callable = Callable()) -> Dictionary:
 	var data := DataDB.items()
 	var rdef: Dictionary = data["rarities"][rarity]
 	var bases: Array = data["bases"]
+	if base_filter.is_valid():
+		var picked: Array = bases.filter(base_filter)
+		if not picked.is_empty():
+			bases = picked
 	var base: Dictionary = bases[rng.randi() % bases.size()]
 	var ilvl := maxi(floor_num, 1)
 	var scale := float(rdef["mult"]) * pow(float(data["item_growth"]), ilvl - 1) * rng.randf_range(0.9, 1.1)
@@ -100,9 +104,26 @@ static func roll_relic(rng: RandomNumberGenerator, state: Dictionary) -> String:
 	return pool[rng.randi() % pool.size()]
 
 
+## Economy cap: after an Epic / Legendary / Mythic drops, the next one of that
+## tier can only drop `cap_floors` floors later; until then it downgrades.
+static func apply_cap(state: Dictionary, rarity: String) -> String:
+	var cds: Dictionary = state.get("rarity_cd", {})
+	var now := int(state.get("floors_cleared_total", 0))
+	var r := rarity
+	while DataDB.rarity_order(r) > 0 and int(cds.get(r, 0)) > now:
+		r = DataDB.rarity_by_order(DataDB.rarity_order(r) - 1)
+	var cap := int(DataDB.rarities().get(r, {}).get("cap_floors", 0))
+	if cap > 0:
+		cds[r] = now + cap
+		state["rarity_cd"] = cds
+	return r
+
+
 ## A drop result is {"item": Dictionary} or {"relic": id} or {"crystals": n}.
 static func roll_drop(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, min_rarity: String, drop_bonus: float, set_bias: String = "") -> Dictionary:
 	var rarity := roll_rarity(rng, floor_num, min_rarity, drop_bonus)
+	if rarity != "relic":
+		rarity = apply_cap(state, rarity)
 	if rarity == "relic":
 		var relic_id := roll_relic(rng, state)
 		if relic_id == "":
@@ -142,6 +163,10 @@ static func boss_chest(rng: RandomNumberGenerator, state: Dictionary, floor_num:
 	var out := []
 	for i in int(chest["items"]):
 		var rarity := roll_rarity(rng, floor_num, chest["min_rarity"], drop_bonus, false)
+		# Chests keep their minimum rarity even while the cap is active.
+		var capped := apply_cap(state, rarity)
+		if DataDB.rarity_order(capped) >= DataDB.rarity_order(chest["min_rarity"]):
+			rarity = capped
 		out.append({"item": generate_item(rng, state, floor_num, rarity, set_bias)})
 	if floor_num >= int(DataDB.balance()["relic_min_floor"]) and rng.randf() < float(chest["relic_chance"]) * (1.0 + drop_bonus):
 		var relic_id := roll_relic(rng, state)

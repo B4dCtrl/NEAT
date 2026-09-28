@@ -1,19 +1,76 @@
 {
+	"_comment": "Ragnarok-style job skill trees: 1 point per hero level. Passives add stats per rank; actives are learned (and get stronger) with points and are cast automatically in fights, paying mana. 'scale' = [value at rank 1, added per extra rank]. 'auto' = the order the auto-spender follows.",
 	"points_per_level": 1,
-	"row_levels": [1, 8, 16, 25],
-	"branches": {"might": "Might", "guard": "Guard", "cunning": "Cunning"},
-	"nodes": {
-		"power": {"icon": "sword", "name": "Power",        "branch": "might",   "row": 0, "max": 10, "stats": {"attack_pct": 0.04, "magic_power_pct": 0.04}, "text": "+4% Attack & Magic",  "requires": {}},
-		"fury": {"icon": "burst", "name": "Fury",         "branch": "might",   "row": 1, "max": 5,  "stats": {"crit_damage": 0.08},  "text": "+8% Crit Damage",          "requires": {"power": 3}},
-		"cleave": {"icon": "axe", "name": "Cleave",       "branch": "might",   "row": 2, "max": 3,  "stats": {"cleave": 0.15},       "text": "Attacks splash 15% to the next enemy", "requires": {"fury": 2}},
-		"executioner": {"icon": "skull", "name": "Executioner",  "branch": "might",   "row": 3, "max": 5,  "stats": {"damage_pct": 0.06},   "text": "+6% Damage",               "requires": {"cleave": 1}},
-		"toughness": {"icon": "heart", "name": "Toughness",    "branch": "guard",   "row": 0, "max": 10, "stats": {"hp_pct": 0.05},       "text": "+5% HP",                   "requires": {}},
-		"plating": {"icon": "shield", "name": "Plating",      "branch": "guard",   "row": 1, "max": 10, "stats": {"defense_pct": 0.06},  "text": "+6% Defense",              "requires": {"toughness": 3}},
-		"leech": {"icon": "drop", "name": "Leech",        "branch": "guard",   "row": 2, "max": 5,  "stats": {"lifesteal": 0.02},    "text": "Heal 2% of damage dealt",  "requires": {"plating": 2}},
-		"evasion": {"icon": "wind", "name": "Evasion",      "branch": "guard",   "row": 3, "max": 5,  "stats": {"dodge": 0.015},       "text": "+1.5% Dodge",              "requires": {"leech": 1}},
-		"haste": {"icon": "bolt", "name": "Haste",        "branch": "cunning", "row": 0, "max": 10, "stats": {"attack_speed_pct": 0.03}, "text": "+3% Attack Speed",     "requires": {}},
-		"precision": {"icon": "target", "name": "Precision",    "branch": "cunning", "row": 1, "max": 10, "stats": {"crit_chance": 0.015}, "text": "+1.5% Crit Chance",        "requires": {"haste": 3}},
-		"focus": {"icon": "hourglass", "name": "Focus",        "branch": "cunning", "row": 2, "max": 5,  "stats": {"cdr": 0.05},          "text": "Skill recharges 5% faster", "requires": {"precision": 2}},
-		"pathfinder": {"icon": "boot", "name": "Pathfinder",   "branch": "cunning", "row": 3, "max": 5,  "stats": {"move_speed_pct": 0.03}, "text": "+3% party climb speed",  "requires": {"focus": 1}}
+	"classes": {
+		"stairborn": {
+			"auto": ["sb_second_wind", "sb_mastery", "sb_cleaver", "sb_endurance", "sb_iron_will", "sb_cry"],
+			"nodes": {
+				"sb_mastery": {"name": "Stair Mastery", "icon": "sword", "kind": "passive", "max": 20, "col": 0, "row": 0, "requires": {}, "stats": {"attack_pct": 0.03}, "text": "+3% Attack per level"},
+				"sb_second_wind": {"name": "Second Wind", "icon": "heal", "kind": "active", "max": 5, "col": 1, "row": 0, "requires": {},
+					"skill": {"type": "self_heal", "cooldown": 14.0, "scale": {"value": [0.15, 0.05], "mana": [20, 3]}},
+					"text": "Heals {value}% of max HP when wounded"},
+				"sb_endurance": {"name": "Stair Endurance", "icon": "heart", "kind": "passive", "max": 20, "col": 2, "row": 0, "requires": {}, "stats": {"hp_pct": 0.04}, "text": "+4% max HP per level"},
+				"sb_cleaver": {"name": "Stair Cleaver", "icon": "axe", "kind": "active", "max": 10, "col": 0, "row": 1, "requires": {"sb_mastery": 3},
+					"skill": {"type": "strike", "cooldown": 8.0, "scale": {"mult": [1.5, 0.25], "mana": [8, 2]}},
+					"text": "Leaping blow: {mult}% damage to the first enemy"},
+				"sb_iron_will": {"name": "Iron Will", "icon": "shield", "kind": "passive", "max": 10, "col": 2, "row": 1, "requires": {"sb_endurance": 3}, "stats": {"defense_pct": 0.05, "dodge": 0.01}, "text": "+5% Defense and +1% Dodge per level"},
+				"sb_cry": {"name": "Rallying Cry", "icon": "horn", "kind": "active", "max": 5, "col": 1, "row": 2, "requires": {"sb_cleaver": 5, "sb_iron_will": 1},
+					"skill": {"type": "war_cry", "cooldown": 20.0, "scale": {"value": [1.1, 0.05], "duration": [3.0, 0.5], "mana": [30, 5]}},
+					"text": "Party attacks {value_pct}% faster for {duration}s"}
+			}
+		},
+		"knight": {
+			"auto": ["kn_bash", "kn_mastery", "kn_fortitude", "kn_wall", "kn_bulwark", "kn_last_stand"],
+			"nodes": {
+				"kn_mastery": {"name": "Sword Mastery", "icon": "sword", "kind": "passive", "max": 20, "col": 0, "row": 0, "requires": {}, "stats": {"attack_pct": 0.03}, "text": "+3% Attack per level"},
+				"kn_bash": {"name": "Shield Bash", "icon": "bash", "kind": "active", "max": 10, "col": 1, "row": 0, "requires": {},
+					"skill": {"type": "strike", "cooldown": 8.0, "scale": {"mult": [1.3, 0.2], "mana": [6, 2]}},
+					"text": "Slams the first enemy for {mult}% damage"},
+				"kn_fortitude": {"name": "Fortitude", "icon": "heart", "kind": "passive", "max": 20, "col": 2, "row": 0, "requires": {}, "stats": {"hp_pct": 0.05}, "text": "+5% max HP per level"},
+				"kn_wall": {"name": "Shield Wall", "icon": "shield", "kind": "active", "max": 5, "col": 2, "row": 1, "requires": {"kn_fortitude": 3},
+					"skill": {"type": "party_shield", "cooldown": 12.0, "scale": {"value": [0.15, 0.05], "duration": [3.0, 0.25], "mana": [20, 4]}},
+					"text": "Taunts and cuts party damage by {value}% for {duration}s"},
+				"kn_bulwark": {"name": "Bulwark", "icon": "helm", "kind": "passive", "max": 20, "col": 0, "row": 1, "requires": {"kn_mastery": 3}, "stats": {"defense_pct": 0.04}, "text": "+4% Defense per level"},
+				"kn_last_stand": {"name": "Last Stand", "icon": "banner", "kind": "active", "max": 5, "col": 1, "row": 2, "requires": {"kn_wall": 3, "kn_fortitude": 5},
+					"skill": {"type": "party_heal", "cooldown": 22.0, "scale": {"value": [0.08, 0.03], "mana": [35, 5]}},
+					"text": "Heals every hero for {value}% of max HP"}
+			}
+		},
+		"ranger": {
+			"auto": ["rg_double", "rg_owl", "rg_vulture", "rg_shower", "rg_focus", "rg_wind"],
+			"nodes": {
+				"rg_owl": {"name": "Owl's Eye", "icon": "eye", "kind": "passive", "max": 20, "col": 0, "row": 0, "requires": {}, "stats": {"crit_chance": 0.01}, "text": "+1% Crit chance per level"},
+				"rg_double": {"name": "Double Strafe", "icon": "pierce", "kind": "active", "max": 10, "col": 1, "row": 0, "requires": {},
+					"skill": {"type": "strike", "cooldown": 7.0, "scale": {"mult": [1.4, 0.22], "mana": [8, 2]}},
+					"text": "Two quick arrows: {mult}% damage to the first enemy"},
+				"rg_vulture": {"name": "Vulture's Eye", "icon": "target", "kind": "passive", "max": 20, "col": 2, "row": 0, "requires": {"rg_owl": 3}, "stats": {"attack_speed_pct": 0.03}, "text": "+3% Attack speed per level"},
+				"rg_shower": {"name": "Arrow Shower", "icon": "volley", "kind": "active", "max": 10, "col": 1, "row": 1, "requires": {"rg_double": 3},
+					"skill": {"type": "multi_shot", "cooldown": 8.0, "scale": {"mult": [0.6, 0.05], "hits": [3, 0.2], "mana": [15, 3]}},
+					"text": "{hits} arrows at random enemies, {mult}% damage each"},
+				"rg_focus": {"name": "Improve Concentration", "icon": "hourglass", "kind": "passive", "max": 20, "col": 2, "row": 1, "requires": {"rg_vulture": 1}, "stats": {"damage_pct": 0.02, "dodge": 0.01}, "text": "+2% Damage and +1% Dodge per level"},
+				"rg_wind": {"name": "Wind Walk", "icon": "wind", "kind": "active", "max": 5, "col": 1, "row": 2, "requires": {"rg_focus": 3, "rg_shower": 3},
+					"skill": {"type": "war_cry", "cooldown": 18.0, "scale": {"value": [1.15, 0.05], "duration": [3.0, 0.5], "mana": [30, 5]}},
+					"text": "Party attacks {value_pct}% faster for {duration}s"}
+			}
+		},
+		"arcanist": {
+			"auto": ["ar_firebolt", "ar_mind", "ar_recovery", "ar_meteor", "ar_mending", "ar_ward"],
+			"nodes": {
+				"ar_recovery": {"name": "Arcane Recovery", "icon": "book", "kind": "passive", "max": 20, "col": 0, "row": 0, "requires": {}, "stats": {"mana_regen_pct": 0.08}, "text": "+8% Mana regeneration per level"},
+				"ar_firebolt": {"name": "Fire Bolt", "icon": "firebolt", "kind": "active", "max": 10, "col": 1, "row": 0, "requires": {},
+					"skill": {"type": "strike", "element": "fire", "cooldown": 6.0, "scale": {"mult": [1.0, 0.3], "mana": [10, 2]}},
+					"text": "A bolt of fire: {mult}% damage to the first enemy"},
+				"ar_mind": {"name": "Mind Mastery", "icon": "star", "kind": "passive", "max": 20, "col": 2, "row": 0, "requires": {}, "stats": {"magic_power_pct": 0.03}, "text": "+3% Magic power per level"},
+				"ar_meteor": {"name": "Meteor Storm", "icon": "meteor", "kind": "active", "max": 10, "col": 1, "row": 1, "requires": {"ar_firebolt": 4, "ar_mind": 3},
+					"skill": {"type": "meteor", "cooldown": 12.0, "burn": 0.25, "duration": 3.0, "scale": {"mult": [0.8, 0.15], "mana": [30, 4]}},
+					"text": "Every enemy takes {mult}% fire damage and burns"},
+				"ar_mending": {"name": "Mending Flames", "icon": "mend", "kind": "active", "max": 5, "col": 0, "row": 1, "requires": {"ar_recovery": 5},
+					"skill": {"type": "party_heal", "cooldown": 22.0, "scale": {"value": [0.06, 0.03], "mana": [35, 5]}},
+					"text": "Heals every hero for {value}% of max HP"},
+				"ar_ward": {"name": "Frost Ward", "icon": "shield", "kind": "active", "max": 5, "col": 2, "row": 1, "requires": {"ar_mind": 5},
+					"skill": {"type": "party_shield", "cooldown": 16.0, "taunt": false, "scale": {"value": [0.1, 0.04], "duration": [2.5, 0.25], "mana": [25, 4]}},
+					"text": "Cuts party damage by {value}% for {duration}s"}
+			}
+		}
 	}
 }

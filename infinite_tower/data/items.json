@@ -21,7 +21,7 @@
 			"order": 0,
 			"mult": 1.0,
 			"affixes": 0,
-			"weight": 600,
+			"weight": 700,
 			"color": "#b4b4b4",
 			"salvage": 1
 		},
@@ -30,7 +30,7 @@
 			"order": 1,
 			"mult": 1.25,
 			"affixes": 1,
-			"weight": 260,
+			"weight": 220,
 			"color": "#5fd35f",
 			"salvage": 2
 		},
@@ -39,7 +39,7 @@
 			"order": 2,
 			"mult": 1.6,
 			"affixes": 2,
-			"weight": 100,
+			"weight": 60,
 			"color": "#4aa3ff",
 			"salvage": 5
 		},
@@ -48,7 +48,8 @@
 			"order": 3,
 			"mult": 2.1,
 			"affixes": 3,
-			"weight": 32,
+			"weight": 14,
+			"cap_floors": 5,
 			"color": "#b35cff",
 			"salvage": 12
 		},
@@ -57,7 +58,8 @@
 			"order": 4,
 			"mult": 2.8,
 			"affixes": 4,
-			"weight": 8,
+			"weight": 2.5,
+			"cap_floors": 30,
 			"color": "#ff9d2a",
 			"salvage": 30
 		},
@@ -66,7 +68,8 @@
 			"order": 5,
 			"mult": 3.8,
 			"affixes": 5,
-			"weight": 2,
+			"weight": 0.4,
+			"cap_floors": 150,
 			"color": "#ff4f6d",
 			"salvage": 80
 		},
@@ -75,7 +78,7 @@
 			"order": 6,
 			"mult": 0.0,
 			"affixes": 0,
-			"weight": 0.35,
+			"weight": 0.2,
 			"color": "#b388ff",
 			"salvage": 0
 		}
@@ -724,13 +727,13 @@
 		"recipes": {
 			"common": {
 				"to": "uncommon",
-				"count": 3,
+				"count": 4,
 				"gold": 15,
 				"crystals": 0
 			},
 			"uncommon": {
 				"to": "rare",
-				"count": 3,
+				"count": 4,
 				"gold": 40,
 				"crystals": 0
 			},

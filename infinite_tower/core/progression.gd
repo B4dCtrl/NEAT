@@ -7,9 +7,17 @@ const GameState = preload("res://core/game_state.gd")
 const Heroes = preload("res://core/heroes.gd")
 
 
+## Tibia's experience curve: reaching level L takes 50/3 (L³ - 6L² + 17L - 12)
+## XP in total, so one level costs 50 (L² - 3L + 4) (100 XP at level 1-2,
+## 2 200 at level 8, 485 200 at level 100).
+static func xp_total(level: int) -> float:
+	var l := float(level)
+	return 50.0 / 3.0 * (l * l * l - 6.0 * l * l + 17.0 * l - 12.0)
+
+
 static func xp_to_next(level: int) -> float:
-	var bal := DataDB.balance()
-	return float(bal["xp_base"]) * pow(float(bal["xp_growth"]), level - 1)
+	var l := float(level)
+	return 50.0 * (l * l - 3.0 * l + 4.0)
 
 
 ## Adds XP to every hero; returns the names of heroes that levelled up.

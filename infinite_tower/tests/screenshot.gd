@@ -72,11 +72,11 @@ func _run() -> void:
 	await _wait(40)
 	await _shot_desktop("04_taskbar_menu_a", tv)
 	tv.panels.close_all()
-	for id in ["souls", "talents"]:
+	for id in ["talents", "inventory"]:
 		tv.panels.open(id)
 	await _wait(40)
 	# Drag one panel somewhere else, like a player would.
-	var inv: Window = tv.panels.window_of("souls")
+	var inv: Window = tv.panels.window_of("inventory")
 	inv.position -= Vector2i(80, 30)
 	await _wait(10)
 	await _shot_desktop("05_taskbar_menu_b", tv)

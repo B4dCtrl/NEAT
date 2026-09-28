@@ -217,7 +217,7 @@
 		"xp_base": 30,
 		"xp_growth": 1.13,
 		"max_level": 500,
-		"base_drop_chance": 0.07,
+		"base_drop_chance": 0.035,
 		"vault_items": 2,
 		"vault_gold_mult": 12,
 		"chest": {

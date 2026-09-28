@@ -218,14 +218,14 @@ func salvage(uid: int) -> void:
 	inventory_changed.emit()
 
 
-## Burns items of `rarity` into one of the next rarity, made for that hero.
-func forge(rarity: String, hero_idx: int) -> Dictionary:
-	var hero: Dictionary = state["heroes"][clampi(hero_idx, 0, state["heroes"].size() - 1)]
-	var item := Forge.forge(state, rarity, hero["class"])
+## Merges items of `rarity` and kind `key` ("helm/", "weapon/ranger") into one
+## random item of the same kind, one rarity higher.
+func merge(rarity: String, key: String) -> Dictionary:
+	var item := Forge.merge(state, rarity, key)
 	if item.is_empty():
 		return {}
 	sfx_requested.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") else "loot")
-	notified.emit("legendary" if item["rarity"] in ["legendary", "mythic"] else "info", "Forged: %s" % item["name"])
+	notified.emit("legendary" if item["rarity"] in ["legendary", "mythic"] else "info", "Merged: %s" % item["name"])
 	inventory_changed.emit()
 	state_changed.emit()
 	return item

@@ -2,7 +2,7 @@ extends RefCounted
 ## Hero roster: the founder starts alone, up to `party_slots` heroes climb together,
 ## extra heroes wait on the bench. New heroes are bought in the Market or MINTED:
 ## generated from scratch with a random class, name and rarity (potential).
-## Also owns the per-hero skill tree.
+## Also owns the per-class job skill tree (Ragnarok style).
 
 const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
@@ -156,16 +156,20 @@ static func gold_reserve(state: Dictionary) -> float:
 	return 0.0
 
 
-# ------------------------------------------------------------------ skill tree
+# ------------------------------------------------------------------ job skill tree
+# Ragnarok-style: one point per level, a tree per class. Passives add stats per
+# rank; actives are learned with points, grow with rank and are auto-cast.
 
 static func skill_points_total(hero: Dictionary) -> int:
 	return (int(hero["level"]) - 1) * int(DataDB.table("skills")["points_per_level"])
 
 
 static func skill_points_spent(hero: Dictionary) -> int:
+	var nodes := DataDB.skill_nodes(hero["class"])
 	var spent := 0
 	for k in hero.get("skills", {}):
-		spent += int(hero["skills"][k])
+		if nodes.has(k):
+			spent += int(hero["skills"][k])
 	return spent
 
 
@@ -177,15 +181,9 @@ static func skill_rank(hero: Dictionary, node_id: String) -> int:
 	return int(hero.get("skills", {}).get(node_id, 0))
 
 
-## Hero level needed to open a talent row (deeper rows open later).
-static func row_level(row: int) -> int:
-	var gates: Array = DataDB.table("skills").get("row_levels", [1])
-	return int(gates[clampi(row, 0, gates.size() - 1)])
-
-
 static func skill_unlocked(hero: Dictionary, node_id: String) -> bool:
-	var node: Dictionary = DataDB.skill_nodes()[node_id]
-	if int(hero["level"]) < row_level(int(node["row"])):
+	var node: Dictionary = DataDB.skill_nodes(hero["class"]).get(node_id, {})
+	if node.is_empty():
 		return false
 	for req in node["requires"]:
 		if skill_rank(hero, req) < int(node["requires"][req]):
@@ -194,8 +192,8 @@ static func skill_unlocked(hero: Dictionary, node_id: String) -> bool:
 
 
 static func learn_skill(hero: Dictionary, node_id: String) -> bool:
-	var node: Dictionary = DataDB.skill_nodes()[node_id]
-	if skill_points_free(hero) <= 0 or skill_rank(hero, node_id) >= int(node["max"]) or not skill_unlocked(hero, node_id):
+	var node: Dictionary = DataDB.skill_nodes(hero["class"]).get(node_id, {})
+	if node.is_empty() or skill_points_free(hero) <= 0 or skill_rank(hero, node_id) >= int(node["max"]) or not skill_unlocked(hero, node_id):
 		return false
 	if not hero.has("skills"):
 		hero["skills"] = {}
@@ -207,45 +205,89 @@ static func reset_skills(hero: Dictionary) -> void:
 	hero["skills"] = {}
 
 
-## Spends free points automatically, cycling through the class' preferred branch.
+## Drops ranks of nodes that are not in the hero's class tree (old saves).
+static func clean_skills(hero: Dictionary) -> void:
+	var nodes := DataDB.skill_nodes(hero["class"])
+	var kept := {}
+	for k in hero.get("skills", {}):
+		if nodes.has(k):
+			kept[k] = hero["skills"][k]
+	hero["skills"] = kept
+
+
+## Spends free points following the class' "auto" order: one point in each
+## node of the list in turn, until everything reachable is maxed.
 static func auto_learn(hero: Dictionary) -> int:
-	var nodes := DataDB.skill_nodes()
-	var prefer: String = DataDB.classes()[hero["class"]].get("skill_branch", "might")
+	var order: Array = DataDB.skill_tree(hero["class"]).get("auto", DataDB.skill_nodes(hero["class"]).keys())
 	var learned := 0
-	while skill_points_free(hero) > 0 and learned < 100:
-		var best := ""
-		var best_rank := 1 << 30
-		for id in nodes:
-			if not skill_unlocked(hero, id) or skill_rank(hero, id) >= int(nodes[id]["max"]):
-				continue
-			# Prefer the class branch, then the lowest-ranked node (spreads points).
-			var r := skill_rank(hero, id) + (0 if nodes[id]["branch"] == prefer else 3)
-			if r < best_rank:
-				best_rank = r
-				best = id
-		if best == "" or not learn_skill(hero, best):
+	while skill_points_free(hero) > 0 and learned < 200:
+		var any := false
+		for id in order:
+			if skill_points_free(hero) <= 0:
+				break
+			if learn_skill(hero, id):
+				learned += 1
+				any = true
+		if not any:
 			break
-		learned += 1
 	return learned
 
 
 # ------------------------------------------------------------------ active skills
 
-## Every active skill of a class, in unlock order (level 1, 10, 25).
+## Value of a scaled field at `rank` ([rank 1 value, added per extra rank]).
+static func _scaled(pair: Array, rank: int) -> float:
+	return float(pair[0]) + float(pair[1]) * maxi(0, rank - 1)
+
+
+## The combat skill a learned active node casts at `rank`.
+static func skill_at_rank(node_id: String, rank: int) -> Dictionary:
+	var node: Dictionary = DataDB.skill_nodes().get(node_id, {})
+	var def: Dictionary = node.get("skill", {})
+	var sk := {"id": node_id, "name": node.get("name", node_id), "icon": node.get("icon", "star"), "rank": rank}
+	for k in def:
+		if k != "scale":
+			sk[k] = def[k]
+	for k in def.get("scale", {}):
+		sk[k] = _scaled(def["scale"][k], rank)
+	if sk.has("hits"):
+		sk["hits"] = int(floor(float(sk["hits"])))
+	sk["mana"] = roundi(float(sk.get("mana", 0)))
+	return sk
+
+
+## Human text of a node at a rank ("{mult}%" and friends filled in).
+static func describe(node_id: String, rank: int) -> String:
+	var node: Dictionary = DataDB.skill_nodes().get(node_id, {})
+	var text: String = node.get("text", "")
+	if node.get("kind", "") != "active":
+		return text
+	var sk := skill_at_rank(node_id, maxi(rank, 1))
+	text = text.replace("{mult}", str(roundi(float(sk.get("mult", 0.0)) * 100.0)))
+	text = text.replace("{value_pct}", str(roundi((float(sk.get("value", 1.0)) - 1.0) * 100.0)))
+	text = text.replace("{value}", str(roundi(float(sk.get("value", 0.0)) * 100.0)))
+	text = text.replace("{duration}", String.num(float(sk.get("duration", 0.0)), 1))
+	text = text.replace("{hits}", str(int(sk.get("hits", 0))))
+	return "%s · %d mana · %ss cooldown" % [text, int(sk["mana"]), String.num(float(sk.get("cooldown", 0.0)), 0)]
+
+
+## Active nodes of a class (ids), in tree order.
 static func class_skills(class_id: String) -> Array:
-	var cdef: Dictionary = DataDB.classes()[class_id]
-	return cdef.get("skills", [cdef["skill"]] if cdef.has("skill") else [])
+	var nodes := DataDB.skill_nodes(class_id)
+	var ids: Array = nodes.keys().filter(func(id): return nodes[id].get("kind", "") == "active")
+	ids.sort_custom(func(a, b): return int(nodes[a]["row"]) * 10 + int(nodes[a]["col"]) < int(nodes[b]["row"]) * 10 + int(nodes[b]["col"]))
+	return ids
 
 
-static func active_skill_learned(hero: Dictionary, sk: Dictionary) -> bool:
-	return int(hero["level"]) >= int(sk.get("level", 1))
+static func active_skill_learned(hero: Dictionary, node_id: String) -> bool:
+	return skill_rank(hero, node_id) > 0
 
 
-static func active_skill_enabled(hero: Dictionary, sk: Dictionary) -> bool:
-	return not String(sk["id"]) in hero.get("skills_off", [])
+static func active_skill_enabled(hero: Dictionary, node_id: String) -> bool:
+	return not node_id in hero.get("skills_off", [])
 
 
-## Turns a learned skill on/off (the party then fights without it).
+## Turns a learned skill's auto-cast on/off.
 static func toggle_active_skill(hero: Dictionary, skill_id: String) -> void:
 	var off: Array = hero.get("skills_off", [])
 	if skill_id in off:
@@ -255,10 +297,10 @@ static func toggle_active_skill(hero: Dictionary, skill_id: String) -> void:
 	hero["skills_off"] = off
 
 
-## What this hero actually casts in a fight.
+## What this hero auto-casts in a fight (learned, switched on), at its rank.
 static func active_skills(hero: Dictionary) -> Array:
 	var out := []
-	for sk in class_skills(hero["class"]):
-		if active_skill_learned(hero, sk) and active_skill_enabled(hero, sk):
-			out.append(sk)
+	for id in class_skills(hero["class"]):
+		if active_skill_learned(hero, id) and active_skill_enabled(hero, id):
+			out.append(skill_at_rank(id, skill_rank(hero, id)))
 	return out

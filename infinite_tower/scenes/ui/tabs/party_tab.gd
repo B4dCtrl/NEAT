@@ -280,6 +280,8 @@ static func item_tooltip(item: Dictionary) -> String:
 	lines.append(item["name"])
 	lines.append("%s %s  ·  Item Level %d" % [rarity_name, item["slot"].capitalize(), item["ilvl"]])
 	lines.append("Usable by: " + users_text(item))
+	if item.get("bound", false):
+		lines.append("Bound: it was equipped, so it can no longer be traded")
 	var base_keys := []
 	for b in DataDB.items()["bases"]:
 		if b["id"] == item.get("base", ""):

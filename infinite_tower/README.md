@@ -60,7 +60,8 @@ infinite_tower/
 │   ├── platform_services.gd  # Costura para Steamworks (GodotSteam); no-op sem backend
 │   ├── game.gd               # [autoload Game] dirige a Expedition, sinais p/ UI, autosave, ações
 │   ├── audio.gd              # [autoload Audio] SFX e música chiptune sintetizados em código
-│   ├── forge.gd              # Forja: queima itens para subir de raridade (sumidouro)
+│   ├── forge.gd              # Merge: itens do mesmo tipo sobem de raridade (sumidouro)
+│   ├── danger.gd             # Simula a próxima luta: Easy / Fair / Hard / Deadly
 │   └── window_manager.gd     # [autoload WindowManager] Taskbar ↔ Expedition, dock, foco
 ├── data/
 │   ├── items.json            # Slots, raridades, bases, afixos, sets e relics
@@ -133,10 +134,24 @@ simulação da próxima luta (`core/danger.gd`).
 O painel **HEROES** concentra a party (3 vagas), a reserva e o **mint** (com as chances
 de raridade à vista). O painel **SOULS** traz a Ascensão e a árvore permanente.
 
-### Forja (queimar itens)
-`core/forge.gd` queima 3–5 itens de uma raridade e cria 1 da raridade seguinte para o
-herói escolhido (Common→Uncommon→Rare→Epic→Legendary→Mythic), cobrando ouro que cresce
-com o nível do item (e cristais nos tiers altos). É o principal sumidouro da economia.
+### Progressão (Tibia) e árvore de skills (Ragnarok)
+- **XP estilo Tibia:** o nível L custa `50·(L² − 3L + 4)` XP (100 no nível 1, 2 200 no 8,
+  485 200 no 100); a XP dos monstros cresce de forma polinomial com o andar.
+- **Ganho por nível por vocação:** Knight +30 HP/+0,5 mana, Ranger +20/+1,5,
+  Arcanist +10/+3, Stairborn +24/+1 (as proporções 15/10/5 e 5/15/30 do Tibia).
+- **Árvore da classe (`data/skill_tree.json`):** 1 ponto por nível. Passivas somam
+  atributos por nível; skills ativas (Bash, Double Strafe, Fire Bolt, Meteor Storm...)
+  têm níveis 1–10 com pré-requisitos e saem sozinhas na luta (**autocast**) gastando mana.
+
+### Itens: equipar à mão, merge e limites da economia
+- **Nada se equipa sozinho:** o jogador escolhe o que cada herói usa. Item equipado fica
+  **vinculado** (não poderá ser negociado).
+- **Merge (`core/forge.gd`):** 4–5 itens da mesma raridade e do mesmo tipo (slot, e a
+  classe da arma) viram 1 item aleatório do mesmo tipo, uma raridade acima; custa ouro
+  (e cristais nos tiers altos) que cresce com o nível do item.
+- **Drops escassos:** chance base de 3,5% por monstro e raridades altas mais raras. Depois
+  de um Epic/Legendary/Mythic, o próximo da mesma raridade só cai 5/30/150 andares depois
+  (até lá ele vira a raridade de baixo).
 
 ### Monstros, afixos e chefes
 28 monstros (variantes de cor com traços próprios: roubo de vida, espinhos, regeneração)

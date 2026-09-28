@@ -276,17 +276,13 @@ func _fall_back() -> void:
 	_set_phase("pause", float(bal["fallback_pause"]))
 
 
-## Bonfire: rest (full heal), tidy up gear, learn skills, set the checkpoint.
+## Bonfire: rest (full HP and mana), spend skill points, set the checkpoint.
+## Gear is never equipped automatically: that is the player's job.
 func _rest_at_bonfire() -> void:
 	var bal := DataDB.balance()
 	var f := int(state["floor"])
 	state["checkpoint"] = f
 	restore_party()
-	if state["settings"].get("auto_equip", true):
-		for item in state["inventory"].duplicate():
-			var idx := Inventory.best_hero_for(state, item)
-			if idx >= 0:
-				Inventory.equip(state, idx, item)
 	if state["settings"].get("auto_skills", true):
 		for hero in state["heroes"]:
 			Heroes.auto_learn(hero)

@@ -5,7 +5,7 @@ extends RefCounted
 const DataDB = preload("res://core/data_db.gd")
 const Heroes = preload("res://core/heroes.gd")
 
-const VERSION := 1
+const VERSION := 2
 const HISTORY_CAP := 150
 
 const DEFAULT_SETTINGS := {
@@ -23,7 +23,7 @@ const DEFAULT_SETTINGS := {
 	"music_volume": 0.35,
 	"sfx_volume": 0.5,
 	"notify_glow": true,
-	"auto_equip": true,
+	"auto_equip": false,       # legacy: gear is always equipped by the player now
 	"auto_train": true,
 	"auto_salvage_below": "uncommon",  # items below this rarity are salvaged on drop
 	"show_damage_numbers": true,
@@ -65,6 +65,8 @@ static func new_game(run_seed: int = 0) -> Dictionary:
 		"milestones": [],
 		"floors_cleared_total": 0,
 		"market": {},
+		# Economy caps: floors_cleared_total at which a scarce rarity may drop again.
+		"rarity_cd": {},
 		"consumables": {"health_potion": 3},
 		"intro_seen": false,
 		"tutorial_seen": false,
@@ -129,6 +131,8 @@ static func migrate(state: Dictionary) -> Dictionary:
 			hero["rarity"] = "common"
 		for k in hero["skills"]:
 			hero["skills"][k] = int(hero["skills"][k])
+		# v2: the generic talent tree became per-class job trees; old ranks are refunded.
+		Heroes.clean_skills(hero)
 		for slot in DataDB.items()["slots"]:
 			if not hero["equipment"].has(slot):
 				hero["equipment"][slot] = null
@@ -138,6 +142,9 @@ static func migrate(state: Dictionary) -> Dictionary:
 		state["training"][key] = int(state["training"][key])
 	for key in state["ascension"]:
 		state["ascension"][key] = int(state["ascension"][key])
+	if int(state.get("version", 1)) < 2:
+		# v2: nothing equips itself any more.
+		state["settings"]["auto_equip"] = false
 	state["version"] = VERSION
 	return state
 

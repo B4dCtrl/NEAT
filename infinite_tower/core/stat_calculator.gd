@@ -55,10 +55,10 @@ static func party_mods(state: Dictionary) -> Dictionary:
 ## Summed stats from a hero's skill tree ranks.
 static func skill_stats(hero: Dictionary) -> Dictionary:
 	var out := {}
-	var nodes := DataDB.skill_nodes()
+	var nodes := DataDB.skill_nodes(hero["class"])
 	var skills: Dictionary = hero.get("skills", {})
 	for node_id in skills:
-		if nodes.has(node_id):
+		if nodes.has(node_id) and nodes[node_id].has("stats"):
 			_add_stats(out, nodes[node_id]["stats"], int(skills[node_id]))
 	return out
 

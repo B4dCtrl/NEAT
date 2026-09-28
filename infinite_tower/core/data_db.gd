@@ -66,8 +66,22 @@ static func ascension_nodes() -> Dictionary:
 	return table("ascension")["nodes"]
 
 
-static func skill_nodes() -> Dictionary:
-	return table("skills")["nodes"]
+## Job skill tree nodes of one class, or of every class merged ("" = all;
+## node ids are unique across classes).
+static func skill_nodes(class_id: String = "") -> Dictionary:
+	var classes: Dictionary = table("skills")["classes"]
+	if class_id != "":
+		return classes.get(class_id, {}).get("nodes", {})
+	if not _cache.has("_all_skill_nodes"):
+		var all := {}
+		for c in classes:
+			all.merge(classes[c]["nodes"])
+		_cache["_all_skill_nodes"] = all
+	return _cache["_all_skill_nodes"]
+
+
+static func skill_tree(class_id: String) -> Dictionary:
+	return table("skills")["classes"].get(class_id, {})
 
 
 static func platform() -> Dictionary:

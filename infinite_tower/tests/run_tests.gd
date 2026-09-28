@@ -118,7 +118,16 @@ func test_loot_and_inventory() -> void:
 	while weapon.is_empty() or weapon["class"] != "knight":
 		weapon = Loot.generate_item(rng, state, 30, "epic")
 	check(Inventory.best_hero_for(state, weapon) == 0, "knight weapon goes to the knight")
-	check(Inventory.receive_item(state, weapon).begins_with("equipped"), "auto-equip upgrades")
+	check(Inventory.receive_item(state, weapon) == "stored", "drops are never auto-equipped")
+	check(state["heroes"][0]["equipment"]["weapon"]["uid"] != weapon["uid"], "the old weapon stays until the player swaps it")
+	Inventory.equip(state, 0, weapon)
+	check(weapon.get("bound", false), "equipping binds the item")
+	# Economy cap: a Legendary blocks the next Legendary for a while.
+	state["floors_cleared_total"] = 100
+	check(Loot.apply_cap(state, "legendary") == "legendary", "first legendary drops")
+	check(Loot.apply_cap(state, "legendary") == "epic", "the next one is capped down to epic")
+	state["floors_cleared_total"] = 200
+	check(Loot.apply_cap(state, "legendary") == "legendary", "the cap wears off with floors")
 	check(Inventory.receive_relic(state, "blood_crown"), "relic is new")
 	check(not Inventory.receive_relic(state, "blood_crown"), "duplicate relic becomes crystals")
 	check("blood_crown" in state["relics_equipped"], "relic auto-equipped")
@@ -233,21 +242,27 @@ func test_roster_and_skills() -> void:
 	var hero: Dictionary = state["heroes"][0]
 	hero["level"] = 6
 	check(Heroes.skill_points_free(hero) == 5, "one skill point per level")
-	check(not Heroes.learn_skill(hero, "fury"), "locked skill node")
+	check(not Heroes.learn_skill(hero, "sb_cleaver"), "Stair Cleaver needs Stair Mastery 3")
+	check(not Heroes.learn_skill(hero, "kn_bash"), "a Knight skill is not in the Stairborn tree")
 	var before: float = StatCalc.hero_stats(state, hero)["hp"]
 	for i in 3:
-		Heroes.learn_skill(hero, "toughness")
-	check(StatCalc.hero_stats(state, hero)["hp"] > before, "skills raise stats")
-	check(not Heroes.learn_skill(hero, "plating"), "talent row 2 waits for its level gate")
-	hero["level"] = 8
-	check(Heroes.learn_skill(hero, "plating"), "prerequisite unlocks next node")
-	check(Heroes.active_skills(hero).size() == 1, "one active skill at level 8")
-	hero["level"] = 25
-	check(Heroes.active_skills(hero).size() == 3, "three active skills at level 25")
-	Heroes.toggle_active_skill(hero, Heroes.active_skills(hero)[1]["id"])
-	check(Heroes.active_skills(hero).size() == 2, "a skill can be switched off")
+		Heroes.learn_skill(hero, "sb_endurance")
+	check(StatCalc.hero_stats(state, hero)["hp"] > before, "passives raise stats")
+	check(Heroes.active_skills(hero).is_empty(), "no active skill until one is learned")
+	check(Heroes.learn_skill(hero, "sb_second_wind"), "an active skill costs a point")
+	check(Heroes.active_skills(hero).size() == 1 and int(Heroes.active_skills(hero)[0]["rank"]) == 1, "learned skills are auto-cast at their level")
+	Heroes.learn_skill(hero, "sb_second_wind")
+	check(float(Heroes.active_skills(hero)[0]["value"]) > 0.15, "a higher skill level is stronger")
+	Heroes.toggle_active_skill(hero, "sb_second_wind")
+	check(Heroes.active_skills(hero).is_empty(), "auto-cast can be switched off")
+	Heroes.toggle_active_skill(hero, "sb_second_wind")
+	hero["level"] = 40
 	Heroes.auto_learn(hero)
 	check(Heroes.skill_points_free(hero) == 0, "auto-learn spends every point")
+	check(Heroes.skill_rank(hero, "sb_cleaver") > 0, "auto-learn reaches the deeper skills")
+	# Tibia: 100 XP for level 2, 50 (L^2 - 3L + 4) per level after.
+	check(is_equal_approx(Progression.xp_to_next(1), 100.0) and is_equal_approx(Progression.xp_to_next(8), 2200.0), "Tibia experience curve")
+	check(is_equal_approx(Progression.xp_total(8), 4200.0), "Tibia total XP for level 8")
 
 
 func test_bonfire_and_market() -> void:
@@ -310,18 +325,22 @@ func test_forge() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 77
 	state["inventory"] = []
+	var helm := func(b): return b["slot"] == "helm"
 	for i in 3:
-		state["inventory"].append(Loot.generate_item(rng, state, 20, "rare"))
+		state["inventory"].append(Loot.generate_item(rng, state, 20, "rare", "", helm))
+	# A rare boot does not count towards the helm group.
+	state["inventory"].append(Loot.generate_item(rng, state, 20, "rare", "", func(b): return b["slot"] == "boots"))
 	state["gold"] = 1e9
-	check(not Forge.quote(state, "rare")["ok"], "forge needs enough items (4 rares)")
-	state["inventory"].append(Loot.generate_item(rng, state, 22, "rare"))
-	var q := Forge.quote(state, "rare")
-	check(q["ok"] and q["to"] == "epic" and int(q["ilvl"]) == 22, "forge quote: 4 rares -> epic at the best item level")
+	check(not Forge.quote(state, "rare", "helm/")["ok"], "merge needs 4 items of the same kind")
+	state["inventory"].append(Loot.generate_item(rng, state, 22, "rare", "", helm))
+	var q := Forge.quote(state, "rare", "helm/")
+	check(q["ok"] and q["to"] == "epic" and int(q["ilvl"]) == 22, "merge quote: 4 rare helms -> 1 epic at the best item level")
 	var gold_before := float(state["gold"])
-	var made := Forge.forge(state, "rare", "stairborn")
-	check(made["rarity"] == "epic" and state["inventory"].size() == 1, "forge burns the inputs and makes one epic")
-	check(float(state["gold"]) < gold_before, "forging costs gold (economy sink)")
-	check(Loot.can_equip(made, "stairborn"), "forged item fits the chosen hero")
+	var made := Forge.merge(state, "rare", "helm/")
+	check(made["rarity"] == "epic" and made["slot"] == "helm", "merge makes one epic of the same kind")
+	check(state["inventory"].size() == 2, "the 4 helms are gone, the boot stays")
+	check(float(state["gold"]) < gold_before, "merging costs gold (economy sink)")
+	check(Forge.groups(state).size() >= 1, "merge groups are listed")
 
 
 func test_mana_bonfire_danger() -> void:

@@ -26,7 +26,7 @@
 			"dodge": 0.05
 		},
 		"growth": {
-			"hp": 32,
+			"hp": 24,
 			"attack": 2.4,
 			"defense": 1.6
 		},
@@ -106,7 +106,7 @@
 			"dodge": 0.03
 		},
 		"growth": {
-			"hp": 28,
+			"hp": 30,
 			"attack": 1.6,
 			"defense": 1.7
 		},
@@ -161,7 +161,7 @@
 		],
 		"mana": {
 			"max": 60,
-			"per_level": 0.8,
+			"per_level": 0.5,
 			"regen": 2.0
 		}
 	},
@@ -187,7 +187,7 @@
 			"dodge": 0.1
 		},
 		"growth": {
-			"hp": 15,
+			"hp": 20,
 			"attack": 2.3,
 			"defense": 0.7
 		},
@@ -243,7 +243,7 @@
 		],
 		"mana": {
 			"max": 80,
-			"per_level": 1.0,
+			"per_level": 1.5,
 			"regen": 2.5
 		}
 	},
@@ -269,7 +269,7 @@
 			"dodge": 0.05
 		},
 		"growth": {
-			"hp": 12,
+			"hp": 10,
 			"magic_power": 2.8,
 			"defense": 0.5
 		},
@@ -326,7 +326,7 @@
 		],
 		"mana": {
 			"max": 140,
-			"per_level": 1.6,
+			"per_level": 3.0,
 			"regen": 3.5
 		}
 	}

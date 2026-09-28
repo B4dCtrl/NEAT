@@ -138,6 +138,8 @@ func _ready() -> void:
 	_auto_equip.text = "Auto-equip upgrades"
 	_auto_equip.toggled.connect(func(on): Game.set_setting("auto_equip", on))
 	rules.add_child(_auto_equip)
+	# Gear is always equipped by hand now.
+	_auto_equip.visible = false
 	var al := Label.new()
 	al.text = "  Auto-salvage below:"
 	rules.add_child(al)

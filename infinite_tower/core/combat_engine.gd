@@ -353,7 +353,8 @@ func _use_skill(u: Unit, sk: Dictionary) -> void:
 			for h in alive_units(SIDE_HEROES):
 				h.dr = float(sk["value"])
 				h.dr_time = float(sk["duration"])
-			u.taunt_time = float(sk["duration"])
+			if sk.get("taunt", true):
+				u.taunt_time = float(sk["duration"])
 			_emit({"t": "skill", "src": u.uid, "name": sk["name"], "kind": kind})
 		"multi_shot":
 			if alive_units(SIDE_ENEMIES).is_empty():
@@ -380,7 +381,7 @@ func _use_skill(u: Unit, sk: Dictionary) -> void:
 			if foes.is_empty():
 				return
 			_emit({"t": "skill", "src": u.uid, "dst": foes[0].uid, "name": sk["name"], "kind": kind, "id": sk.get("id", "")})
-			_hit(u, foes[0], float(sk["mult"]), "fire" if sk.get("id", "") == "firebolt" else u.element, "skill")
+			_hit(u, foes[0], float(sk["mult"]), String(sk.get("element", u.element)), "skill")
 		"party_heal":
 			for h in alive_units(SIDE_HEROES):
 				h.hp = minf(h.max_hp, h.hp + h.max_hp * float(sk["value"]))

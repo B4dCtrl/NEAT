@@ -45,7 +45,6 @@ func _ready() -> void:
 	_slider(grid, "sfx_volume", "Sound effects", 0.0, 1.0, 0.05)
 
 	_section(grid, "Loot")
-	_check(grid, "auto_equip", "Auto-equip upgrades")
 	_check(grid, "auto_train", "Auto-train with spare gold")
 	_check(grid, "auto_skills", "Auto-spend skill points")
 

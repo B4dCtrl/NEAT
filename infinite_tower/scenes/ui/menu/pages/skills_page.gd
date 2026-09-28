@@ -1,6 +1,7 @@
 extends VBoxContainer
-## SKILLS: each hero's three active skills (unlocked at levels 1, 10 and 25),
-## their live cooldowns during a fight and an on/off switch for each.
+## SKILLS: the hero's active job skills. They are learned and levelled up in
+## TALENTS with skill points, then AUTO-CAST in every fight while there is
+## mana. Shows level, cost, live cooldowns and an auto-cast on/off switch.
 
 const DataDB = preload("res://core/data_db.gd")
 const Heroes = preload("res://core/heroes.gd")
@@ -14,7 +15,7 @@ var host
 var hero_idx := 0
 var _picker
 var _list: VBoxContainer
-var _cards: Array = []   # [{skill, tile, toggle, state}]
+var _cards: Array = []   # [{id, tile, toggle, meta, desc}]
 var _built_for := ""
 var _dirty := true
 
@@ -40,7 +41,10 @@ func _ready() -> void:
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_list)
-	add_child(Ornate.small_label("Skills fire on their own when there is mana.\nMana refills slowly in fights, fully at bonfires.\nSwitch a skill off to save mana for the others.", Ornate.TEXT_DIM, 11))
+	var hint := Ornate.small_label("Learn and level skills in TALENTS (1 point per level). Learned skills auto-cast when there is mana; switch one off to save mana.", Ornate.TEXT_DIM, 11)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.custom_minimum_size = Vector2(200, 0)
+	add_child(hint)
 	Game.state_changed.connect(func(): _dirty = true)
 	Game.party_changed.connect(func(): _picker.rebuild(); _built_for = ""; _dirty = true)
 
@@ -55,25 +59,26 @@ func _build() -> void:
 	_cards.clear()
 	var hero := _hero()
 	_built_for = String(hero["id"])
-	for sk in Heroes.class_skills(hero["class"]):
+	var nodes := DataDB.skill_nodes(hero["class"])
+	for id in Heroes.class_skills(hero["class"]):
+		var n: Dictionary = nodes[id]
 		var panel := PanelContainer.new()
 		_list.add_child(panel)
 		var h := HBoxContainer.new()
 		panel.add_child(h)
 		var tile = IconTile.new()
 		tile.custom_minimum_size = Vector2(44, 44)
-		tile.glyph = sk.get("icon", "star")
+		tile.glyph = n.get("icon", "star")
 		tile.fill = CLASS_COLORS.get(hero["class"], Color("#5a2a24"))
 		h.add_child(tile)
 		var v := VBoxContainer.new()
 		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		v.add_theme_constant_override("separation", 1)
 		h.add_child(v)
-		var title := Ornate.header_label(sk["name"])
-		v.add_child(title)
+		v.add_child(Ornate.header_label(n["name"]))
 		var meta := Ornate.small_label("", Ornate.TEXT_DIM, 11)
 		v.add_child(meta)
-		var desc := Ornate.small_label(sk["description"], Ornate.TEXT, 11)
+		var desc := Ornate.small_label("", Ornate.TEXT, 11)
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc.custom_minimum_size = Vector2(150, 0)
 		v.add_child(desc)
@@ -81,10 +86,10 @@ func _build() -> void:
 		toggle.focus_mode = Control.FOCUS_NONE
 		toggle.custom_minimum_size = Vector2(46, 0)
 		toggle.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var sid: String = sk["id"]
+		var sid: String = id
 		toggle.pressed.connect(func(): Game.toggle_active_skill(hero_idx, sid); _dirty = true)
 		h.add_child(toggle)
-		_cards.append({"skill": sk, "tile": tile, "toggle": toggle, "meta": meta})
+		_cards.append({"id": id, "tile": tile, "toggle": toggle, "meta": meta, "desc": desc})
 
 
 func _process(_delta: float) -> void:
@@ -104,20 +109,32 @@ func _process(_delta: float) -> void:
 
 func _refresh() -> void:
 	var hero := _hero()
+	var nodes := DataDB.skill_nodes(hero["class"])
 	for c in _cards:
-		var sk: Dictionary = c["skill"]
-		var learned := Heroes.active_skill_learned(hero, sk)
-		var on := Heroes.active_skill_enabled(hero, sk)
+		var id: String = c["id"]
+		var rank := Heroes.skill_rank(hero, id)
+		var learned := rank > 0
+		var on := Heroes.active_skill_enabled(hero, id)
 		c["tile"].locked = not learned
 		c["tile"].dim = learned and not on
+		c["tile"].rank_text = ""
 		c["tile"].queue_redraw()
-		c["meta"].text = ("%d mana · cooldown %ss" % [int(sk.get("mana", 0)), String.num(float(sk["cooldown"]), 1)]) if learned else "Unlocks at level %d" % int(sk.get("level", 1))
+		c["desc"].text = Heroes.describe(id, maxi(rank, 1)).get_slice(" · ", 0)
+		if learned:
+			var sk := Heroes.skill_at_rank(id, rank)
+			c["meta"].text = "Lv %d/%d · %d mana · %ss cooldown" % [rank, int(nodes[id]["max"]), int(sk["mana"]), String.num(float(sk["cooldown"]), 0)]
+		else:
+			var reqs := []
+			for req in nodes[id]["requires"]:
+				reqs.append("%s %d" % [nodes[req]["name"], nodes[id]["requires"][req]])
+			c["meta"].text = "Not learned" + (" · needs " + ", ".join(reqs) if not reqs.is_empty() else " · learn it in TALENTS")
 		c["toggle"].disabled = not learned
 		c["toggle"].text = "ON" if on and learned else ("OFF" if learned else "—")
+		c["toggle"].tooltip_text = "Auto-cast on/off"
 		c["toggle"].add_theme_color_override("font_color", Ornate.GOOD if on and learned else Ornate.TEXT_DIM)
 
 
-## Live cooldown sweep on the icons while the party is fighting.
+## Live cooldown sweep and "out of mana" dimming while the party fights.
 func _update_cooldowns() -> void:
 	var exp = Game.expedition
 	var unit = null
@@ -125,12 +142,14 @@ func _update_cooldowns() -> void:
 		unit = exp.combat.heroes[hero_idx]
 	for c in _cards:
 		var cd := 0.0
+		var cost := 0.0
 		if unit != null and unit.alive:
 			for i in unit.skills.size():
-				if unit.skills[i].get("id", "") == c["skill"]["id"]:
-					cd = clampf(unit.skill_cds[i] / maxf(0.1, float(c["skill"]["cooldown"])), 0.0, 1.0)
-		var dry: bool = unit != null and unit.alive and unit.mana < float(c["skill"].get("mana", 0))
-		if dry != c["tile"].dim and Heroes.active_skill_enabled(_hero(), c["skill"]):
+				if unit.skills[i].get("id", "") == c["id"]:
+					cd = clampf(unit.skill_cds[i] / maxf(0.1, float(unit.skills[i]["cooldown"])), 0.0, 1.0)
+					cost = float(unit.skills[i].get("mana", 0))
+		var dry: bool = unit != null and unit.alive and cost > 0.0 and unit.mana < cost
+		if dry != c["tile"].dim and Heroes.active_skill_enabled(_hero(), c["id"]) and Heroes.skill_rank(_hero(), c["id"]) > 0:
 			c["tile"].dim = dry
 			c["tile"].queue_redraw()
 		if absf(cd - c["tile"].cooldown) > 0.001:

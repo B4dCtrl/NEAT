@@ -524,10 +524,10 @@ func _skill_fx(ev: Dictionary, src, su) -> void:
 			if dst != null:
 				target = _center(dst)
 			match String(ev.get("id", "")):
-				"piercing_shot":
+				"rg_double":
 					_fx.spawn("arrow", at, target, Color.WHITE, 1.8, 0.14)
 					_fx.spawn("burst", target, target, Color("#e0e6ee"), 1.4, 0.3, 0.14)
-				"firebolt":
+				"ar_firebolt":
 					_fx.spawn("bolt", at, target, Color("#ff5a1a"), 1.8, 0.2)
 					_fx.spawn("burst", target, target, Color("#ff9d4a"), 1.6, 0.35, 0.2)
 				_:

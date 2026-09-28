@@ -33,7 +33,7 @@ const TUTORIAL := {
 		["Wounds, mana and bonfires", "HP and mana do NOT come back between floors. Skills cost mana. Every 10 floors a bonfire heals everything and saves a checkpoint. With Auto-rest on, a hurt party walks back to the bonfire by itself."],
 		["Falling hurts", "If everyone falls, the party tumbles back to the bonfire and drops a quarter of its gold. The floor number turns green, yellow, orange or red to show how dangerous the next floor is."],
 		["Heroes", "You start alone. In the HEROES panel, Mint a hero for gold: random class, name and rarity. Up to 3 heroes fight; the others wait in the reserve, and you choose who swaps in."],
-		["Gear, talents and skills", "Loot drops on the stairs. Drag items onto heroes in INVENTORY, and burn spare items in the Forge to make a better one. Each level gives a talent point (TALENTS); new skills unlock at levels 10 and 25 (SKILLS)."],
+		["Gear, skills and merging", "Loot is rare. Nothing equips itself: drag items onto heroes in INVENTORY (equipped items become bound). MERGE 4-5 weak items of the same kind into one better item. Each level gives 1 skill point for the job tree in TALENTS; learned skills are cast automatically."],
 		["Souls", "When the climb stalls (floor 50+), Ascend in the SOULS panel: start over and earn Souls for permanent bonuses. Closing the game hides it in the tray; the climb goes on."],
 	],
 	"pt": [
@@ -41,7 +41,7 @@ const TUTORIAL := {
 		["Ferimentos, mana e fogueiras", "Vida e mana NÃO voltam entre os andares. As skills gastam mana. A cada 10 andares uma fogueira cura tudo e salva o checkpoint. Com o Auto-descanso ligado, o grupo ferido volta sozinho para a fogueira."],
 		["Cair dói", "Se todos caírem, o grupo rola de volta até a fogueira e perde um quarto do ouro. O número do andar fica verde, amarelo, laranja ou vermelho para mostrar o perigo do próximo andar."],
 		["Heróis", "Você começa sozinho. No painel HEROES, faça Mint de um herói com ouro: classe, nome e raridade aleatórios. Até 3 heróis lutam; os outros esperam na reserva, e você escolhe quem entra."],
-		["Itens, talentos e skills", "Os itens caem nos degraus. Arraste itens para os heróis no INVENTORY e queime os que sobram na Forja para criar um melhor. Cada nível dá um ponto de talento (TALENTS); skills novas liberam nos níveis 10 e 25 (SKILLS)."],
+		["Itens, skills e merge", "Os itens são raros. Nada se equipa sozinho: arraste os itens para os heróis no INVENTORY (item equipado fica vinculado). Faça MERGE de 4-5 itens fracos do mesmo tipo para ganhar um melhor. Cada nível dá 1 ponto de habilidade para a árvore da classe em TALENTS; as skills aprendidas saem sozinhas (autocast)."],
 		["Souls", "Quando a subida travar (andar 50+), faça a Ascensão no painel SOULS: recomece e ganhe Souls para bônus permanentes. Fechar o jogo esconde ele na bandeja e a subida continua."],
 	],
 }

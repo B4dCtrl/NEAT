@@ -993,6 +993,9 @@
 		"defense_growth": 1.055,
 		"gold_growth": 1.05,
 		"xp_growth": 1.04,
+		"xp_scale": 6.0,
+		"xp_linear": 0.15,
+		"xp_power": 2.0,
 		"boss_tiers": {
 			"guardian": {
 				"name": "Guardian",
