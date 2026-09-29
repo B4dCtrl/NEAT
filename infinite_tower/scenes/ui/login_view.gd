@@ -8,30 +8,7 @@ signal logged_in()
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const Accounts = preload("res://core/accounts.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
-const StoryText = preload("res://scenes/ui/story_text.gd")
-
-const TEXT := {
-	"en": {
-		"title": "Sign in", "create_title": "Create account", "user": "Account name", "password": "Password",
-		"confirm": "Confirm password", "remember": "Remember me on this computer", "sign_in": "Sign in",
-		"create": "Create account", "to_create": "New here? Create an account", "to_sign_in": "Already have an account? Sign in",
-		"note": "Accounts are stored on this computer. Each one has its own encrypted save and starts from floor 1.",
-		"name_length": "The name needs 3 to 16 characters.", "name_chars": "Use only letters, numbers and _ in the name.",
-		"password_length": "The password needs at least 6 characters.", "name_taken": "That name is already taken.",
-		"no_account": "No account with that name. Create one below.", "wrong_password": "Wrong password.",
-		"mismatch": "The passwords do not match.",
-	},
-	"pt": {
-		"title": "Entrar", "create_title": "Criar conta", "user": "Nome da conta", "password": "Senha",
-		"confirm": "Confirmar senha", "remember": "Lembrar de mim neste computador", "sign_in": "Entrar",
-		"create": "Criar conta", "to_create": "Novo por aqui? Crie uma conta", "to_sign_in": "Já tem conta? Entrar",
-		"note": "As contas ficam neste computador. Cada uma tem seu próprio save criptografado e começa do andar 1.",
-		"name_length": "O nome precisa ter de 3 a 16 caracteres.", "name_chars": "Use só letras, números e _ no nome.",
-		"password_length": "A senha precisa ter pelo menos 6 caracteres.", "name_taken": "Esse nome já está em uso.",
-		"no_account": "Não existe conta com esse nome. Crie uma abaixo.", "wrong_password": "Senha incorreta.",
-		"mismatch": "As senhas não conferem.",
-	},
-}
+const Loc = preload("res://core/loc.gd")
 
 var _creating := false
 var _title: Label
@@ -43,10 +20,14 @@ var _remember: CheckBox
 var _go: Button
 var _switch: Button
 var _error: Label
+var _lang: OptionButton
+var _note: Label
+var _user_label: Label
+var _pass_label: Label
 
 
 static func t(key: String) -> String:
-	return TEXT[StoryText.lang()].get(key, TEXT["en"].get(key, key))
+	return Loc.t(key if key.begins_with("login.") else "err." + key if key in ["name_length", "name_chars", "password_length", "name_taken", "no_account", "wrong_password", "mismatch"] else "login." + key)
 
 
 func _ready() -> void:
@@ -126,16 +107,32 @@ func _ready() -> void:
 	_switch.add_theme_color_override("font_color", Ornate.ACCENT)
 	_switch.pressed.connect(func(): _set_creating(not _creating))
 	v.add_child(_switch)
+	_lang = OptionButton.new()
+	_lang.focus_mode = Control.FOCUS_NONE
+	for code in Loc.LANGUAGES:
+		_lang.add_item(Loc.LANGUAGES[code])
+		_lang.set_item_metadata(_lang.item_count - 1, code)
+		if code == Loc.current():
+			_lang.select(_lang.item_count - 1)
+	_lang.item_selected.connect(func(i): Game.set_language(_lang.get_item_metadata(i)))
+	col.add_child(_lang)
+	Game.language_changed.connect(_retranslate)
 	var note := Ornate.small_label(t("note"), Ornate.TEXT_DIM, 11)
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.custom_minimum_size = Vector2(380, 0)
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_note = note
 	col.add_child(note)
 	_set_creating(Accounts.last_user() == "")
 
 
 func _field(v: VBoxContainer, label: String, secret: bool) -> LineEdit:
-	v.add_child(Ornate.small_label(label, Ornate.TEXT_DIM, 12))
+	var lbl := Ornate.small_label(label, Ornate.TEXT_DIM, 12)
+	v.add_child(lbl)
+	if secret:
+		_pass_label = lbl
+	else:
+		_user_label = lbl
 	var e := LineEdit.new()
 	e.secret = secret
 	e.max_length = 16 if not secret else 64
@@ -146,6 +143,15 @@ func _field(v: VBoxContainer, label: String, secret: bool) -> LineEdit:
 	e.add_theme_color_override("font_color", Ornate.TEXT)
 	v.add_child(e)
 	return e
+
+
+func _retranslate() -> void:
+	_user_label.text = t("user")
+	_pass_label.text = t("password")
+	_confirm_label.text = t("confirm")
+	_remember.text = t("remember")
+	_note.text = t("note")
+	_set_creating(_creating)
 
 
 func start() -> void:

@@ -53,7 +53,8 @@ const UI := {
 
 
 static func lang() -> String:
-	return "pt" if OS.get_locale_language() == "pt" else "en"
+	# Story / tutorial exist in Portuguese and English; Spanish reads them in English.
+	return "pt" if load("res://core/loc.gd").current() == "pt" else "en"
 
 
 static func comic(key: String) -> String:

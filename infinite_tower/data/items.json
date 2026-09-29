@@ -719,6 +719,24 @@
 			"price": 50,
 			"weight": 2,
 			"text": "Climb 60% faster for 10 floors."
+		},
+		"warp_stone": {
+			"name": "Warp Stone",
+			"icon": "icon_crystal",
+			"kind": "warp",
+			"price": 120,
+			"weight": 0.8,
+			"text": "Teleports the party to the highest bonfire it has ever reached (great after a fall)."
+		},
+		"hourglass": {
+			"name": "Hourglass of Haste",
+			"icon": "icon_floor",
+			"kind": "time",
+			"value": 2.0,
+			"seconds": 600,
+			"price": 200,
+			"weight": 0.4,
+			"text": "Time flows twice as fast for the party for 10 minutes (while the game is open)."
 		}
 	},
 	"consumable_drop_chance": 0.05,

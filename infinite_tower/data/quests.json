@@ -1,0 +1,22 @@
+{
+	"_comment": "Contracts: 3 at a time; progress = growth of a stats counter since the contract started. Rewards: consumables, crystals, gold (x floors worth of gold at the best floor) or an item. Daily: a 7-day streak that resets when a day is missed.",
+	"active": 3,
+	"contracts": [
+		{"id": "climb", "stat": "floors_climbed", "text": "Climb %d floors", "amount": [8, 0.35], "reward": {"climbing_scroll": 1, "gold_floors": 3}},
+		{"id": "slay", "stat": "kills", "text": "Slay %d monsters", "amount": [25, 1.0], "reward": {"health_potion": 3, "gold_floors": 2}},
+		{"id": "guardian", "stat": "bosses", "text": "Defeat %d Guardian", "amount": [1, 0.0], "reward": {"warp_stone": 1, "crystals": 2}},
+		{"id": "wins", "stat": "fights_won", "text": "Win %d fights", "amount": [15, 0.6], "reward": {"mana_potion": 2, "fury_tonic": 1}},
+		{"id": "merge", "stat": "items_forged", "text": "Merge %d item", "amount": [1, 0.0], "reward": {"crystals": 3, "fortune_scroll": 1}},
+		{"id": "treasure", "stat": "items_found", "text": "Find %d items", "amount": [4, 0.05], "reward": {"hourglass": 1}},
+		{"id": "rest", "stat": "retreats", "text": "Rest at a bonfire %d times", "amount": [2, 0.0], "reward": {"iron_draught": 1, "gold_floors": 2}}
+	],
+	"daily": [
+		{"health_potion": 3, "gold_floors": 2},
+		{"mana_potion": 2, "climbing_scroll": 1},
+		{"crystals": 3, "fury_tonic": 1},
+		{"warp_stone": 1, "gold_floors": 4},
+		{"fortune_scroll": 1, "crystals": 5},
+		{"hourglass": 1, "climbing_scroll": 2},
+		{"item": "epic", "warp_stone": 1, "crystals": 10}
+	]
+}

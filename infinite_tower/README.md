@@ -134,6 +134,25 @@ simulação da próxima luta (`core/danger.gd`).
 O painel **HEROES** concentra a party (3 vagas), a reserva e o **mint** (com as chances
 de raridade à vista). O painel **SOULS** traz a Ascensão e a árvore permanente.
 
+### Ritmo lento, itens de velocidade e vício
+A subida base ficou mais lenta (22 s por andar). O que acelera é conquistado: **Pergaminho
+de Pressa** (+60% de velocidade por 10 andares), **Pedra de Teletransporte** (leva à maior
+fogueira já alcançada, ótima depois de uma queda) e **Ampulheta** (o tempo corre 2× por
+10 minutos com o jogo aberto), além dos elixires. Eles vêm de dois lugares
+(`core/quests.gd`, `data/quests.json`):
+- **Contratos** (painel QUESTS): 3 metas curtas por vez ("suba 12 andares", "derrote um
+  Guardião", "faça 1 merge"...) que rendem esses itens e se renovam ao resgatar.
+- **Recompensa diária** com sequência de 7 dias (o 7º dia dá um item Epic); perder um dia
+  zera a sequência.
+
+### Idiomas
+Pacotes em `data/lang/<código>.json` (`en`, `pt`, `es`), chaves planas com fallback para o
+inglês (`core/loc.gd`). O idioma se escolhe na tela de login e em Configurações e vale antes
+mesmo de entrar na conta. Para adicionar um idioma, basta um novo `.json` e uma linha em
+`Loc.LANGUAGES`. Hoje os pacotes cobrem menu, painéis, login, missões e avisos; a história e
+o tutorial existem em português e inglês (espanhol lê em inglês), e nomes de itens,
+monstros e skills ainda estão só em inglês.
+
 ### Login e contas
 O jogo abre numa tela de **login** (como a da Steam): entrar com nome e senha ou criar
 uma conta. Cada conta tem seu próprio save em `user://accounts/`, criptografado com uma

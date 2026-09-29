@@ -39,6 +39,7 @@ func _init() -> void:
 	test_forge()
 	test_mana_bonfire_danger()
 	test_accounts()
+	test_quests_and_languages()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -405,6 +406,48 @@ func test_accounts() -> void:
 	Accounts.delete_account(a)
 	Accounts.delete_account(b)
 	check(not Accounts.exists(a), "account deleted")
+
+
+func test_quests_and_languages() -> void:
+	var Quests = load("res://core/quests.gd")
+	var Loc = load("res://core/loc.gd")
+	var state := GameState.new_game(9)
+	Quests.ensure(state)
+	check(state["contracts"].size() == 3, "three contracts at a time")
+	var ids: Array = state["contracts"].map(func(c): return c["id"])
+	check(ids.size() == ids.duplicate().filter(func(i): return ids.count(i) == 1).size(), "the three contracts are different")
+	var c: Dictionary = state["contracts"][0]
+	check(not Quests.is_done(state, c), "a fresh contract is not done")
+	check(Quests.claim(state, 0).is_empty(), "cannot claim an unfinished contract")
+	state["stats"][c["stat"]] = float(state["stats"].get(c["stat"], 0)) + float(c["target"])
+	check(Quests.is_done(state, c), "progress follows the stat")
+	var before := str(c)
+	var got: Dictionary = Quests.claim(state, 0)
+	check(not got.is_empty() and str(state["contracts"][0]) != before, "claiming pays out and renews the contract")
+	# Daily streak: consecutive days grow, a missed day resets.
+	check(Quests.daily_status(state, "2026-05-01")["claimable"], "daily reward is claimable")
+	check(not Quests.claim_daily(state, "2026-05-01").is_empty(), "day 1 claimed")
+	check(Quests.claim_daily(state, "2026-05-01").is_empty(), "only once a day")
+	Quests.claim_daily(state, "2026-05-02")
+	check(int(state["daily_streak"]) == 2, "consecutive days build a streak")
+	Quests.claim_daily(state, "2026-05-05")
+	check(int(state["daily_streak"]) == 1, "a missed day resets the streak")
+	# Warp Stone jumps to the highest bonfire reached.
+	state["max_floor"] = 47
+	state["floor"] = 3
+	var sim := Expedition.new(state)
+	check(sim.warp_target() == 41, "warp target is the highest bonfire (41)")
+	sim.warp_to(41)
+	check(int(state["floor"]) == 41 and int(state["checkpoint"]) == 41, "warp moves the party and the checkpoint")
+	# Language packs: every language covers the English keys, and falls back safely.
+	for code in Loc.LANGUAGES:
+		check(Loc.coverage(code) >= 0.99, "language pack %s is complete (%.0f%%)" % [code, Loc.coverage(code) * 100.0])
+	Loc.lang = "pt"
+	check(Loc.t("panel.inventory") == "INVENTÁRIO", "Portuguese pack")
+	Loc.lang = "es"
+	check(Loc.t("panel.quests") == "MISIONES", "Spanish pack")
+	check(Loc.t("does.not.exist") == "does.not.exist", "unknown key falls back to itself")
+	Loc.lang = "en"
 
 
 ## Long run with no player input: how far does the idle loop get?

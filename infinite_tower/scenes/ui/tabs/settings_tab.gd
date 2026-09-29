@@ -4,6 +4,7 @@ extends MarginContainer
 const SaveSystem = preload("res://core/save_system.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
 const Accounts = preload("res://core/accounts.gd")
+const Loc = preload("res://core/loc.gd")
 
 ## Single-column layout for the narrow menu panel.
 var compact := false
@@ -67,14 +68,27 @@ func _ready() -> void:
 	guide.pressed.connect(func(): Game.story_requested.emit("tutorial"))
 	grid.add_child(guide)
 
-	_section(grid, "Account")
+	_section(grid, Loc.t("settings.language"))
+	var lang := OptionButton.new()
+	lang.focus_mode = Control.FOCUS_NONE
+	for code in Loc.LANGUAGES:
+		lang.add_item(Loc.LANGUAGES[code])
+		lang.set_item_metadata(lang.item_count - 1, code)
+		if code == Loc.current():
+			lang.select(lang.item_count - 1)
+	lang.item_selected.connect(func(i): Game.set_language(lang.get_item_metadata(i)))
+	grid.add_child(lang)
+	if not compact:
+		grid.add_child(Control.new())
+
+	_section(grid, Loc.t("settings.account"))
 	var who := Label.new()
-	who.text = "Signed in as " + Accounts.display_name(Game.account)
+	who.text = Loc.t("settings.signed_in") % Accounts.display_name(Game.account)
 	who.add_theme_color_override("font_color", Color("#9a96a8"))
-	Game.account_changed.connect(func(): who.text = "Signed in as " + Accounts.display_name(Game.account))
+	Game.account_changed.connect(func(): who.text = Loc.t("settings.signed_in") % Accounts.display_name(Game.account))
 	grid.add_child(who)
 	var logout := Button.new()
-	logout.text = "Log out"
+	logout.text = Loc.t("settings.logout")
 	logout.focus_mode = Control.FOCUS_NONE
 	logout.tooltip_text = "Saves and returns to the login screen (another player can sign in)"
 	logout.pressed.connect(func(): Game.logout())

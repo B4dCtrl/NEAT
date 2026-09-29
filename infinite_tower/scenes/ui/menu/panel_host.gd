@@ -13,14 +13,15 @@ const SkillsPage = preload("res://scenes/ui/menu/pages/skills_page.gd")
 const InventoryPage = preload("res://scenes/ui/menu/pages/inventory_page.gd")
 const HeroesPage = preload("res://scenes/ui/menu/pages/heroes_page.gd")
 const SoulsPage = preload("res://scenes/ui/menu/pages/souls_page.gd")
+const QuestsPage = preload("res://scenes/ui/menu/pages/quests_page.gd")
+const Loc = preload("res://core/loc.gd")
 const SettingsTab = preload("res://scenes/ui/tabs/settings_tab.gd")
 
 const MAX_OPEN := 3
 const GAP := 6.0
 const PANEL_H := 420.0
-const ORDER := ["status", "heroes", "talents", "skills", "inventory", "souls", "settings"]
-const TITLES := {"status": "STATUS", "heroes": "HEROES", "talents": "TALENTS", "skills": "SKILLS", "inventory": "INVENTORY", "souls": "SOULS", "settings": "SETTINGS"}
-const WIDTHS := {"status": 300.0, "heroes": 320.0, "talents": 300.0, "skills": 300.0, "inventory": 360.0, "souls": 320.0, "settings": 320.0}
+const ORDER := ["status", "heroes", "talents", "skills", "inventory", "quests", "souls", "settings"]
+const WIDTHS := {"status": 300.0, "heroes": 320.0, "talents": 300.0, "skills": 300.0, "inventory": 360.0, "quests": 300.0, "souls": 320.0, "settings": 320.0}
 
 ## Hero shown by the hero-centric pages; shared so switching tabs keeps it.
 var hero_idx := 0
@@ -59,11 +60,11 @@ func open(id: String) -> void:
 		close(_open[0])
 	var p = GamePanel.new()
 	var sz := Vector2(WIDTHS[id], PANEL_H)
-	p.setup(id, TITLES[id], _make_page(id), sz)
+	p.setup(id, Loc.t("panel." + id), _make_page(id), sz)
 	p.close_requested.connect(close)
 	p.dragged.connect(_on_panel_dragged)
 	var w := Window.new()
-	w.title = "Stairborn · " + TITLES[id].capitalize()
+	w.title = "Stairborn · " + Loc.t("panel." + id).capitalize()
 	w.borderless = true
 	w.transparent = true
 	w.transparent_bg = true
@@ -113,6 +114,8 @@ func _make_page(id: String) -> Control:
 			page = HeroesPage.new()
 		"souls":
 			page = SoulsPage.new()
+		"quests":
+			page = QuestsPage.new()
 		_:
 			page = SettingsTab.new()
 			page.compact = true

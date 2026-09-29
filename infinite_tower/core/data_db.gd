@@ -11,6 +11,7 @@ const FILES := {
 	"sprites": "res://data/sprites.json",
 	"skills": "res://data/skill_tree.json",
 	"platform": "res://data/platform.json",
+	"quests": "res://data/quests.json",
 }
 
 static var _cache: Dictionary = {}

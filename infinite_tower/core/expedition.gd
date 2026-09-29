@@ -331,6 +331,25 @@ func retreat_to_bonfire() -> void:
 	_set_phase("pause", float(DataDB.balance()["fallback_pause"]))
 
 
+## Warp Stone target: the highest bonfire at or below the best floor reached.
+func warp_target() -> int:
+	return maxi(1, TowerGen.bonfire_below(int(state["max_floor"])))
+
+
+## Teleports to a bonfire: the party arrives rested and the checkpoint moves.
+func warp_to(target: int) -> void:
+	var from := int(state["floor"])
+	state["floor"] = target
+	state["checkpoint"] = target
+	restore_party()
+	combat = null
+	last_fall = {}
+	GameState.add_history(state, "info", "Warped from floor %d to the bonfire on %d" % [from, target])
+	events.append({"type": "warp", "from": from, "to": target})
+	after_pause = "next_floor"
+	_set_phase("pause", 1.0)
+
+
 ## Auto-bonfire: after a won fight, retreat when the party is too hurt to go on.
 func _should_retreat() -> bool:
 	if retreat_requested:

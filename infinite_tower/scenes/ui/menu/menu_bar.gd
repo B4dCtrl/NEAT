@@ -8,20 +8,22 @@ signal close_requested()
 
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const Glyphs = preload("res://scenes/ui/menu/glyphs.gd")
+const Loc = preload("res://core/loc.gd")
 
 const BUTTON := 20.0
 const GAP := 2.0
 ## [id, glyph, tooltip]
 const BUTTONS := [
-	["status", "helm", "Status"],
-	["heroes", "banner", "Heroes: party, reserve and minting"],
-	["talents", "tree", "Talent tree"],
-	["skills", "book", "Skills"],
-	["inventory", "bag", "Inventory"],
-	["souls", "skull", "Souls: Ascension and the permanent tree"],
-	["settings", "gear", "Settings"],
-	["expedition", "expand", "Expedition (market, ascension, bestiary...)"],
-	["close", "close", "Close (the climb goes on in the system tray)"],
+	["status", "helm", "menu.status"],
+	["heroes", "banner", "menu.heroes"],
+	["talents", "tree", "menu.talents"],
+	["skills", "book", "menu.skills"],
+	["inventory", "bag", "menu.inventory"],
+	["quests", "star", "menu.quests"],
+	["souls", "skull", "menu.souls"],
+	["settings", "gear", "menu.settings"],
+	["expedition", "expand", "menu.expedition"],
+	["close", "close", "menu.close"],
 ]
 
 var open_ids: Array = []
@@ -50,7 +52,7 @@ func _index_at(p: Vector2) -> int:
 
 func _get_tooltip(at: Vector2) -> String:
 	var i := _index_at(at)
-	return BUTTONS[i][2] if i >= 0 else ""
+	return Loc.t(BUTTONS[i][2]) if i >= 0 else ""
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -58,7 +60,7 @@ func _gui_input(event: InputEvent) -> void:
 		var i := _index_at(event.position)
 		if i != _hover:
 			_hover = i
-			tooltip_text = BUTTONS[i][2] if i >= 0 else ""
+			tooltip_text = Loc.t(BUTTONS[i][2]) if i >= 0 else ""
 			queue_redraw()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var i := _index_at(event.position)

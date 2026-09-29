@@ -17,6 +17,8 @@ const Forge = preload("res://core/forge.gd")
 const UiNum = preload("res://scenes/ui/ui_util.gd")
 const Danger = preload("res://core/danger.gd")
 const Accounts = preload("res://core/accounts.gd")
+const Quests = preload("res://core/quests.gd")
+const Loc = preload("res://core/loc.gd")
 
 ## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
 signal notified(kind: String, text: String)
@@ -37,6 +39,8 @@ signal story_requested(what: String)
 signal sfx_requested(cue: String)
 ## A player logged in or out.
 signal account_changed()
+## The interface language changed (see core/loc.gd).
+signal language_changed()
 
 const AUTOSAVE_INTERVAL := 30.0
 
@@ -127,6 +131,13 @@ func _open_account(user: String, key: String) -> void:
 		call_deferred("emit_signal", "offline_report_ready", offline_report)
 
 
+func set_language(code: String) -> void:
+	if code == Loc.current():
+		return
+	Loc.set_language(code)
+	language_changed.emit()
+
+
 ## Saves and returns to the login screen (also forgets "remember me").
 func logout() -> void:
 	if not logged_in():
@@ -169,6 +180,15 @@ func _process(delta: float) -> void:
 		return
 	_update_danger(delta)
 	var dt := delta * time_scale
+	# Hourglass of Haste: the climb runs faster for a while (real time).
+	var boost: Dictionary = state.get("time_boost", {})
+	if float(boost.get("left", 0.0)) > 0.0 and state.get("intro_seen", false):
+		boost["left"] = float(boost["left"]) - delta
+		dt *= float(boost.get("mult", 1.0))
+		if float(boost["left"]) <= 0.0:
+			state.erase("time_boost")
+			notified.emit("info", Loc.t("toast.hourglass_end"))
+	_check_contracts(delta)
 	# The climb begins once the Stairborn has been introduced.
 	if not state.get("intro_seen", false):
 		return
@@ -400,11 +420,73 @@ func use_consumable(id: String) -> bool:
 					state_changed.emit()
 					return true
 			buffs.append({"id": id, "name": def["name"], "stats": def["stats"], "floors_left": int(def["floors"])})
+		"warp":
+			var target := expedition.warp_target()
+			if in_fight or target <= int(state["floor"]):
+				notified.emit("info", "No higher bonfire to warp to" if not in_fight else "Wait until the fight is over")
+				return false
+			expedition.warp_to(target)
+			notified.emit("milestone", Loc.t("toast.warp") % target)
+		"time":
+			var boost: Dictionary = state.get("time_boost", {})
+			# Stacking an hourglass adds time, the speed stays the same.
+			state["time_boost"] = {"mult": float(def["value"]), "left": float(boost.get("left", 0.0)) + float(def["seconds"])}
+			notified.emit("milestone", Loc.t("toast.hourglass") % [int(def["value"]), int(float(state["time_boost"]["left"]) / 60.0)])
 	bag[id] = int(bag[id]) - 1
 	sfx_requested.emit("use")
 	state_changed.emit()
 	inventory_changed.emit()
 	return true
+
+
+# ------------------------------------------------------------------ contracts & daily
+
+var _contracts_wait := 0.0
+var _contracts_ready := 0
+
+
+## Glows once when a contract becomes claimable (checked twice a second).
+func _check_contracts(delta: float) -> void:
+	_contracts_wait -= delta
+	if _contracts_wait > 0.0:
+		return
+	_contracts_wait = 0.5
+	Quests.ensure(state)
+	var ready := 0
+	for c in state["contracts"]:
+		if Quests.is_done(state, c):
+			ready += 1
+	if ready > _contracts_ready:
+		notified.emit("milestone", Loc.t("toast.contract_done"))
+		sfx_requested.emit("fanfare")
+	_contracts_ready = ready
+
+
+func claim_contract(index: int) -> Dictionary:
+	var got := Quests.claim(state, index)
+	if not got.is_empty():
+		notified.emit("milestone", Loc.t("toast.reward") % Quests.reward_text(got, state))
+		sfx_requested.emit("loot")
+		_contracts_ready = maxi(0, _contracts_ready - 1)
+		inventory_changed.emit()
+		state_changed.emit()
+		save()
+	return got
+
+
+func daily_status() -> Dictionary:
+	return Quests.daily_status(state, Quests.today_string())
+
+
+func claim_daily() -> Dictionary:
+	var got := Quests.claim_daily(state, Quests.today_string())
+	if not got.is_empty():
+		notified.emit("milestone", Loc.t("toast.daily") % [int(state["daily_streak"]), Quests.reward_text(got, state)])
+		sfx_requested.emit("fanfare")
+		inventory_changed.emit()
+		state_changed.emit()
+		save()
+	return got
 
 
 func mint_hero() -> void:
