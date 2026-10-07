@@ -76,6 +76,9 @@ func _run() -> void:
 		if not seen.has(g):
 			seen[g] = true
 			_save("glyphs", g, Glyphs.texture(g), 64.0)
+	# Rarity auras on one piece, for the changelog / docs.
+	for r in ["common", "uncommon", "rare", "epic", "legendary", "mythic"]:
+		_save("rarity", r, PixelArt.item_icon({"base": "ashen_king_weapon_k", "slot": "weapon", "rarity": r}, false), 128.0)
 	_sheets()
 	var f4 := FileAccess.open(out_dir.path_join("index.json"), FileAccess.WRITE)
 	f4.store_string(JSON.stringify(index))
