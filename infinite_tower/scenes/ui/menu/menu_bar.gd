@@ -23,7 +23,8 @@ const BUTTONS := [
 	["souls", "skull", "menu.souls"],
 	["settings", "gear", "menu.settings"],
 	["expedition", "expand", "menu.expedition"],
-	["close", "close", "menu.close"],
+	["close", "minimize", "menu.close"],
+	["quit", "power", "menu.quit"],
 ]
 
 var open_ids: Array = []
@@ -70,6 +71,9 @@ func _gui_input(event: InputEvent) -> void:
 				expand_requested.emit()
 			elif id == "close":
 				close_requested.emit()
+			elif id == "quit":
+				Game.save()
+				get_tree().quit()
 			else:
 				toggled.emit(id)
 			Game.sfx_requested.emit("use")

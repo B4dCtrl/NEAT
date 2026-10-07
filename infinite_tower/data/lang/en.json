@@ -8,7 +8,7 @@
 	"menu.souls": "Souls: Ascension and the permanent tree",
 	"menu.settings": "Settings",
 	"menu.expedition": "Expedition (market, ascension, bestiary...)",
-	"menu.close": "Close (the climb goes on in the system tray)",
+	"menu.close": "Minimize to the system tray (the climb continues)",
 	"panel.status": "STATUS",
 	"panel.heroes": "HEROES",
 	"panel.talents": "TALENTS",
@@ -57,5 +57,6 @@
 	"name.hint": "The tale is called Stairborn, but this hero is yours. Choose a name (you can change it later in the Heroes panel).",
 	"name.ok": "Begin the climb",
 	"name.placeholder": "Your hero's name",
-	"name.default": "The Stairborn"
+	"name.default": "The Stairborn",
+	"menu.quit": "Quit the game (saves and closes completely)"
 }

@@ -8,7 +8,7 @@
 	"menu.souls": "Almas: Ascensión y el árbol permanente",
 	"menu.settings": "Ajustes",
 	"menu.expedition": "Expedición (mercado, ascensión, bestiario...)",
-	"menu.close": "Cerrar (la subida sigue en la bandeja del sistema)",
+	"menu.close": "Minimizar a la bandeja del sistema (la subida continúa)",
 	"panel.status": "ESTADO",
 	"panel.heroes": "HÉROES",
 	"panel.talents": "TALENTOS",
@@ -876,5 +876,6 @@
 	"Bestiary": "Bestiario",
 	"History": "Historial",
 	"Stats": "Estadísticas",
-	"Settings": "Ajustes"
+	"Settings": "Ajustes",
+	"menu.quit": "Salir del juego (guarda y cierra por completo)"
 }

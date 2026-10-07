@@ -247,6 +247,13 @@ static func _paint(img: Image, glyph: String) -> void:
 			_line(img, Vector2i(2, 13), Vector2i(13, 2), CREAM, 2)
 			_poly(img, [Vector2(8, 1), Vector2(15, 1), Vector2(15, 8)], CREAM)
 			_poly(img, [Vector2(1, 8), Vector2(1, 15), Vector2(8, 15)], CREAM)
+		"minimize":
+			_rect(img, 3, 10, 10, 3, CREAM)
+			_poly(img, [Vector2(4, 4), Vector2(12, 4), Vector2(8, 9)], CREAM)
+		"power":
+			_ring(img, 8, 9, 5, 2, RED_HI)
+			_rect(img, 5, 2, 6, 5, Color(0, 0, 0, 0))
+			_rect(img, 7, 1, 2, 8, RED_HI)
 		"close":
 			_line(img, Vector2i(3, 3), Vector2i(12, 12), CREAM, 2)
 			_line(img, Vector2i(3, 12), Vector2i(12, 3), CREAM, 2)
