@@ -234,9 +234,18 @@ func test_roster_and_skills() -> void:
 	check(state["heroes"].size() == 1 and state["heroes"][0]["class"] == "stairborn", "the Stairborn starts alone")
 	check(not Heroes.can_mint(state), "minting costs gold")
 	state["gold"] = 1e9
+	state["best_floor_ever"] = 9999
+	check(int(Heroes.mint_cost(state)) == 120, "2nd hero costs 120")
 	var h1 := Heroes.mint(state)
+	check(int(Heroes.mint_cost(state)) == 400, "3rd hero costs 400")
 	var h2 := Heroes.mint(state)
+	check(int(Heroes.mint_cost(state)) == 520, "4th hero costs 520")
 	var h3 := Heroes.mint(state)
+	check(int(Heroes.mint_cost(state)) == 650, "5th hero costs 650")
+	check(int(Heroes.hire_price(state)) > 650, "buying a known hero costs more than minting")
+	state["best_floor_ever"] = 10
+	check(Heroes.mint_blocker(state) == "Reach floor 50 first", "5th hero needs floor 50")
+	state["best_floor_ever"] = 9999
 	check(not h1.is_empty() and h1["class"] != "stairborn", "mint creates a hireable hero")
 	check(state["heroes"].size() == 3 and state["bench"].size() == 1, "two extra slots, then the bench")
 	check(h1["id"] != h2["id"] and h2["id"] != h3["id"], "hero ids are unique")

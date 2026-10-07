@@ -282,7 +282,28 @@
 			"gold_growth": 3.0,
 			"mint_gold_base": 120,
 			"mint_gold_growth": 2.6,
-			"mint_crystals": 0
+			"mint_crystals": 0,
+			"mint_table": {
+				"2": 120,
+				"3": 400,
+				"4": 520,
+				"5": 650
+			},
+			"mint_growth_after": 1.75,
+			"mint_floor": {
+				"2": 1,
+				"3": 10,
+				"4": 25,
+				"5": 50,
+				"6": 80,
+				"7": 120,
+				"8": 170,
+				"9": 230,
+				"10": 300
+			},
+			"mint_floor_step_after": 80,
+			"market_premium": 1.6,
+			"_comment": "Mint cost depends on how many heroes you already own (founder counts): 2nd 120, 3rd 400, 4th 520, 5th 650, then x1.75 each. Each slot also needs a best floor reached (mint_floor)."
 		},
 		"hero_rarities": {
 			"common": {

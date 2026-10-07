@@ -96,14 +96,49 @@ static func _discount(state: Dictionary) -> float:
 	return 1.0 - minf(0.6, float(StatCalc.party_mods(state).get("mint_discount", 0.0)))
 
 
+## Gold for the next hero: it depends on how many heroes you already own (the
+## founder counts), so a full team makes every extra hero a real investment.
 static func mint_cost(state: Dictionary) -> float:
 	var h: Dictionary = DataDB.balance()["hire"]
-	return floorf(float(h["mint_gold_base"]) * pow(float(h["mint_gold_growth"]), int(state.get("mints", 0))) * _discount(state))
+	var k := total_heroes(state) + 1
+	var table: Dictionary = h["mint_table"]
+	var base: float
+	if table.has(str(k)):
+		base = float(table[str(k)])
+	else:
+		var last := 2
+		for key in table:
+			last = maxi(last, int(key))
+		base = float(table[str(last)]) * pow(float(h["mint_growth_after"]), k - last)
+	return floorf(base * _discount(state))
+
+
+## Best floor reached that the next hero slot demands.
+static func mint_floor_required(state: Dictionary) -> int:
+	var h: Dictionary = DataDB.balance()["hire"]
+	var k := total_heroes(state) + 1
+	var table: Dictionary = h["mint_floor"]
+	if table.has(str(k)):
+		return int(table[str(k)])
+	var last := 2
+	for key in table:
+		last = maxi(last, int(key))
+	return int(table[str(last)]) + int(h["mint_floor_step_after"]) * (k - last)
+
+
+## "" when minting is possible, else why not (shown on the button).
+static func mint_blocker(state: Dictionary) -> String:
+	var need := mint_floor_required(state)
+	if int(state.get("best_floor_ever", 1)) < need:
+		return "Reach floor %d first" % need
+	if float(state["gold"]) < mint_cost(state):
+		return "Not enough gold"
+	return ""
 
 
 static func hire_price(state: Dictionary) -> float:
 	var h: Dictionary = DataDB.balance()["hire"]
-	return floorf(float(h["gold_base"]) * pow(float(h["gold_growth"]), maxi(0, total_heroes(state) - 1)) * _discount(state))
+	return floorf(mint_cost(state) * float(h["market_premium"]))
 
 
 static func roll_rarity(rng: RandomNumberGenerator, luck: float = 0.0) -> String:
@@ -132,13 +167,13 @@ static func generate(state: Dictionary, rng: RandomNumberGenerator) -> Dictionar
 
 
 static func can_mint(state: Dictionary) -> bool:
-	return float(state["gold"]) >= mint_cost(state)
+	return mint_blocker(state) == ""
 
 
 ## Spends gold and mints a hero. Returns the hero ({} if unaffordable).
 static func mint(state: Dictionary) -> Dictionary:
 	var cost := mint_cost(state)
-	if float(state["gold"]) < cost:
+	if mint_blocker(state) != "":
 		return {}
 	state["gold"] = float(state["gold"]) - cost
 	var rng := RandomNumberGenerator.new()

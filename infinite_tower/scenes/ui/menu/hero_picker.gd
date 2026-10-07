@@ -35,7 +35,7 @@ func _signature() -> String:
 	for h in Game.state["heroes"]:
 		parts.append([h["id"], h["level"], str(badge.call(h)) if badge.is_valid() else ""])
 	if show_mint:
-		parts.append(float(Game.state["gold"]) >= Heroes.mint_cost(Game.state))
+		parts.append(Heroes.can_mint(Game.state))
 	return str(parts)
 
 
@@ -70,8 +70,8 @@ func rebuild() -> void:
 			t.rim = Ornate.GOLD_LO
 			var cost := Heroes.mint_cost(Game.state)
 			t.rank_text = UiUtil.num(cost)
-			t.dim = float(Game.state["gold"]) < cost
-			t.tooltip_text = "Empty slot: mint a new hero for %s gold\n(random class, name and rarity)" % UiUtil.num(cost)
+			t.dim = not Heroes.can_mint(Game.state)
+			t.tooltip_text = "Empty slot: mint a new hero for %s gold\n(random class, name and rarity)%s" % [UiUtil.num(cost), ("\n" + Heroes.mint_blocker(Game.state)) if not Heroes.can_mint(Game.state) else ""]
 			t.pressed.connect(func(): Game.mint_hero())
 			add_child(t)
 

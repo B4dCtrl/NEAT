@@ -187,9 +187,10 @@ func _refresh_mint() -> void:
 		return
 	var cost := Heroes.mint_cost(Game.state)
 	_mint_btn.text = "Mint hero  (%s gold)" % UiUtil.num(cost)
-	_mint_btn.disabled = float(Game.state["gold"]) < cost
+	var why := Heroes.mint_blocker(Game.state)
+	_mint_btn.disabled = why != ""
 	if _last_minted == "":
-		_mint_info.text = "You have %s gold. Each mint costs more than the last." % UiUtil.num(Game.state["gold"])
+		_mint_info.text = "You have %s gold. Hero #%d costs more than the last (%s)." % [UiUtil.num(Game.state["gold"]), Heroes.total_heroes(Game.state) + 1, why if why != "" else "ready"]
 
 
 func _mint() -> void:

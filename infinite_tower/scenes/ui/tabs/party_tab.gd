@@ -233,7 +233,8 @@ func _refresh() -> void:
 	if _mint_btn != null:
 		var cost := Heroes.mint_cost(Game.state)
 		_mint_btn.text = "  Mint hero (%s gold)  " % UiUtil.num(cost)
-		_mint_btn.disabled = Game.state["gold"] < cost
+		_mint_btn.disabled = not Heroes.can_mint(Game.state)
+		_mint_btn.tooltip_text = Heroes.mint_blocker(Game.state)
 	for key in _train_buttons:
 		var t: Dictionary = DataDB.balance()["training"][key]
 		var cost := Progression.training_cost(Game.state, key)
