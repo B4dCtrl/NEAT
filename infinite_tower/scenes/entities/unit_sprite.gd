@@ -30,10 +30,12 @@ var _tint := Color.WHITE
 const EXTERNAL_MIN_HEIGHT := 17
 
 var _norm := 1.0
+var _fx_anim := false
 
 
 func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false, unit_id: String = "", hue: float = -1.0, fx: Array = []) -> void:
 	textures = PixelArt.unit_frames(unit_id, sprite_id, palette, mono, hue, fx)
+	_fx_anim = not fx.is_empty()
 	_norm = 0.5 if not textures.is_empty() and textures[0].get_height() >= EXTERNAL_MIN_HEIGHT else 1.0
 	px_scale = scale_px
 	face_left = left
@@ -89,7 +91,7 @@ func _draw() -> void:
 		return
 	var frame_idx := 0
 	if textures.size() > 1:
-		var speed := 6.0 if walking else 2.0
+		var speed := 8.0 if _fx_anim else (6.0 if walking else 2.0)
 		frame_idx = int(_anim_t * speed + _bob_phase) % textures.size()
 	var tex: Texture2D = textures[frame_idx]
 	var sz := Vector2(tex.get_width(), tex.get_height()) * px_scale * _norm

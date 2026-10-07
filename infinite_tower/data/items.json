@@ -2317,15 +2317,15 @@
 				},
 				"4": {
 					"stats": {
-						"hp_pct": 0.06
+						"hp_pct": 0.128
 					},
-					"text": "+6% HP"
+					"text": "+12.8% HP"
 				},
 				"6": {
 					"stats": {
-						"gold_pct": 0.1
+						"gold_pct": 0.192
 					},
-					"text": "+10% Gold"
+					"text": "+19.2% Gold"
 				}
 			}
 		},
@@ -2357,21 +2357,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"defense_pct": 0.08
+						"defense_pct": 0.0944
 					},
-					"text": "+8% Defense"
+					"text": "+9.4% Defense"
 				},
 				"4": {
 					"stats": {
-						"hp_pct": 0.1
+						"hp_pct": 0.1133,
+						"lifesteal": 0.0283
 					},
-					"text": "+10% HP"
+					"text": "+11.3% HP, +2.8% Lifesteal"
 				},
 				"6": {
 					"stats": {
-						"damage_pct": 0.12
+						"damage_pct": 0.085,
+						"thorns": 0.1274
 					},
-					"text": "+12% Damage"
+					"text": "+8.5% Damage, +12.7% Thorns (reflect)"
 				}
 			}
 		},
@@ -2403,25 +2405,29 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"attack_pct": 0.1,
-						"magic_power_pct": 0.1
+						"attack_pct": 0.0612,
+						"magic_power_pct": 0.0612
 					},
-					"text": "+10% Attack Power"
+					"text": "+6.1% Attack, +6.1% Magic"
 				},
 				"4": {
 					"stats": {
-						"fire_damage_pct": 0.2
+						"fire_damage_pct": 0.1741
 					},
+					"text": "+17.4% Fire damage, attacks become Fire",
 					"specials": [
 						"fire_imbue"
-					],
-					"text": "+20% Fire Damage (attacks become Fire)"
+					]
 				},
 				"6": {
+					"stats": {
+						"damage_pct": 0.0979,
+						"fire_damage_pct": 0.1958
+					},
+					"text": "+9.8% Damage, +19.6% Fire damage, attacks apply a burn over time",
 					"specials": [
 						"burning_soul"
-					],
-					"text": "Burning Soul: attacks apply a burn over time"
+					]
 				}
 			}
 		},
@@ -2453,21 +2459,27 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"hp_pct": 0.12
+						"hp_pct": 0.0924,
+						"regen": 0.0035
 					},
-					"text": "+12% HP"
+					"text": "+9.2% HP, +0.4% HP regen per second"
 				},
 				"4": {
 					"stats": {
-						"defense_pct": 0.2
+						"defense_pct": 0.1478,
+						"thorns": 0.1109
 					},
-					"text": "+20% Defense"
+					"text": "+14.8% Defense, +11.1% Thorns (reflect)"
 				},
 				"6": {
+					"stats": {
+						"regen": 0.0083,
+						"hp_pct": 0.2218
+					},
+					"text": "+0.8% HP regen per second, +22.2% HP, Regrowth: slowly heals",
 					"specials": [
 						"regrowth"
-					],
-					"text": "Regrowth: regenerate 2% max HP per second"
+					]
 				}
 			}
 		},
@@ -2499,21 +2511,26 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"attack_speed_pct": 0.1
+						"attack_speed_pct": 0.0688
 					},
-					"text": "+10% Attack Speed"
+					"text": "+6.9% Attack speed"
 				},
 				"4": {
 					"stats": {
-						"crit_chance": 0.08
+						"crit_chance": 0.031,
+						"attack_speed_pct": 0.0826
 					},
-					"text": "+8% Crit Chance"
+					"text": "+3.1% Crit chance, +8.3% Attack speed"
 				},
 				"6": {
+					"stats": {
+						"crit_damage": 0.2477,
+						"crit_chance": 0.0464
+					},
+					"text": "+24.8% Crit damage, +4.6% Crit chance, crits chain lightning",
 					"specials": [
 						"chain_lightning"
-					],
-					"text": "Chain Lightning: crits arc to another enemy for 60%"
+					]
 				}
 			}
 		},
@@ -2545,21 +2562,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"defense_pct": 0.1
+						"defense_pct": 0.152
 					},
-					"text": "+10% Defense"
+					"text": "+15.2% Defense"
 				},
 				"4": {
 					"stats": {
-						"dodge": 0.06
+						"dodge": 0.0342,
+						"defense_pct": 0.1824
 					},
-					"text": "+6% Dodge"
+					"text": "+3.4% Dodge, +18.2% Defense"
 				},
 				"6": {
 					"stats": {
-						"attack_speed_pct": 0.12
+						"attack_speed_pct": 0.1368,
+						"dodge": 0.0513
 					},
-					"text": "+12% Attack speed"
+					"text": "+13.7% Attack speed, +5.1% Dodge"
 				}
 			}
 		},
@@ -2591,21 +2610,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"magic_power_pct": 0.1
+						"magic_power_pct": 0.1248
 					},
-					"text": "+10% Magic"
+					"text": "+12.5% Magic"
 				},
 				"4": {
 					"stats": {
-						"crit_chance": 0.06
+						"crit_chance": 0.0374,
+						"magic_power_pct": 0.1498
 					},
-					"text": "+6% Crit chance"
+					"text": "+3.7% Crit chance, +15% Magic"
 				},
 				"6": {
 					"stats": {
-						"crit_damage": 0.3
+						"crit_damage": 0.2995,
+						"magic_power_pct": 0.2246
 					},
-					"text": "+30% Crit damage"
+					"text": "+29.9% Crit damage, +22.5% Magic"
 				}
 			}
 		},
@@ -2637,21 +2658,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"hp_pct": 0.1
+						"hp_pct": 0.1808
 					},
-					"text": "+10% HP"
+					"text": "+18.1% HP"
 				},
 				"4": {
 					"stats": {
-						"defense_pct": 0.1
+						"defense_pct": 0.217,
+						"mana_regen_pct": 0.3254
 					},
-					"text": "+10% Defense"
+					"text": "+21.7% Defense, +32.5% Mana regeneration"
 				},
 				"6": {
 					"stats": {
-						"gold_pct": 0.2
+						"gold_pct": 0.3254,
+						"hp_pct": 0.3254
 					},
-					"text": "+20% Gold"
+					"text": "+32.5% Gold, +32.5% HP"
 				}
 			}
 		},
@@ -2683,21 +2706,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"gold_pct": 0.12
+						"gold_pct": 0.1952
 					},
-					"text": "+12% Gold"
+					"text": "+19.5% Gold"
 				},
 				"4": {
 					"stats": {
-						"drop_pct": 0.1
+						"drop_pct": 0.1171,
+						"move_speed_pct": 0.1464
 					},
-					"text": "+10% Drop chance"
+					"text": "+11.7% Drop chance, +14.6% Climb speed"
 				},
 				"6": {
 					"stats": {
-						"move_speed_pct": 0.2
+						"gold_pct": 0.3514,
+						"drop_pct": 0.1757
 					},
-					"text": "+20% Climb speed"
+					"text": "+35.1% Gold, +17.6% Drop chance"
 				}
 			}
 		},
@@ -2729,21 +2754,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"defense_pct": 0.1
+						"defense_pct": 0.2096
 					},
-					"text": "+10% Defense"
+					"text": "+21% Defense"
 				},
 				"4": {
 					"stats": {
-						"attack_pct": 0.12
+						"attack_pct": 0.1886,
+						"thorns": 0.1886
 					},
-					"text": "+12% Attack"
+					"text": "+18.9% Attack, +18.9% Thorns (reflect)"
 				},
 				"6": {
 					"stats": {
-						"fire_damage_pct": 0.25
+						"fire_damage_pct": 0.3773,
+						"damage_pct": 0.1886
 					},
-					"text": "+25% Fire damage, attacks become Fire",
+					"text": "+37.7% Fire damage, +18.9% Damage, attacks become Fire",
 					"specials": [
 						"fire_imbue"
 					]
@@ -2778,21 +2805,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"attack_pct": 0.1
+						"attack_pct": 0.168
 					},
-					"text": "+10% Attack"
+					"text": "+16.8% Attack"
 				},
 				"4": {
 					"stats": {
-						"crit_chance": 0.06
+						"lifesteal": 0.0672,
+						"crit_chance": 0.0504
 					},
-					"text": "+6% Crit chance"
+					"text": "+6.7% Lifesteal, +5% Crit chance"
 				},
 				"6": {
 					"stats": {
-						"crit_damage": 0.35
+						"lifesteal": 0.1008,
+						"crit_damage": 0.4032
 					},
-					"text": "+35% Crit damage"
+					"text": "+10.1% Lifesteal, +40.3% Crit damage"
 				}
 			}
 		},
@@ -2824,21 +2853,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"magic_power_pct": 0.1
+						"magic_power_pct": 0.1788
 					},
-					"text": "+10% Magic"
+					"text": "+17.9% Magic"
 				},
 				"4": {
 					"stats": {
-						"dodge": 0.06
+						"dodge": 0.0536,
+						"lifesteal": 0.0715
 					},
-					"text": "+6% Dodge"
+					"text": "+5.4% Dodge, +7.1% Lifesteal"
 				},
 				"6": {
 					"stats": {
-						"damage_pct": 0.15
+						"damage_pct": 0.2146,
+						"magic_power_pct": 0.3218
 					},
-					"text": "+15% Damage"
+					"text": "+21.5% Damage, +32.2% Magic"
 				}
 			}
 		},
@@ -2870,22 +2901,24 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"damage_pct": 0.08
+						"damage_pct": 0.1264
 					},
-					"text": "+8% Damage"
+					"text": "+12.6% Damage"
 				},
 				"4": {
 					"stats": {
-						"crit_damage": 0.3
+						"crit_damage": 0.3034,
+						"attack_pct": 0.2275
 					},
-					"text": "+30% Crit damage"
+					"text": "+30.3% Crit damage, +22.8% Attack"
 				},
 				"6": {
 					"stats": {
-						"attack_pct": 0.2,
-						"magic_power_pct": 0.2
+						"attack_pct": 0.273,
+						"magic_power_pct": 0.273,
+						"damage_pct": 0.182
 					},
-					"text": "+20% Attack, +20% Magic"
+					"text": "+27.3% Attack, +27.3% Magic, +18.2% Damage"
 				}
 			}
 		},
@@ -2917,21 +2950,24 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"dodge": 0.06
+						"dodge": 0.0501
 					},
-					"text": "+6% Dodge"
+					"text": "+5% Dodge"
 				},
 				"4": {
 					"stats": {
-						"move_speed_pct": 0.15
+						"move_speed_pct": 0.2004,
+						"dodge": 0.0601
 					},
-					"text": "+15% Climb speed"
+					"text": "+20% Climb speed, +6% Dodge"
 				},
 				"6": {
 					"stats": {
-						"attack_speed_pct": 0.15
+						"attack_speed_pct": 0.1924,
+						"dodge": 0.0721,
+						"lifesteal": 0.0962
 					},
-					"text": "+15% Attack speed"
+					"text": "+19.2% Attack speed, +7.2% Dodge, +9.6% Lifesteal"
 				}
 			}
 		},
@@ -2963,21 +2999,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"hp_pct": 0.12
+						"hp_pct": 0.2816
 					},
-					"text": "+12% HP"
+					"text": "+28.2% HP"
 				},
 				"4": {
 					"stats": {
-						"defense_pct": 0.12
+						"defense_pct": 0.3379,
+						"regen": 0.0127
 					},
-					"text": "+12% Defense"
+					"text": "+33.8% Defense, +1.3% HP regen per second"
 				},
 				"6": {
 					"stats": {
-						"hp_pct": 0.2
+						"hp_pct": 0.5069,
+						"mana_regen_pct": 0.7603
 					},
-					"text": "+20% HP, Regrowth: slowly heals",
+					"text": "+50.7% HP, +76% Mana regeneration, Regrowth: slowly heals",
 					"specials": [
 						"regrowth"
 					]
@@ -3012,21 +3050,25 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"hp_pct": 0.15
+						"hp_pct": 0.222,
+						"defense_pct": 0.222
 					},
-					"text": "+15% HP"
+					"text": "+22.2% HP, +22.2% Defense"
 				},
 				"4": {
 					"stats": {
-						"attack_pct": 0.15
+						"attack_pct": 0.2664,
+						"hp_pct": 0.3552
 					},
-					"text": "+15% Attack"
+					"text": "+26.6% Attack, +35.5% HP"
 				},
 				"6": {
 					"stats": {
-						"defense_pct": 0.25
+						"defense_pct": 0.4262,
+						"thorns": 0.3197,
+						"hp_pct": 0.4262
 					},
-					"text": "+25% Defense"
+					"text": "+42.6% Defense, +32% Thorns (reflect), +42.6% HP"
 				}
 			}
 		},
@@ -3058,21 +3100,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"attack_pct": 0.12
+						"attack_pct": 0.2328
 					},
-					"text": "+12% Attack"
+					"text": "+23.3% Attack"
 				},
 				"4": {
 					"stats": {
-						"fire_damage_pct": 0.25
+						"fire_damage_pct": 0.3725,
+						"crit_chance": 0.0698
 					},
-					"text": "+25% Fire damage"
+					"text": "+37.2% Fire damage, +7% Crit chance"
 				},
 				"6": {
 					"stats": {
-						"damage_pct": 0.2
+						"damage_pct": 0.2794,
+						"fire_damage_pct": 0.5587
 					},
-					"text": "+20% Damage, attacks apply a burn over time",
+					"text": "+27.9% Damage, +55.9% Fire damage, attacks apply a burn over time",
 					"specials": [
 						"burning_soul"
 					]
@@ -3107,21 +3151,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"crit_chance": 0.06
+						"crit_chance": 0.0609
 					},
-					"text": "+6% Crit chance"
+					"text": "+6.1% Crit chance"
 				},
 				"4": {
 					"stats": {
-						"magic_power_pct": 0.15
+						"magic_power_pct": 0.2923,
+						"mana_regen_pct": 0.5846
 					},
-					"text": "+15% Magic"
+					"text": "+29.2% Magic, +58.5% Mana regeneration"
 				},
 				"6": {
 					"stats": {
-						"crit_damage": 0.4
+						"crit_damage": 0.5846,
+						"crit_chance": 0.1096
 					},
-					"text": "+40% Crit damage"
+					"text": "+58.5% Crit damage, +11% Crit chance"
 				}
 			}
 		},
@@ -3153,21 +3199,23 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"damage_pct": 0.1
+						"damage_pct": 0.1696
 					},
-					"text": "+10% Damage"
+					"text": "+17% Damage"
 				},
 				"4": {
 					"stats": {
-						"attack_speed_pct": 0.12
+						"attack_speed_pct": 0.2035,
+						"crit_damage": 0.407
 					},
-					"text": "+12% Attack speed"
+					"text": "+20.3% Attack speed, +40.7% Crit damage"
 				},
 				"6": {
 					"stats": {
-						"crit_chance": 0.1
+						"crit_chance": 0.1145,
+						"damage_pct": 0.3053
 					},
-					"text": "+10% Crit chance, crits chain lightning",
+					"text": "+11.5% Crit chance, +30.5% Damage, crits chain lightning",
 					"specials": [
 						"chain_lightning"
 					]
@@ -3202,24 +3250,27 @@
 			"bonuses": {
 				"2": {
 					"stats": {
-						"hp_pct": 0.1
+						"hp_pct": 0.2122,
+						"attack_pct": 0.1591,
+						"magic_power_pct": 0.1591
 					},
-					"text": "+10% HP"
+					"text": "+21.2% HP, +15.9% Attack, +15.9% Magic"
 				},
 				"4": {
 					"stats": {
-						"attack_pct": 0.12,
-						"magic_power_pct": 0.12
+						"damage_pct": 0.2122,
+						"gold_pct": 0.4243
 					},
-					"text": "+12% Attack, +12% Magic"
+					"text": "+21.2% Damage, +42.4% Gold"
 				},
 				"6": {
 					"stats": {
-						"damage_pct": 0.25,
-						"gold_pct": 0.25,
-						"drop_pct": 0.15
+						"damage_pct": 0.2122,
+						"gold_pct": 0.4243,
+						"drop_pct": 0.2122,
+						"lifesteal": 0.1061
 					},
-					"text": "+25% Damage, +25% Gold, +15% Drop chance"
+					"text": "+21.2% Damage, +42.4% Gold, +21.2% Drop chance, +10.6% Lifesteal"
 				}
 			}
 		}

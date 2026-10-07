@@ -153,6 +153,8 @@ static func hero_stats(state: Dictionary, hero: Dictionary, mods: Dictionary = {
 		"cdr": minf(float(mods.get("cdr", 0.0)) + hero_cdr, CDR_CAP),
 		"lifesteal": pct.get("lifesteal", 0.0),
 		"cleave": pct.get("cleave", 0.0),
+		"thorns": pct.get("thorns", 0.0),
+		"regen": pct.get("regen", 0.0),
 		"specials": specials,
 		"damage_type": cdef["damage_type"],
 		"element": "fire" if "fire_imbue" in specials else cdef["element"],

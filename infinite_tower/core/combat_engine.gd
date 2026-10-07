@@ -145,6 +145,8 @@ func _make_hero(entry: Dictionary) -> Unit:
 	u.fire_damage_pct = st["fire_damage_pct"]
 	u.lifesteal = st.get("lifesteal", 0.0)
 	u.cleave = st.get("cleave", 0.0)
+	u.thorns = st.get("thorns", 0.0)
+	u.regen = st.get("regen", 0.0)
 	u.damage_type = st["damage_type"]
 	u.element = st["element"]
 	u.cdr = st.get("cdr", 0.0)

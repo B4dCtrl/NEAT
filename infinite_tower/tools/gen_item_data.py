@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parent.parent
 P = ROOT / "data" / "items.json"
 data = json.loads(P.read_text())
 
-STAT_TXT = {"attack_pct": "Attack", "magic_power_pct": "Magic", "hp_pct": "HP", "defense_pct": "Defense",
+STAT_TXT = {"lifesteal": "Lifesteal", "thorns": "Thorns (reflect)", "regen": "HP regen per second", "mana_regen_pct": "Mana regeneration",
+            "attack_pct": "Attack", "magic_power_pct": "Magic", "hp_pct": "HP", "defense_pct": "Defense",
             "crit_chance": "Crit chance", "crit_damage": "Crit damage", "attack_speed_pct": "Attack speed",
             "dodge": "Dodge", "damage_pct": "Damage", "fire_damage_pct": "Fire damage", "gold_pct": "Gold",
             "drop_pct": "Drop chance", "move_speed_pct": "Climb speed"}
@@ -102,7 +103,7 @@ SET_POWER_STEP = 0.08
 
 
 def fmt(v):
-    return f"{v*100:g}%"
+    return f"{v*100:.1f}".rstrip("0").rstrip(".") + "%"
 
 
 def bonus_text(stats, special):
@@ -112,6 +113,41 @@ def bonus_text(stats, special):
         t += (", " if parts else "") + SPECIAL_TXT[special]
     return t
 
+
+# Set bonuses PROGRESS: value = base x threshold factor x tier factor. A tier-20 set
+# is worth about 4.5x a tier-1 set, and each set has its own identity (stat mix).
+BASE = {"attack_pct": 0.06, "magic_power_pct": 0.06, "hp_pct": 0.08, "defense_pct": 0.08, "crit_chance": 0.015,
+        "crit_damage": 0.08, "attack_speed_pct": 0.04, "dodge": 0.015, "damage_pct": 0.04, "fire_damage_pct": 0.08,
+        "gold_pct": 0.08, "drop_pct": 0.04, "move_speed_pct": 0.05, "lifesteal": 0.02, "thorns": 0.06,
+        "regen": 0.003, "mana_regen_pct": 0.12}
+THRESH = {"2": 1.0, "4": 1.6, "6": 2.4}
+GROUP = {1: 1.0, 2: 0.75, 3: 0.6, 4: 0.5}
+TIER_STEP = 0.18
+A, M, H, D, C, CD, AS, DG, DM, FD, G, DR, MV, LS, TH, RG, MR = ("attack_pct", "magic_power_pct", "hp_pct", "defense_pct", "crit_chance",
+    "crit_damage", "attack_speed_pct", "dodge", "damage_pct", "fire_damage_pct", "gold_pct", "drop_pct", "move_speed_pct", "lifesteal",
+    "thorns", "regen", "mana_regen_pct")
+BON = {   # set: [(stats at 2p, special), (stats at 4p, special), (stats at 6p, special)]
+    "wayfarer": [([MV], None), ([H], None), ([G], None)],
+    "gravebound": [([D], None), ([H, LS], None), ([DM, TH], None)],
+    "ashen_king": [([A, M], None), ([FD], "fire_imbue"), ([DM, FD], "burning_soul")],
+    "verdant_warden": [([H, RG], None), ([D, TH], None), ([RG, H], "regrowth")],
+    "stormcaller": [([AS], None), ([C, AS], None), ([CD, C], "chain_lightning")],
+    "frostbound": [([D], None), ([DG, D], None), ([AS, DG], None)],
+    "prismatic": [([M], None), ([C, M], None), ([CD, M], None)],
+    "sunken_tide": [([H], None), ([D, MR], None), ([G, H], None)],
+    "dune_nomad": [([G], None), ([DR, MV], None), ([G, DR], None)],
+    "forgeborn": [([D], None), ([A, TH], None), ([FD, DM], "fire_imbue")],
+    "bloodmoon": [([A], None), ([LS, C], None), ([LS, CD], None)],
+    "nightbloom": [([M], None), ([DG, LS], None), ([DM, M], None)],
+    "voidtouched": [([DM], None), ([CD, A], None), ([A, M, DM], None)],
+    "wraithwoven": [([DG], None), ([MV, DG], None), ([AS, DG, LS], None)],
+    "radiant_choir": [([H], None), ([D, RG], None), ([H, MR], "regrowth")],
+    "titanforge": [([H, D], None), ([A, H], None), ([D, TH, H], None)],
+    "dragonscale": [([A], None), ([FD, C], None), ([DM, FD], "burning_soul")],
+    "starfall": [([C], None), ([M, MR], None), ([CD, C], None)],
+    "eclipse": [([DM], None), ([AS, CD], None), ([C, DM], "chain_lightning")],
+    "infinite": [([H, A, M], None), ([DM, G], None), ([DM, G, DR, LS], None)],
+}
 
 old_sets = data["sets"]
 bases, sets = [], {}
@@ -131,15 +167,14 @@ for i, (sid, name, floor, pal, motif, bon, names) in enumerate(SETS):
         else:
             pieces[slot] = nm
     pieces = {"weapon": names[0], **pieces}
-    if sid in old_sets:                       # keep the bonuses already tuned and tested
-        bonuses = old_sets[sid]["bonuses"]
-    else:
-        bonuses = {}
-        for th, (st, sp) in zip(("2", "4", "6"), bon):
-            e = {"stats": st, "text": bonus_text(st, sp)}
-            if sp:
-                e["specials"] = [sp]
-            bonuses[th] = e
+    bonuses = {}
+    tier_mult = 1 + TIER_STEP * i
+    for th, (stats_list, sp) in zip(("2", "4", "6"), BON[sid]):
+        vals = {k: round(BASE[k] * THRESH[th] * tier_mult * GROUP[len(stats_list)], 4) for k in stats_list}
+        e = {"stats": vals, "text": bonus_text(vals, sp)}
+        if sp:
+            e["specials"] = [sp]
+        bonuses[th] = e
     sets[sid] = {"name": name, "tier": i + 1, "min_floor": floor, "power": round(mult, 2),
                  "art": {"main": pal[0], "accent": pal[1], "dark": pal[2], "glow": pal[3], "motif": motif},
                  "pieces": pieces, "weapons": weapons, "bonuses": bonuses}

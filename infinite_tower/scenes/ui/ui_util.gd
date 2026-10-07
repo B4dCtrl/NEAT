@@ -47,6 +47,7 @@ static func stat_line(key: String, value: float) -> String:
 		"magic_power_pct": "Magic Power", "damage_pct": "Damage", "fire_damage_pct": "Fire Damage",
 		"gold_pct": "Gold Find", "drop_pct": "Drop Chance", "move_speed_pct": "Movement Speed",
 		"xp_pct": "XP", "soul_pct": "Souls", "cdr": "Cooldown Reduction",
+		"lifesteal": "Lifesteal", "thorns": "Thorns", "regen": "HP regen/s", "mana_regen_pct": "Mana Regen",
 	}
 	var label: String = names.get(key, key.capitalize())
 	if key in ["hp", "attack", "defense", "magic_power", "power"]:
