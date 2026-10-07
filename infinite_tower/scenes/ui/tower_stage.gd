@@ -77,6 +77,7 @@ func _ready() -> void:
 	add_child(_fx_layer)
 	Game.settings_changed.connect(_on_style_changed)
 	Game.loot_dropped.connect(_on_loot)
+	Game.consumable_used.connect(_on_consumable_used)
 	Game.party_changed.connect(_rebuild_heroes)
 
 
@@ -412,6 +413,7 @@ func _consume_combat_events() -> void:
 				Game.sfx_requested.emit("miss")
 			"skill":
 				if src != null:
+					src.cast(_cast_color(String(ev.get("kind", ""))))
 					_skill_fx(ev, src, su)
 					_float_at(src, ev["name"], Color("#7fe0ff"), true)
 			"summon":
@@ -420,11 +422,13 @@ func _consume_combat_events() -> void:
 				Game.sfx_requested.emit("summon")
 			"mana":
 				if src != null:
+					src.cast(Color("#5a9cff"))
 					_fx.spawn("aura", _center(src), _center(src), Color("#5a9cff"), 1.0, 0.8)
 					_float_text(src, "+MP", Color("#8fc0ff"), false, true)
 				Game.sfx_requested.emit("potion")
 			"potion":
 				if src != null:
+					src.cast(Color("#5fd35f"))
 					_fx.spawn("heal", _center(src), _center(src), Color.WHITE, 1.0, 0.8)
 					_float_text(src, "+HP", Color("#5fd35f"), true, true)
 				Game.sfx_requested.emit("potion")
@@ -440,13 +444,75 @@ func _consume_combat_events() -> void:
 				Game.sfx_requested.emit("death")
 			"revive":
 				if src != null:
+					src.cast(Color("#ff9d2a"))
 					_fx.spawn("burst", _center(src), _center(src), Color("#ff9d2a"), 2.0, 0.6)
 					_float_at(src, "REVIVE", Color("#ff9d2a"), true)
 			"enrage":
 				if src != null:
+					src.cast(Color("#ff4f4f"))
 					_fx.spawn("aura", _center(src), _center(src), Color("#ff3030"), 1.4, 0.9)
 					_float_at(src, "ENRAGE", Color("#ff4f4f"), true)
 				Game.sfx_requested.emit("enrage")
+
+
+## Glow colour of a unit while it casts a skill of this kind.
+func _cast_color(kind: String) -> Color:
+	match kind:
+		"self_heal", "heal", "party_heal":
+			return Color("#5fd35f")
+		"party_shield", "shield":
+			return Color("#7fe0ff")
+		"war_cry", "frenzy":
+			return Color("#ffb13d")
+		"meteor", "strike":
+			return Color("#ff8a3a")
+		"drain", "summon":
+			return Color("#b35cff")
+		"slam":
+			return Color("#e8d7b0")
+	return Color.WHITE
+
+
+## Using a consumable outside a fight (buffs, warp, hourglass, potions between
+## fights): the whole party glows and shows what it drank or read.
+func _on_consumable_used(id: String, kind: String) -> void:
+	if not is_visible_in_tree():
+		return
+	var def: Dictionary = DataDB.items()["consumables"].get(id, {})
+	var col := Color("#ffd23f")
+	var word: String = String(def.get("name", id))
+	match kind:
+		"potion":
+			col = Color("#5fd35f")
+		"mana":
+			col = Color("#5a9cff")
+		"warp":
+			col = Color("#b35cff")
+		"time":
+			col = Color("#ffd23f")
+		"buff":
+			var st: Dictionary = def.get("stats", {})
+			if st.has("attack_pct"):
+				col = Color("#ff6a3a")
+			elif st.has("defense_pct"):
+				col = Color("#9ab0c8")
+			elif st.has("attack_speed_pct") or st.has("move_speed_pct"):
+				col = Color("#ffe14a")
+			elif st.has("gold_pct"):
+				col = Color("#f2c14e")
+	for h in hero_sprites:
+		if not h.visible:
+			continue
+		h.cast(col)
+		_fx.spawn("aura", _center(h), _center(h), col, 1.2, 0.9)
+		if kind == "potion":
+			_fx.spawn("heal", _center(h), _center(h), Color.WHITE, 1.0, 0.8)
+		_fx.burst_particles(_center(h), col, 8, 28.0 * px, 1.0, -24.0 * px, 0.7)
+	if kind == "warp":
+		_fx.spawn("shockwave", _party_center(), _party_center(), col, 1.4, 0.7)
+		_fx.add_shake(0.4)
+	if not hero_sprites.is_empty():
+		_float_text(hero_sprites[0], word, col, true, true)
 
 
 ## Basic attack visuals depend on who swings: arrows, fireballs, orbs or blades.

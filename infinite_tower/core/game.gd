@@ -31,6 +31,8 @@ signal settings_changed()
 signal offline_report_ready(report: Dictionary)
 ## Any loot the party picks up (item dict, or {"relic": id} / {"crystals": n}).
 signal loot_dropped(drop: Dictionary)
+## A consumable was used outside the combat events (buffs, warp, hourglass, potions between fights).
+signal consumable_used(id: String, kind: String)
 ## The party composition changed (recruit, mint, swap, bench, reset).
 signal party_changed()
 ## Asks the root to show the story window: "intro" or "tutorial".
@@ -444,6 +446,7 @@ func use_consumable(id: String) -> bool:
 				if b["id"] == id:
 					b["floors_left"] = int(def["floors"])
 					bag[id] = int(bag[id]) - 1
+					consumable_used.emit(id, "buff")
 					state_changed.emit()
 					return true
 			buffs.append({"id": id, "name": def["name"], "stats": def["stats"], "floors_left": int(def["floors"])})
@@ -461,6 +464,8 @@ func use_consumable(id: String) -> bool:
 			notified.emit("milestone", Loc.t("toast.hourglass") % [int(def["value"]), int(float(state["time_boost"]["left"]) / 60.0)])
 	bag[id] = int(bag[id]) - 1
 	sfx_requested.emit("use")
+	if not (in_fight and def["kind"] in ["potion", "mana", "bomb"]):
+		consumable_used.emit(id, String(def["kind"]))
 	state_changed.emit()
 	inventory_changed.emit()
 	return true
