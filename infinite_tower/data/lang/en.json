@@ -52,5 +52,10 @@
 	"toast.warp": "Warped to the bonfire on floor %d!",
 	"toast.hourglass": "Time flows x%d for %d minutes",
 	"toast.hourglass_end": "The Hourglass ran out",
-	"hud.floor": "FLOOR %d"
+	"hud.floor": "FLOOR %d",
+	"name.title": "Name your Stairborn",
+	"name.hint": "The tale is called Stairborn, but this hero is yours. Choose a name (you can change it later in the Heroes panel).",
+	"name.ok": "Begin the climb",
+	"name.placeholder": "Your hero's name",
+	"name.default": "The Stairborn"
 }

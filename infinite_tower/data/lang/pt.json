@@ -52,5 +52,10 @@
 	"toast.warp": "Teletransportado para a fogueira do andar %d!",
 	"toast.hourglass": "O tempo corre x%d por %d minutos",
 	"toast.hourglass_end": "A Ampulheta acabou",
-	"hud.floor": "ANDAR %d"
+	"hud.floor": "ANDAR %d",
+	"name.title": "Dê um nome ao seu Stairborn",
+	"name.hint": "A história se chama Stairborn, mas este herói é seu. Escolha um nome (você pode mudar depois no painel Heróis).",
+	"name.ok": "Começar a subida",
+	"name.placeholder": "Nome do seu herói",
+	"name.default": "O Stairborn"
 }

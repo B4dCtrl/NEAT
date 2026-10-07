@@ -38,6 +38,25 @@ static func make_hero(state: Dictionary, class_id: String, hero_name: String, ra
 	}
 
 
+## A player-chosen hero name: trimmed, 1 to 16 characters, no BBCode brackets.
+static func clean_name(raw: String) -> String:
+	var s := raw.strip_edges().replace("[", "").replace("]", "").replace("\n", " ").replace("\t", " ")
+	while "  " in s:
+		s = s.replace("  ", " ")
+	return s.substr(0, 16).strip_edges()
+
+
+static func rename(state: Dictionary, hero_id: String, raw: String) -> bool:
+	var nm := clean_name(raw)
+	if nm == "":
+		return false
+	for h in state["heroes"] + state["bench"]:
+		if h["id"] == hero_id:
+			h["name"] = nm
+			return true
+	return false
+
+
 static func party_slots() -> int:
 	return int(DataDB.balance()["party_slots"])
 

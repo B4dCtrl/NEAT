@@ -33,7 +33,7 @@ func _run() -> void:
 			var sp: Node2D = UnitSprite.new()
 			vp.add_child(sp)
 			sp.position = Vector2(60, 96)
-			sp.configure(def["sprite"], def.get("palette", {}), 3.0, false, false, String(def.get("art", id)), float(def.get("hue", -1.0)), def.get("fx", []))
+			sp.configure(def["sprite"], def.get("palette", {}), 3.0, not is_hero, false, String(def.get("art", id)), float(def.get("hue", -1.0)), def.get("fx", []))
 			match st:
 				"walk": sp.walking = true
 				"attack": sp.lunge()

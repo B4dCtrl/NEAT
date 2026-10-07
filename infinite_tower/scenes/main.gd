@@ -4,6 +4,8 @@ extends Control
 ## tray while the climb goes on; the tray menu brings it back or quits.
 
 const ThemeBuilder = preload("res://scenes/ui/theme_builder.gd")
+const NameView = preload("res://scenes/ui/name_view.gd")
+const TooltipLayer = preload("res://scenes/ui/tooltip_layer.gd")
 const ComicIntro = preload("res://scenes/ui/comic_intro.gd")
 const TutorialView = preload("res://scenes/ui/tutorial_view.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
@@ -20,6 +22,7 @@ const TRAY_QUIT := 2
 var _debug_speed_idx := 0
 var _comic: Control
 var _tutorial: Control
+var _name_view: Control
 var _story_stage := ""           # "login" | "intro" | "tutorial" while the story window is up
 var _login: Control
 var _tray: Node = null
@@ -29,11 +32,17 @@ var _tray_menu: PopupMenu
 func _ready() -> void:
 	theme = ThemeBuilder.build()
 	get_tree().auto_accept_quit = false
+	add_child(TooltipLayer.new())
 	_comic = ComicIntro.new()
 	_comic.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_comic.visible = false
 	_comic.finished.connect(_on_intro_done)
 	add_child(_comic)
+	_name_view = NameView.new()
+	_name_view.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_name_view.visible = false
+	_name_view.finished.connect(_on_name_done)
+	add_child(_name_view)
 	_tutorial = TutorialView.new()
 	_tutorial.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_tutorial.visible = false
@@ -73,6 +82,8 @@ func _ready() -> void:
 func _next_story_stage() -> String:
 	if not Game.state.get("intro_seen", false):
 		return "intro"
+	if not Game.state.get("named", false):
+		return "name"
 	if not Game.state.get("tutorial_seen", false):
 		return "tutorial"
 	return ""
@@ -98,7 +109,15 @@ func _on_story_requested(what: String) -> void:
 
 func _on_intro_done() -> void:
 	Game.state["intro_seen"] = true
-	_story_stage = "tutorial" if not Game.state.get("tutorial_seen", false) else ""
+	_story_stage = _next_story_stage()
+	if _story_stage == "":
+		_end_story()
+	else:
+		_on_mode_changed("story")
+
+
+func _on_name_done() -> void:
+	_story_stage = _next_story_stage()
 	if _story_stage == "":
 		_end_story()
 	else:
@@ -121,6 +140,9 @@ func _on_mode_changed(mode: String) -> void:
 	taskbar_view.visible = mode == "taskbar"
 	expedition_view.visible = mode == "expedition"
 	_comic.visible = story and _story_stage == "intro"
+	_name_view.visible = story and _story_stage == "name"
+	if _name_view.visible:
+		_name_view.start()
 	_tutorial.visible = story and _story_stage == "tutorial"
 	_login.visible = story and _story_stage == "login"
 	if _login.visible:

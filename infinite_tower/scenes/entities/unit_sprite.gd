@@ -143,7 +143,7 @@ func _draw() -> void:
 	draw_set_transform(off, rot, sc)
 	var rect := Rect2(Vector2(-sz.x * 0.5, -sz.y), sz)
 	if face_left:
-		rect.position.x += rect.size.x
+		# A negative width mirrors the sprite in place (the rect spans position..position+|size|).
 		rect.size.x = -rect.size.x
 	var mod := _tint
 	mod.a = _fade

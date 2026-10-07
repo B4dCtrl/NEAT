@@ -74,6 +74,8 @@ func open(id: String) -> void:
 	w.theme = Ornate.theme()
 	w.visible = false
 	w.add_child(p)
+	# Tooltips are native popups; without this they open BEHIND an always-on-top panel.
+	w.child_entered_tree.connect(func(n): _raise_popup(n))
 	add_child(w)
 	_panels[id] = p
 	_windows[id] = w
@@ -81,6 +83,12 @@ func open(id: String) -> void:
 	w.position = _start_position(id)
 	w.visible = _shown
 	layout_changed.emit()
+
+
+func _raise_popup(n: Node) -> void:
+	if n is Window:
+		n.always_on_top = true
+		n.transient = false
 
 
 func close(id: String) -> void:
@@ -128,7 +136,9 @@ func _make_page(id: String) -> Control:
 ## tower window (above it, or below when the tower sits near the top).
 func _start_position(id: String) -> Vector2i:
 	var saved = Game.state["settings"].get("panel_pos", {}).get(id, null)
-	if saved is Array and saved.size() == 2:
+	# With other panels already open the newcomer docks to them like a magnet;
+	# its remembered spot is only used when it opens alone.
+	if _windows.size() <= 1 and saved is Array and saved.size() == 2:
 		var r := Rect2i(Vector2i(int(saved[0]), int(saved[1])), Vector2i(int(WIDTHS[id]), int(PANEL_H)))
 		for i in DisplayServer.get_screen_count():
 			if DisplayServer.screen_get_usable_rect(i).intersection(r).size.x >= 80:
@@ -176,10 +186,51 @@ func _start_position(id: String) -> Vector2i:
 func _on_panel_dragged(id: String, pos: Vector2i) -> void:
 	if not _windows.has(id):
 		return
+	pos = _snap(id, pos)
 	_windows[id].position = pos
 	var saved: Dictionary = Game.state["settings"].get("panel_pos", {})
 	saved[id] = [pos.x, pos.y]
 	Game.state["settings"]["panel_pos"] = saved
+
+
+const SNAP := 18
+
+## Magnet: a dragged panel clings to the edges of the other panels and of the
+## tower window (side by side, or stacked) when it comes within SNAP pixels.
+func _snap(id: String, pos: Vector2i) -> Vector2i:
+	var me: Window = _windows[id]
+	var size := me.size
+	var others: Array = []
+	for other in _windows:
+		if other != id:
+			others.append(Rect2i(_windows[other].position, _windows[other].size))
+	var main := get_window()
+	others.append(Rect2i(main.position, main.size))
+	var best_x := SNAP + 1
+	var best_y := SNAP + 1
+	var out := pos
+	for r in others:
+		var g := int(GAP)
+		# horizontal candidates: my left to their right, my right to their left, same left, same right
+		for cand in [[r.end.x + g, pos.x], [r.position.x - g - size.x, pos.x], [r.position.x, pos.x], [r.end.x - size.x, pos.x]]:
+			var d := absi(int(cand[0]) - int(cand[1]))
+			if d < best_x and _overlaps_y(pos, size, r, SNAP * 4):
+				best_x = d
+				out.x = int(cand[0])
+		for cand in [[r.end.y + g, pos.y], [r.position.y - g - size.y, pos.y], [r.position.y, pos.y], [r.end.y - size.y, pos.y]]:
+			var d2 := absi(int(cand[0]) - int(cand[1]))
+			if d2 < best_y and _overlaps_x(pos, size, r, SNAP * 4):
+				best_y = d2
+				out.y = int(cand[0])
+	return out
+
+
+func _overlaps_y(pos: Vector2i, size: Vector2i, r: Rect2i, slack: int) -> bool:
+	return pos.y < r.end.y + slack and pos.y + size.y > r.position.y - slack
+
+
+func _overlaps_x(pos: Vector2i, size: Vector2i, r: Rect2i, slack: int) -> bool:
+	return pos.x < r.end.x + slack and pos.x + size.x > r.position.x - slack
 
 
 func window_of(id: String) -> Window:

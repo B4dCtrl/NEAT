@@ -530,6 +530,15 @@ func mint_hero() -> void:
 		state_changed.emit()
 
 
+## Your Stairborn (or any hero) can be renamed; the story and the game stay "Stairborn".
+func rename_hero(hero_id: String, raw: String) -> bool:
+	if not Heroes.rename(state, hero_id, raw):
+		return false
+	party_changed.emit()
+	state_changed.emit()
+	return true
+
+
 func swap_hero(party_idx: int, bench_idx: int) -> void:
 	if Heroes.swap(state, party_idx, bench_idx):
 		party_changed.emit()

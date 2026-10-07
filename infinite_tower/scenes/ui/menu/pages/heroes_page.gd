@@ -8,6 +8,7 @@ extends ScrollContainer
 const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
 const Heroes = preload("res://core/heroes.gd")
+const Loc = preload("res://core/loc.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
@@ -22,6 +23,7 @@ var _odds: GridContainer
 var _reserve: VBoxContainer
 var _last_minted := ""
 var _sig := ""
+var _name_edit: LineEdit
 
 
 func mark_dirty() -> void:
@@ -44,6 +46,20 @@ func _ready() -> void:
 	_party = VBoxContainer.new()
 	_party.add_theme_constant_override("separation", 3)
 	v.add_child(_party)
+	var name_row := HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 4)
+	v.add_child(name_row)
+	_name_edit = LineEdit.new()
+	_name_edit.max_length = 16
+	_name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_name_edit.placeholder_text = Loc.t("Name of the selected hero")
+	_name_edit.text_submitted.connect(func(_s): _rename())
+	name_row.add_child(_name_edit)
+	var name_btn := Button.new()
+	name_btn.text = Loc.t("Rename")
+	name_btn.focus_mode = Control.FOCUS_NONE
+	name_btn.pressed.connect(_rename)
+	name_row.add_child(name_btn)
 
 	var mint := PanelContainer.new()
 	v.add_child(mint)
@@ -81,15 +97,23 @@ func _process(_delta: float) -> void:
 	if not is_visible_in_tree():
 		return
 	var s: Dictionary = Game.state
-	var sig := str([hero_idx, s["heroes"].size(), s["bench"].size()] + s["heroes"].map(func(h): return [h["id"], h["level"]]) + s["bench"].map(func(h): return [h["id"], h["level"]]))
+	var sig := str([hero_idx, s["heroes"].size(), s["bench"].size()] + s["heroes"].map(func(h): return [h["id"], h["level"], h["name"]]) + s["bench"].map(func(h): return [h["id"], h["level"]]))
 	if sig != _sig:
 		_sig = sig
 		_rebuild()
 
 
+func _rename() -> void:
+	var s: Dictionary = Game.state
+	if hero_idx < s["heroes"].size():
+		Game.rename_hero(s["heroes"][hero_idx]["id"], _name_edit.text)
+
+
 func _rebuild() -> void:
 	var s: Dictionary = Game.state
 	hero_idx = clampi(hero_idx, 0, s["heroes"].size() - 1)
+	if _name_edit != null and not _name_edit.has_focus():
+		_name_edit.text = s["heroes"][hero_idx]["name"]
 	for c in _party.get_children():
 		c.queue_free()
 	for i in Heroes.party_slots():

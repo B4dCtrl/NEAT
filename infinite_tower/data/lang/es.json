@@ -52,5 +52,10 @@
 	"toast.warp": "¡Teletransportado a la hoguera del piso %d!",
 	"toast.hourglass": "El tiempo corre x%d durante %d minutos",
 	"toast.hourglass_end": "El Reloj de arena se agotó",
-	"hud.floor": "PISO %d"
+	"hud.floor": "PISO %d",
+	"name.title": "Ponle nombre a tu Stairborn",
+	"name.hint": "La historia se llama Stairborn, pero este héroe es tuyo. Elige un nombre (podrás cambiarlo luego en el panel Héroes).",
+	"name.ok": "Empezar la subida",
+	"name.placeholder": "Nombre de tu héroe",
+	"name.default": "El Stairborn"
 }
