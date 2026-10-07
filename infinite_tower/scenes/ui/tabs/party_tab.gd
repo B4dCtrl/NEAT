@@ -8,6 +8,7 @@ const Progression = preload("res://core/progression.gd")
 const Heroes = preload("res://core/heroes.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
+const Loc = preload("res://core/loc.gd")
 
 var _cards_row: HBoxContainer
 var _cards: Array = []
@@ -41,7 +42,7 @@ func _ready() -> void:
 	var train_row := HBoxContainer.new()
 	train_panel.add_child(train_row)
 	var tl := Label.new()
-	tl.text = "Training (party-wide):"
+	tl.text = Loc.t("Training (party-wide):")
 	train_row.add_child(tl)
 	for key in DataDB.balance()["training"]:
 		var b := Button.new()
@@ -50,7 +51,7 @@ func _ready() -> void:
 		train_row.add_child(b)
 		_train_buttons[key] = b
 	_auto_train = CheckBox.new()
-	_auto_train.text = "Auto-train (saves for the next hero)"
+	_auto_train.text = Loc.t("Auto-train (saves for the next hero)")
 	_auto_train.focus_mode = Control.FOCUS_NONE
 	_auto_train.toggled.connect(func(on): Game.set_setting("auto_train", on))
 	train_row.add_child(_auto_train)
@@ -82,7 +83,7 @@ func _rebuild() -> void:
 		var empty := PanelContainer.new()
 		empty.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var l := Label.new()
-		l.text = "\n\nEmpty slot\n\nMint a hero below\nor buy one in the Market"
+		l.text = Loc.t("\n\nEmpty slot\n\nMint a hero below\nor buy one in the Market")
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.add_theme_color_override("font_color", Color("#5a566a"))
 		empty.add_child(l)
@@ -122,7 +123,7 @@ func _build_card(i: int) -> Control:
 	name_box.add_child(level_lbl)
 	var row_btn := Button.new()
 	row_btn.focus_mode = Control.FOCUS_NONE
-	row_btn.tooltip_text = "Frontline heroes draw most enemy attacks."
+	row_btn.tooltip_text = Loc.t("Frontline heroes draw most enemy attacks.")
 	row_btn.pressed.connect(func():
 		var h: Dictionary = Game.state["heroes"][i]
 		Game.set_row(i, "back" if h["row"] == "front" else "front")
@@ -158,7 +159,7 @@ func _build_card(i: int) -> Control:
 	if Game.state["heroes"].size() > 1:
 		var bench := Button.new()
 		bench.focus_mode = Control.FOCUS_NONE
-		bench.text = "Send to bench"
+		bench.text = Loc.t("Send to bench")
 		bench.add_theme_font_size_override("font_size", 12)
 		bench.pressed.connect(func(): Game.bench_hero(i))
 		v.add_child(bench)
@@ -172,12 +173,12 @@ func _rebuild_recruit() -> void:
 	var head := HBoxContainer.new()
 	_recruit_box.add_child(head)
 	var t := Label.new()
-	t.text = "Heroes: %d/%d in party · %d on the bench" % [Game.state["heroes"].size(), Heroes.party_slots(), Game.state["bench"].size()]
+	t.text = Loc.t("Heroes: %d/%d in party · %d on the bench") % [Game.state["heroes"].size(), Heroes.party_slots(), Game.state["bench"].size()]
 	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(t)
 	_mint_btn = Button.new()
 	_mint_btn.focus_mode = Control.FOCUS_NONE
-	_mint_btn.tooltip_text = "Mint a brand-new hero: random class, name and rarity (potential)."
+	_mint_btn.tooltip_text = Loc.t("Mint a brand-new hero: random class, name and rarity (potential).")
 	_mint_btn.pressed.connect(func(): Game.mint_hero())
 	head.add_child(_mint_btn)
 	for b in Game.state["bench"].size():
@@ -192,13 +193,13 @@ func _rebuild_recruit() -> void:
 			var sb := Button.new()
 			sb.focus_mode = Control.FOCUS_NONE
 			sb.add_theme_font_size_override("font_size", 12)
-			sb.text = "Swap with " + Game.state["heroes"][p]["name"]
+			sb.text = Loc.t("Swap with ") + Game.state["heroes"][p]["name"]
 			sb.pressed.connect(func(): Game.swap_hero(p, b))
 			row.add_child(sb)
 		if Game.state["heroes"].size() < Heroes.party_slots():
 			var jb := Button.new()
 			jb.focus_mode = Control.FOCUS_NONE
-			jb.text = "Join party"
+			jb.text = Loc.t("Join party")
 			jb.pressed.connect(func(): Game.swap_hero(Game.state["heroes"].size(), b))
 			row.add_child(jb)
 		_recruit_box.add_child(row)
@@ -212,34 +213,34 @@ func _refresh() -> void:
 		var hero: Dictionary = Game.state["heroes"][i]
 		var card: Dictionary = _cards[i]
 		var st := StatCalc.hero_stats(Game.state, hero, mods)
-		card["level"].text = "Level %d · %s potential · %d skill pts" % [hero["level"], hero.get("rarity", "common").capitalize(), Heroes.skill_points_free(hero)]
+		card["level"].text = Loc.t("Level %d · %s potential · %d skill pts") % [hero["level"], Loc.t(hero.get("rarity", "common").capitalize()), Heroes.skill_points_free(hero)]
 		card["xp"].max_value = Progression.xp_to_next(int(hero["level"]))
 		card["xp"].value = float(hero["xp"])
-		card["row_btn"].text = "Front" if hero["row"] == "front" else "Back"
+		card["row_btn"].text = Loc.t("Front") if hero["row"] == "front" else Loc.t("Back")
 		var is_magic: bool = st["damage_type"] == "magic"
 		var values := {
 			"hp": ["HP", UiUtil.num(st["hp"])],
-			"power": ["Magic" if is_magic else "Attack", UiUtil.num(st["magic_power"] if is_magic else st["attack"])],
-			"defense": ["Defense", UiUtil.num(st["defense"])],
-			"attack_speed": ["Atk Spd", "%.2f/s" % st["attack_speed"]],
-			"crit_chance": ["Crit", UiUtil.pct(st["crit_chance"], 1)],
-			"crit_damage": ["Crit Dmg", "x%.2f" % st["crit_damage"]],
-			"dodge": ["Dodge", UiUtil.pct(st["dodge"], 1)],
-			"rating": ["Power", UiUtil.num(StatCalc.power_rating(st))],
+			"power": [Loc.t("Magic") if is_magic else Loc.t("Attack"), UiUtil.num(st["magic_power"] if is_magic else st["attack"])],
+			"defense": [Loc.t("Defense"), UiUtil.num(st["defense"])],
+			"attack_speed": [Loc.t("Atk Spd"), "%.2f/s" % st["attack_speed"]],
+			"crit_chance": [Loc.t("Crit"), UiUtil.pct(st["crit_chance"], 1)],
+			"crit_damage": [Loc.t("Crit Dmg"), "x%.2f" % st["crit_damage"]],
+			"dodge": [Loc.t("Dodge"), UiUtil.pct(st["dodge"], 1)],
+			"rating": [Loc.t("Power"), UiUtil.num(StatCalc.power_rating(st))],
 		}
 		for key in values:
 			card["stats"][key][0].text = values[key][0]
 			card["stats"][key][1].text = values[key][1]
 	if _mint_btn != null:
 		var cost := Heroes.mint_cost(Game.state)
-		_mint_btn.text = "  Mint hero (%s gold)  " % UiUtil.num(cost)
+		_mint_btn.text = Loc.t("  Mint hero (%s gold)  ") % UiUtil.num(cost)
 		_mint_btn.disabled = not Heroes.can_mint(Game.state)
 		_mint_btn.tooltip_text = Heroes.mint_blocker(Game.state)
 	for key in _train_buttons:
 		var t: Dictionary = DataDB.balance()["training"][key]
 		var cost := Progression.training_cost(Game.state, key)
 		var b: Button = _train_buttons[key]
-		b.text = "%s Lv %d  (%s gold)" % [t["name"], Game.state["training"][key], UiUtil.num(cost)]
+		b.text = Loc.t("%s Lv %d  (%s gold)") % [t["name"], Game.state["training"][key], UiUtil.num(cost)]
 		b.disabled = Game.state["gold"] < cost
 	_auto_train.set_pressed_no_signal(Game.state["settings"].get("auto_train", true))
 
@@ -249,7 +250,7 @@ func _rebuild_relics() -> void:
 		c.queue_free()
 	var slots := StatCalc.relic_slots(Game.state)
 	var lbl := Label.new()
-	lbl.text = "Gems %d/%d equipped:" % [Game.state["relics_equipped"].size(), slots]
+	lbl.text = Loc.t("Gems %d/%d equipped:") % [Game.state["relics_equipped"].size(), slots]
 	_relic_box.add_child(lbl)
 	var relics := DataDB.relics()
 	for relic_id in relics:
@@ -260,13 +261,13 @@ func _rebuild_relics() -> void:
 		if not owned:
 			b.text = "???"
 			b.disabled = true
-			b.tooltip_text = "Undiscovered gem"
+			b.tooltip_text = Loc.t("Undiscovered gem")
 		else:
 			var equipped: bool = relic_id in Game.state["relics_equipped"]
 			b.text = ("● " if equipped else "○ ") + relics[relic_id]["name"]
 			b.icon = PixelArt.gem(relic_id)
 			b.add_theme_constant_override("icon_max_width", 22)
-			b.tooltip_text = relics[relic_id]["description"] + ("\n\n(click to unequip)" if equipped else "\n\n(click to equip)")
+			b.tooltip_text = relics[relic_id]["description"] + (Loc.t("\n\n(click to unequip)") if equipped else Loc.t("\n\n(click to equip)"))
 			b.add_theme_color_override("font_color", UiUtil.rarity_color("relic"))
 			b.disabled = not equipped and Game.state["relics_equipped"].size() >= slots
 			b.pressed.connect(func():
@@ -281,10 +282,10 @@ static func item_tooltip(item: Dictionary) -> String:
 	var lines := []
 	var rarity_name: String = DataDB.rarities()[item["rarity"]]["name"]
 	lines.append(item["name"])
-	lines.append("%s %s  ·  Item Level %d" % [rarity_name, item["slot"].capitalize(), item["ilvl"]])
-	lines.append("Usable by: " + users_text(item))
+	lines.append(Loc.t("%s %s  ·  Item Level %d") % [rarity_name, Loc.t(item["slot"].capitalize()), item["ilvl"]])
+	lines.append(Loc.t("Usable by: ") + users_text(item))
 	if item.get("bound", false):
-		lines.append("Bound: it was equipped, so it can no longer be traded")
+		lines.append(Loc.t("Bound: it was equipped, so it can no longer be traded"))
 	var base_keys := []
 	for b in DataDB.items()["bases"]:
 		if b["id"] == item.get("base", ""):
@@ -298,21 +299,21 @@ static func item_tooltip(item: Dictionary) -> String:
 		if not key in base_keys:
 			bonus.append("  " + UiUtil.stat_line(key, float(item["stats"][key])))
 	if not bonus.is_empty():
-		lines.append("Bonuses:")
+		lines.append(Loc.t("Bonuses:"))
 		lines.append_array(bonus)
 	if item.get("set", "") != "":
 		var set_def: Dictionary = DataDB.sets()[item["set"]]
 		lines.append("")
-		lines.append("Set: %s  (tier %d of %d)" % [set_def["name"], int(set_def.get("tier", 1)), DataDB.sets().size()])
+		lines.append(Loc.t("Set: %s  (tier %d of %d)") % [set_def["name"], int(set_def.get("tier", 1)), DataDB.sets().size()])
 		for threshold in set_def["bonuses"]:
-			lines.append("  (%s pieces) %s" % [threshold, set_def["bonuses"][threshold]["text"]])
+			lines.append(Loc.t("  (%s pieces) %s") % [threshold, set_def["bonuses"][threshold]["text"]])
 	return "\n".join(lines)
 
 
 ## "Everyone", or the classes that can wield a class-locked weapon.
 static func users_text(item: Dictionary) -> String:
 	if item["class"] == "":
-		return "every hero"
+		return Loc.t("every hero")
 	var names := []
 	for id in DataDB.classes():
 		if item["class"] == id or item["class"] in DataDB.classes()[id].get("uses", []):

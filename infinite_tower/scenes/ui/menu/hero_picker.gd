@@ -10,6 +10,7 @@ const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const IconTile = preload("res://scenes/ui/menu/icon_tile.gd")
+const Loc = preload("res://core/loc.gd")
 
 var selected := 0
 var show_mint := false
@@ -71,7 +72,7 @@ func rebuild() -> void:
 			var cost := Heroes.mint_cost(Game.state)
 			t.rank_text = UiUtil.num(cost)
 			t.dim = not Heroes.can_mint(Game.state)
-			t.tooltip_text = "Empty slot: mint a new hero for %s gold\n(random class, name and rarity)%s" % [UiUtil.num(cost), ("\n" + Heroes.mint_blocker(Game.state)) if not Heroes.can_mint(Game.state) else ""]
+			t.tooltip_text = Loc.t("Empty slot: mint a new hero for %s gold\n(random class, name and rarity)%s") % [UiUtil.num(cost), ("\n" + Heroes.mint_blocker(Game.state)) if not Heroes.can_mint(Game.state) else ""]
 			t.pressed.connect(func(): Game.mint_hero())
 			add_child(t)
 

@@ -3,6 +3,7 @@ extends MarginContainer
 
 const DataDB = preload("res://core/data_db.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
+const Loc = preload("res://core/loc.gd")
 
 const HERO_COLORS := [Color("#c9a36b"), Color("#3f8f4a"), Color("#7a3fc2"), Color("#3d6fd1")]
 
@@ -20,7 +21,7 @@ func _ready() -> void:
 	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	h.add_child(left)
 	var t := Label.new()
-	t.text = "Damage meter (current / last fight)"
+	t.text = Loc.t("Damage meter (current / last fight)")
 	left.add_child(t)
 	_meter = Control.new()
 	_meter.custom_minimum_size = Vector2(0, 120)
@@ -48,17 +49,17 @@ func _process(delta: float) -> void:
 		lines.append("  %s: %s" % [hero["name"], UiUtil.num(float(st["damage_by_hero"].get(hero["id"], 0.0)))])
 	_totals.text = "\n".join(lines)
 	_general.text = "\n".join([
-		"Time played: %s" % UiUtil.duration(st["play_time"]),
-		"Floors climbed: %d" % st["floors_climbed"],
-		"Best floor ever: %d" % s["best_floor_ever"],
-		"Monsters slain: %d" % st["kills"],
-		"Guardians defeated: %d" % st["bosses"],
-		"Fights won / lost: %d / %d" % [st["fights_won"], st["fights_lost"]],
-		"Fall Backs: %d" % st["fall_backs"],
-		"Gold earned: %s" % UiUtil.num(st["total_gold"]),
-		"Items found: %d" % st["items_found"],
-		"Relics found: %d / %d" % [s["relics_owned"].size(), DataDB.relics().size()],
-		"Ascensions: %d" % s["ascensions"],
+		Loc.t("Time played: %s") % UiUtil.duration(st["play_time"]),
+		Loc.t("Floors climbed: %d") % st["floors_climbed"],
+		Loc.t("Best floor ever: %d") % s["best_floor_ever"],
+		Loc.t("Monsters slain: %d") % st["kills"],
+		Loc.t("Guardians defeated: %d") % st["bosses"],
+		Loc.t("Fights won / lost: %d / %d") % [st["fights_won"], st["fights_lost"]],
+		Loc.t("Fall Backs: %d") % st["fall_backs"],
+		Loc.t("Gold earned: %s") % UiUtil.num(st["total_gold"]),
+		Loc.t("Items found: %d") % st["items_found"],
+		Loc.t("Gems found: %d / %d") % [s["relics_owned"].size(), DataDB.relics().size()],
+		Loc.t("Ascensions: %d") % s["ascensions"],
 	])
 
 
@@ -96,4 +97,4 @@ func _draw_meter() -> void:
 		var hero: Dictionary = Game.state["heroes"][i]
 		_meter.draw_string(font, Vector2(0, y + row_h * 0.55), hero["name"], HORIZONTAL_ALIGNMENT_LEFT, 110, 14)
 		var share: float = dps[i] / total if total > 0.0 else 0.0
-		_meter.draw_string(font, Vector2(126, y + row_h * 0.55), "%s DPS  (%s)" % [UiUtil.num(dps[i]), UiUtil.pct(share)], HORIZONTAL_ALIGNMENT_LEFT, -1, 13)
+		_meter.draw_string(font, Vector2(126, y + row_h * 0.55), Loc.t("%s DPS  (%s)") % [UiUtil.num(dps[i]), UiUtil.pct(share)], HORIZONTAL_ALIGNMENT_LEFT, -1, 13)

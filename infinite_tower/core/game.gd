@@ -130,12 +130,13 @@ func _open_account(user: String, key: String) -> void:
 	state = SaveSystem.load_game(_save_path, _save_key)
 	if state.is_empty():
 		state = GameState.new_game()
-		GameState.add_history(state, "info", "The expedition of %s begins." % Accounts.display_name(user))
+		GameState.add_history(state, "info", Loc.t("The expedition of %s begins.") % Accounts.display_name(user))
 	else:
 		var away := SaveSystem.offline_seconds(state, int(Time.get_unix_time_from_system()))
 		if away >= 60.0:
 			offline_report = SaveSystem.simulate_offline(state, away)
-			GameState.add_history(state, "offline", "Climbed while away: floor %d -> %d" % [offline_report["floor_start"], offline_report["floor_end"]])
+			GameState.add_history(state, "offline", Loc.t("Climbed while away: floor %d -> %d") % [offline_report["floor_start"], offline_report["floor_end"]])
+	relocalize()
 	expedition = Expedition.new(state)
 	_danger_dirty = true
 	inventory_changed.emit()
@@ -148,11 +149,31 @@ func _open_account(user: String, key: String) -> void:
 		call_deferred("emit_signal", "offline_report_ready", offline_report)
 
 
+## Item names are stored in the save; rewrite them in the current language.
+func relocalize() -> void:
+	if state.is_empty():
+		return
+	for it in state["inventory"]:
+		DataDB.localize_item(it)
+	for h in state["heroes"] + state["bench"]:
+		for slot in h["equipment"]:
+			if h["equipment"][slot] != null:
+				DataDB.localize_item(h["equipment"][slot])
+	for offer in state.get("market", {}).get("offers", []):
+		if offer.has("item"):
+			DataDB.localize_item(offer["item"])
+
+
 func set_language(code: String) -> void:
 	if code == Loc.current():
 		return
 	Loc.set_language(code)
+	DataDB.reload_language()
+	relocalize()
 	language_changed.emit()
+	inventory_changed.emit()
+	party_changed.emit()
+	state_changed.emit()
 
 
 ## Saves and returns to the login screen (also forgets "remember me").
@@ -260,9 +281,9 @@ func _drain_events() -> void:
 				notified.emit("boss", "%s: %s" % [tier_name, ev["name"]])
 			"fall_back":
 				var lost := float(ev.get("gold_lost", 0.0))
-				notified.emit("fall", "Fell back to floor %d%s" % [ev["to"], ("  (-%s gold)" % UiNum.num(lost)) if lost >= 1.0 else ""])
+				notified.emit("fall", Loc.t("Fell back to floor %d%s") % [ev["to"], (Loc.t("  (-%s gold)") % UiNum.num(lost)) if lost >= 1.0 else ""])
 			"retreat":
-				notified.emit("info", "Retreating to rest at the bonfire (floor %d)" % ev["to"])
+				notified.emit("info", Loc.t("Retreating to rest at the bonfire (floor %d)") % ev["to"])
 			"loot":
 				var item: Dictionary = ev["item"]
 				inventory_changed.emit()
@@ -275,24 +296,24 @@ func _drain_events() -> void:
 				inventory_changed.emit()
 				loot_dropped.emit({"relic": ev["id"]})
 				if ev["new"]:
-					notified.emit("relic", "+1 Gem: " + DataDB.relics()[ev["id"]]["name"])
+					notified.emit("relic", Loc.t("+1 Gem: ") + DataDB.relics()[ev["id"]]["name"])
 			"consumable":
 				loot_dropped.emit({"consumable": ev["id"]})
 				inventory_changed.emit()
 			"milestone":
 				PlatformServices.unlock_achievement(ev["achievement"])
-				notified.emit("milestone", "%s  +%d Crystals" % [ev["name"], ev["crystals"]])
+				notified.emit("milestone", Loc.t("%s  +%d Crystals") % [ev["name"], ev["crystals"]])
 			"shrine":
 				notified.emit("info", ev["name"])
 			"vault":
-				notified.emit("info", "Treasure Vault!")
+				notified.emit("info", Loc.t("Treasure Vault!"))
 			"bonfire":
-				notified.emit("info", "Resting at the bonfire")
+				notified.emit("info", Loc.t("Resting at the bonfire"))
 			"wall_broken":
-				notified.emit("info", "Broke through floor %d!" % ev["floor"])
+				notified.emit("info", Loc.t("Broke through floor %d!") % ev["floor"])
 			"level_up":
 				sfx_requested.emit("level")
-				notified.emit("info", "%s reached a new level!" % ev["name"])
+				notified.emit("info", Loc.t("%s reached a new level!") % ev["name"])
 
 
 # ---------------------------------------------------------------- queries
@@ -309,9 +330,9 @@ func current_enemy_name() -> String:
 		"shrine":
 			return info["shrine"]["name"]
 		"vault":
-			return "Treasure Vault"
+			return Loc.t("Treasure Vault")
 		"bonfire":
-			return "Bonfire (camping)" if expedition.is_camping() else "Bonfire"
+			return Loc.t("Bonfire (camping)") if expedition.is_camping() else Loc.t("Bonfire")
 	if expedition.combat != null:
 		for u in expedition.combat.enemies:
 			if u.alive:
@@ -345,7 +366,7 @@ func merge(rarity: String, key: String) -> Dictionary:
 	if item.is_empty():
 		return {}
 	sfx_requested.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") else "loot")
-	notified.emit("legendary" if item["rarity"] in ["legendary", "mythic"] else "info", "Merged: %s" % item["name"])
+	notified.emit("legendary" if item["rarity"] in ["legendary", "mythic"] else "info", Loc.t("Merged: %s") % item["name"])
 	inventory_changed.emit()
 	state_changed.emit()
 	return item
@@ -357,7 +378,7 @@ func evolve(rarity: String, set_id: String, key: String) -> Dictionary:
 	if item.is_empty():
 		return {}
 	sfx_requested.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("epic") else "loot")
-	notified.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") else "info", "Evolved: %s" % item["name"])
+	notified.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") else "info", Loc.t("Evolved: %s") % item["name"])
 	inventory_changed.emit()
 	state_changed.emit()
 	return item
@@ -397,7 +418,7 @@ func ascend() -> void:
 	var souls := Progression.ascend(state)
 	if souls > 0:
 		expedition = Expedition.new(state)
-		notified.emit("milestone", "Ascended! +%d Souls" % souls)
+		notified.emit("milestone", Loc.t("Ascended! +%d Souls") % souls)
 		inventory_changed.emit()
 		party_changed.emit()
 		state_changed.emit()
@@ -435,7 +456,7 @@ func use_consumable(id: String) -> bool:
 					hero["mp_ratio"] = minf(1.0, float(hero.get("mp_ratio", 1.0)) + float(def["value"]))
 		"bomb":
 			if not in_fight:
-				notified.emit("info", "Bombs can only be thrown in a fight")
+				notified.emit("info", Loc.t("Bombs can only be thrown in a fight"))
 				return false
 			expedition.combat.supplies["bomb"] = int(expedition.combat.supplies.get("bomb", 0)) + 1
 			expedition.combat.use_bomb(float(def["value"]))
@@ -453,7 +474,7 @@ func use_consumable(id: String) -> bool:
 		"warp":
 			var target := expedition.warp_target()
 			if in_fight or target <= int(state["floor"]):
-				notified.emit("info", "No higher bonfire to warp to" if not in_fight else "Wait until the fight is over")
+				notified.emit("info", Loc.t("No higher bonfire to warp to") if not in_fight else Loc.t("Wait until the fight is over"))
 				return false
 			expedition.warp_to(target)
 			notified.emit("milestone", Loc.t("toast.warp") % target)
@@ -524,8 +545,8 @@ func claim_daily() -> Dictionary:
 func mint_hero() -> void:
 	var hero := Heroes.mint(state)
 	if not hero.is_empty():
-		GameState.add_history(state, "info", "Minted %s the %s [%s]" % [hero["name"], DataDB.classes()[hero["class"]]["name"], hero["rarity"]])
-		notified.emit("milestone", "Minted %s the %s" % [hero["name"], DataDB.classes()[hero["class"]]["name"]])
+		GameState.add_history(state, "info", Loc.t("Minted %s the %s [%s]") % [hero["name"], DataDB.classes()[hero["class"]]["name"], hero["rarity"]])
+		notified.emit("milestone", Loc.t("Minted %s the %s") % [hero["name"], DataDB.classes()[hero["class"]]["name"]])
 		party_changed.emit()
 		state_changed.emit()
 
@@ -587,11 +608,11 @@ func market_reroll() -> void:
 ## current fight) to refill HP and mana without losing gold.
 func request_retreat() -> void:
 	if int(state["floor"]) <= int(state.get("checkpoint", 1)):
-		notified.emit("info", "Already at the bonfire")
+		notified.emit("info", Loc.t("Already at the bonfire"))
 		return
 	if expedition.phase == "combat":
 		expedition.retreat_requested = true
-		notified.emit("info", "The party will rest at the bonfire after this fight")
+		notified.emit("info", Loc.t("The party will rest at the bonfire after this fight"))
 	else:
 		expedition.retreat_to_bonfire()
 	state_changed.emit()
@@ -617,7 +638,7 @@ func reset_save() -> void:
 		return
 	SaveSystem.delete_save(_save_path)
 	state = GameState.new_game()
-	GameState.add_history(state, "info", "A new expedition begins.")
+	GameState.add_history(state, "info", Loc.t("A new expedition begins."))
 	expedition = Expedition.new(state)
 	inventory_changed.emit()
 	party_changed.emit()

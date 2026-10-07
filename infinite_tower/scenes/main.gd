@@ -10,6 +10,7 @@ const ComicIntro = preload("res://scenes/ui/comic_intro.gd")
 const TutorialView = preload("res://scenes/ui/tutorial_view.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
 const LoginView = preload("res://scenes/ui/login_view.gd")
+const Loc = preload("res://core/loc.gd")
 
 @onready var taskbar_view: Control = $TaskbarView
 @onready var expedition_view: Control = $ExpeditionView
@@ -160,7 +161,7 @@ func _on_mode_changed(mode: String) -> void:
 func _on_offline_report(report: Dictionary) -> void:
 	# Never pops a window: just a glow on the bar. Details wait for the Expedition view.
 	var floors := int(report["max_floor_end"]) - int(report["max_floor_start"])
-	Game.notified.emit("milestone", "Welcome back! +%d floors" % maxi(floors, 0))
+	Game.notified.emit("milestone", Loc.t("Welcome back! +%d floors") % maxi(floors, 0))
 
 
 func _apply_audio() -> void:
@@ -194,7 +195,7 @@ func _setup_tray() -> void:
 	_tray.connect("pressed", func(button: int, _pos: Vector2i):
 		if button == MOUSE_BUTTON_LEFT:
 			_show_from_tray("taskbar"))
-	Game.floor_changed.connect(func(f: int): _tray.set("tooltip", "Stairborn · Floor %d" % f))
+	Game.floor_changed.connect(func(f: int): _tray.set("tooltip", Loc.t("Stairborn · Floor %d") % f))
 
 
 func _on_tray_menu(id: int) -> void:

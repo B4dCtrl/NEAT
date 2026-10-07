@@ -14,6 +14,7 @@ const Inventory = preload("res://core/inventory.gd")
 const Progression = preload("res://core/progression.gd")
 const GameState = preload("res://core/game_state.gd")
 const Heroes = preload("res://core/heroes.gd")
+const Loc = preload("res://core/loc.gd")
 
 var state: Dictionary
 var rng := RandomNumberGenerator.new()
@@ -244,7 +245,7 @@ func _end_combat() -> void:
 	if floor_info["type"] == "guardian":
 		stats["bosses"] += 1
 		var boss_name: String = DataDB.unit_def(floor_info["enemies"][0])["name"]
-		GameState.add_history(state, "boss", "Defeated %s on floor %d" % [boss_name, state["floor"]])
+		GameState.add_history(state, "boss", Loc.t("Defeated %s on floor %d") % [boss_name, state["floor"]])
 		drops = Loot.boss_chest(rng, state, int(state["floor"]), floor_info["tier"], drop_bonus, set_bias)
 		events.append({"type": "chest", "floor": state["floor"], "tier": floor_info["tier"]})
 		after_pause = "next_floor"
@@ -281,7 +282,7 @@ func _fall_back() -> void:
 	var lost := floorf(float(state["gold"]) * float(bal.get("fall_gold_loss", 0.0)))
 	state["gold"] = float(state["gold"]) - lost
 	last_fall = {"from": from, "to": to, "gold_lost": lost}
-	GameState.add_history(state, "fall", "Fell from floor %d back to the bonfire on %d (lost %d gold)" % [from, to, int(lost)])
+	GameState.add_history(state, "fall", Loc.t("Fell from floor %d back to the bonfire on %d (lost %d gold)") % [from, to, int(lost)])
 	events.append({"type": "fall_back", "from": from, "to": to, "gold_lost": lost})
 	after_pause = "walk"
 	_set_phase("pause", float(bal["fallback_pause"]))
@@ -300,7 +301,7 @@ func _rest_at_bonfire() -> void:
 	events.append({"type": "bonfire", "floor": f})
 	after_pause = "next_floor"
 	if state["settings"].get("camp_at_bonfire", false):
-		GameState.add_history(state, "info", "Camping at the bonfire on floor %d" % f)
+		GameState.add_history(state, "info", Loc.t("Camping at the bonfire on floor %d") % f)
 		phase = "camp"
 		phase_left = 0.0
 		phase_total = 1.0
@@ -335,7 +336,7 @@ func retreat_to_bonfire() -> void:
 	restore_party()
 	state["stats"]["retreats"] = int(state["stats"].get("retreats", 0)) + 1
 	last_fall = {"from": from, "to": to, "retreat": true}
-	GameState.add_history(state, "info", "Retreated from floor %d to rest at the bonfire on %d" % [from, to])
+	GameState.add_history(state, "info", Loc.t("Retreated from floor %d to rest at the bonfire on %d") % [from, to])
 	events.append({"type": "retreat", "from": from, "to": to})
 	combat = null
 	after_pause = "next_floor"
@@ -355,7 +356,7 @@ func warp_to(target: int) -> void:
 	restore_party()
 	combat = null
 	last_fall = {}
-	GameState.add_history(state, "info", "Warped from floor %d to the bonfire on %d" % [from, target])
+	GameState.add_history(state, "info", Loc.t("Warped from floor %d to the bonfire on %d") % [from, target])
 	events.append({"type": "warp", "from": from, "to": target})
 	after_pause = "next_floor"
 	_set_phase("pause", 1.0)
@@ -452,7 +453,7 @@ func _grant_drop(drop: Dictionary) -> void:
 		state["stats"]["items_found"] += 1
 		var result := Inventory.receive_item(state, item)
 		if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("epic"):
-			GameState.add_history(state, "loot", "Found %s [%s]" % [item["name"], DataDB.rarities()[item["rarity"]]["name"]])
+			GameState.add_history(state, "loot", Loc.t("Found %s [%s]") % [item["name"], DataDB.rarities()[item["rarity"]]["name"]])
 		events.append({"type": "loot", "item": item, "result": result})
 	elif drop.has("relic"):
 		var relic_id: String = drop["relic"]
@@ -460,7 +461,7 @@ func _grant_drop(drop: Dictionary) -> void:
 		if is_new:
 			state["stats"]["relics_found"] += 1
 			var relic_name: String = DataDB.relics()[relic_id]["name"]
-			GameState.add_history(state, "relic", "RELIC found: %s" % relic_name)
+			GameState.add_history(state, "relic", Loc.t("GEM found: %s") % relic_name)
 		events.append({"type": "relic", "id": relic_id, "new": is_new})
 	elif drop.has("consumable"):
 		var cid: String = drop["consumable"]
@@ -482,5 +483,5 @@ func _check_milestones() -> void:
 		if int(state["best_floor_ever"]) >= f and not f in state["milestones"]:
 			state["milestones"].append(f)
 			state["crystals"] = int(state["crystals"]) + int(m["crystals"])
-			GameState.add_history(state, "milestone", "Milestone: %s (floor %d)" % [m["name"], f])
+			GameState.add_history(state, "milestone", Loc.t("Milestone: %s (floor %d)") % [m["name"], f])
 			events.append({"type": "milestone", "name": m["name"], "achievement": m["achievement"], "crystals": int(m["crystals"])})

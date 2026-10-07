@@ -8,6 +8,7 @@ const Heroes = preload("res://core/heroes.gd")
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const IconTile = preload("res://scenes/ui/menu/icon_tile.gd")
 const HeroPicker = preload("res://scenes/ui/menu/hero_picker.gd")
+const Loc = preload("res://core/loc.gd")
 
 const PASSIVE := Color("#3a3024")
 const ACTIVE := Color("#6a2c24")
@@ -36,7 +37,7 @@ func _ready() -> void:
 	_picker = HeroPicker.new()
 	_picker.badge = func(h: Dictionary) -> String:
 		var n := Heroes.skill_points_free(h)
-		return "%d skill point%s to spend" % [n, "" if n == 1 else "s"] if n > 0 else ""
+		return Loc.t("%d skill point%s to spend") % [n, "" if n == 1 else "s"] if n > 0 else ""
 	_picker.picked.connect(func(i):
 		hero_idx = i
 		if host != null:
@@ -55,13 +56,15 @@ func _ready() -> void:
 	names.add_child(_points)
 	var reset := Button.new()
 	reset.focus_mode = Control.FOCUS_NONE
-	reset.text = "Reset"
-	reset.tooltip_text = "Refund every skill point of this hero"
+	reset.text = Loc.t("Reset")
+	reset.tooltip_text = Loc.t("Refund every skill point of this hero")
 	reset.pressed.connect(func(): Game.reset_skills(hero_idx))
 	bar.add_child(reset)
 	_auto = CheckBox.new()
 	_auto.focus_mode = Control.FOCUS_NONE
-	_auto.text = "Spend points automatically"
+	_auto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_auto.custom_minimum_size = Vector2(230, 0)
+	_auto.text = Loc.t("Spend points automatically")
 	_auto.toggled.connect(func(on): Game.set_setting("auto_skills", on))
 	add_child(_auto)
 
@@ -73,7 +76,7 @@ func _ready() -> void:
 	_tree.draw.connect(_draw_links)
 	_tree.resized.connect(_place)
 	frame.add_child(_tree)
-	add_child(Ornate.small_label("★ = active skill, cast automatically (uses mana)", Ornate.TEXT_DIM, 11))
+	add_child(Ornate.small_label(Loc.t("★ = active skill, cast automatically (uses mana)"), Ornate.TEXT_DIM, 11))
 	Game.state_changed.connect(func(): _dirty = true)
 	Game.party_changed.connect(func(): _picker.rebuild(); _dirty = true)
 
@@ -153,7 +156,7 @@ func _refresh() -> void:
 		_build(hero["class"])
 	var free := Heroes.skill_points_free(hero)
 	_job.text = "%s · Lv %d" % [DataDB.classes()[hero["class"]]["name"], hero["level"]]
-	_points.text = "Skill points: %d   (1 per level)" % free
+	_points.text = Loc.t("Skill points: %d   (1 per level)") % free
 	_auto.set_pressed_no_signal(Game.state["settings"].get("auto_skills", true))
 	var nodes := DataDB.skill_nodes(hero["class"])
 	for id in _tiles:
@@ -168,13 +171,13 @@ func _refresh() -> void:
 		var reqs := []
 		for req in n["requires"]:
 			reqs.append("%s %d" % [nodes[req]["name"], n["requires"][req]])
-		var lines := ["%s  (Lv %d/%d)%s" % [n["name"], rank, n["max"], "  · ACTIVE, auto-cast" if n.get("kind", "") == "active" else ""]]
+		var lines := ["%s  (Lv %d/%d)%s" % [n["name"], rank, n["max"], Loc.t("  · ACTIVE, auto-cast") if n.get("kind", "") == "active" else ""]]
 		if rank > 0:
-			lines.append("Now: " + Heroes.describe(id, rank))
+			lines.append(Loc.t("Now: ") + Heroes.describe(id, rank))
 		if rank < int(n["max"]):
-			lines.append("Next: " + Heroes.describe(id, rank + 1))
+			lines.append(Loc.t("Next: ") + Heroes.describe(id, rank + 1))
 		if not unlocked and not reqs.is_empty():
-			lines.append("Requires " + ", ".join(reqs))
+			lines.append(Loc.t("Requires ") + ", ".join(reqs))
 		t.tooltip_text = "\n".join(lines)
 		t.queue_redraw()
 	_tree.queue_redraw()

@@ -1,0 +1,130 @@
+{
+ "Weapon": [
+  "Arma",
+  "Arma"
+ ],
+ "Helm": [
+  "Elmo",
+  "Yelmo"
+ ],
+ "Chest": [
+  "Peitoral",
+  "Pechera"
+ ],
+ "Gloves": [
+  "Luvas",
+  "Guantes"
+ ],
+ "Boots": [
+  "Botas",
+  "Botas"
+ ],
+ "Ring": [
+  "Anel",
+  "Anillo"
+ ],
+ "All": [
+  "Todos",
+  "Todos"
+ ],
+ "Monster": [
+  "Monstro",
+  "Monstruo"
+ ],
+ "Easy": [
+  "Fácil",
+  "Fácil"
+ ],
+ "Fair": [
+  "Justo",
+  "Justo"
+ ],
+ "Hard": [
+  "Difícil",
+  "Difícil"
+ ],
+ "Deadly": [
+  "Mortal",
+  "Mortal"
+ ],
+ "Knight": [
+  "Cavaleiro",
+  "Caballero"
+ ],
+ "Ranger": [
+  "Arqueiro",
+  "Arquero"
+ ],
+ "Arcanist": [
+  "Arcanista",
+  "Arcanista"
+ ],
+ "Hero": [
+  "Herói",
+  "Héroe"
+ ],
+ "party": [
+  "grupo",
+  "grupo"
+ ],
+ "reserve": [
+  "reserva",
+  "reserva"
+ ],
+ "Party": [
+  "Grupo",
+  "Grupo"
+ ],
+ "Equipment": [
+  "Equipamento",
+  "Equipo"
+ ],
+ "Skills": [
+  "Habilidades",
+  "Habilidades"
+ ],
+ "Market": [
+  "Mercado",
+  "Mercado"
+ ],
+ "Ascension": [
+  "Ascensão",
+  "Ascensión"
+ ],
+ "Bestiary": [
+  "Bestiário",
+  "Bestiario"
+ ],
+ "History": [
+  "Histórico",
+  "Historial"
+ ],
+ "Stats": [
+  "Estatísticas",
+  "Estadísticas"
+ ],
+ "Settings": [
+  "Configurações",
+  "Ajustes"
+ ],
+ "The Infinite Tower": [
+  "A Torre Infinita",
+  "La Torre Infinita"
+ ],
+ "Taskbar Mode": [
+  "Modo Barra de Tarefas",
+  "Modo Barra de tareas"
+ ],
+ "Back to the taskbar (Esc / Tab)": [
+  "Voltar à barra de tarefas (Esc / Tab)",
+  "Volver a la barra de tareas (Esc / Tab)"
+ ],
+ "While you were away...": [
+  "Enquanto você estava fora...",
+  "Mientras estabas fuera..."
+ ],
+ "Keep climbing": [
+  "Continuar subindo",
+  "Seguir subiendo"
+ ]
+}

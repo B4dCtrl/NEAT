@@ -49,6 +49,7 @@ func _run() -> void:
 	await _wait(2)
 	game.state["intro_seen"] = true
 	game.state["tutorial_seen"] = true
+	game.state["named"] = true
 	await _wait(5)
 	wm.set_mode("taskbar")
 	await _wait(10)

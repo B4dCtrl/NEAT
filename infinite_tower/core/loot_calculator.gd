@@ -94,6 +94,7 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 		stats[key] = float(base["fixed"][key])
 
 	var suffix := ""
+	var suffix_en := ""
 	# Only bonuses that make sense for this kind of piece (boots: speed, rings: luck...).
 	var affixes: Array = data["affixes"].filter(func(a): return a.get("slots", []).is_empty() or base["slot"] in a["slots"])
 	var quality := 0.8 + 0.1 * int(rdef["order"])
@@ -105,10 +106,12 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 		stats[a["stat"]] = snappedf(stats.get(a["stat"], 0.0) + value, 0.001)
 		if suffix == "":
 			suffix = a["suffix"]
+			suffix_en = a.get("suffix_en", a["suffix"])
 
 	return {
 		"uid": new_uid(state),
 		"base": base["id"],
+		"suffix_en": suffix_en,
 		"name": base["name"] + ((" " + suffix) if suffix != "" else ""),
 		"slot": base["slot"],
 		"class": base["class"],

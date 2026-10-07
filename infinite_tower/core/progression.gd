@@ -5,6 +5,7 @@ const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
 const GameState = preload("res://core/game_state.gd")
 const Heroes = preload("res://core/heroes.gd")
+const Loc = preload("res://core/loc.gd")
 
 
 ## Tibia's experience curve: reaching level L takes 50/3 (L³ - 6L² + 17L - 12)
@@ -116,7 +117,7 @@ static func ascend(state: Dictionary) -> int:
 	state["floor"] = start
 	state["max_floor"] = start
 	state["checkpoint"] = start
-	GameState.add_history(state, "ascension", "Ascended (#%d) for %d Souls" % [state["ascensions"], souls])
+	GameState.add_history(state, "ascension", Loc.t("Ascended (#%d) for %d Souls") % [state["ascensions"], souls])
 	return souls
 
 

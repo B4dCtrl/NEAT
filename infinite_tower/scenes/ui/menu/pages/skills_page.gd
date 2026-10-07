@@ -8,6 +8,7 @@ const Heroes = preload("res://core/heroes.gd")
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const IconTile = preload("res://scenes/ui/menu/icon_tile.gd")
 const HeroPicker = preload("res://scenes/ui/menu/hero_picker.gd")
+const Loc = preload("res://core/loc.gd")
 
 const CLASS_COLORS := {"stairborn": Color("#6a2c24"), "knight": Color("#24456e"), "ranger": Color("#2d5a2a"), "arcanist": Color("#4a2a6e")}
 
@@ -41,7 +42,7 @@ func _ready() -> void:
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_list)
-	var hint := Ornate.small_label("Learn and level skills in TALENTS (1 point per level). Learned skills auto-cast when there is mana; switch one off to save mana.", Ornate.TEXT_DIM, 11)
+	var hint := Ornate.small_label(Loc.t("Learn and level skills in TALENTS (1 point per level). Learned skills auto-cast when there is mana; switch one off to save mana."), Ornate.TEXT_DIM, 11)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint.custom_minimum_size = Vector2(200, 0)
 	add_child(hint)
@@ -77,6 +78,8 @@ func _build() -> void:
 		h.add_child(v)
 		v.add_child(Ornate.header_label(n["name"]))
 		var meta := Ornate.small_label("", Ornate.TEXT_DIM, 11)
+		meta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		meta.custom_minimum_size = Vector2(150, 0)
 		v.add_child(meta)
 		var desc := Ornate.small_label("", Ornate.TEXT, 11)
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -122,15 +125,15 @@ func _refresh() -> void:
 		c["desc"].text = Heroes.describe(id, maxi(rank, 1)).get_slice(" · ", 0)
 		if learned:
 			var sk := Heroes.skill_at_rank(id, rank)
-			c["meta"].text = "Lv %d/%d · %d mana · %ss cooldown" % [rank, int(nodes[id]["max"]), int(sk["mana"]), String.num(float(sk["cooldown"]), 0)]
+			c["meta"].text = Loc.t("Lv %d/%d · %d mana · %ss cooldown") % [rank, int(nodes[id]["max"]), int(sk["mana"]), String.num(float(sk["cooldown"]), 0)]
 		else:
 			var reqs := []
 			for req in nodes[id]["requires"]:
 				reqs.append("%s %d" % [nodes[req]["name"], nodes[id]["requires"][req]])
-			c["meta"].text = "Not learned" + (" · needs " + ", ".join(reqs) if not reqs.is_empty() else " · learn it in TALENTS")
+			c["meta"].text = Loc.t("Not learned") + (Loc.t(" · needs ") + ", ".join(reqs) if not reqs.is_empty() else Loc.t(" · learn it in TALENTS"))
 		c["toggle"].disabled = not learned
-		c["toggle"].text = "ON" if on and learned else ("OFF" if learned else "—")
-		c["toggle"].tooltip_text = "Auto-cast on/off"
+		c["toggle"].text = "ON" if on and learned else (Loc.t("OFF") if learned else "—")
+		c["toggle"].tooltip_text = Loc.t("Auto-cast on/off")
 		c["toggle"].add_theme_color_override("font_color", Ornate.GOOD if on and learned else Ornate.TEXT_DIM)
 
 

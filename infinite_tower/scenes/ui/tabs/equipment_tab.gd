@@ -10,6 +10,7 @@ const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const PartyTab = preload("res://scenes/ui/tabs/party_tab.gd")
 const ItemSlot = preload("res://scenes/ui/item_slot.gd")
+const Loc = preload("res://core/loc.gd")
 
 const DOLL_SIZE := Vector2(300, 300)
 const SLOT_CELL := 56.0
@@ -93,7 +94,7 @@ func _ready() -> void:
 	for f in FILTERS:
 		var fb := Button.new()
 		fb.focus_mode = Control.FOCUS_NONE
-		fb.text = f.capitalize()
+		fb.text = Loc.t(f.capitalize())
 		fb.add_theme_font_size_override("font_size", 12)
 		fb.pressed.connect(func(): _filter = f; _dirty = true)
 		top.add_child(fb)
@@ -128,20 +129,20 @@ func _ready() -> void:
 	actions.add_child(_salvage_btn)
 	var bulk := Button.new()
 	bulk.focus_mode = Control.FOCUS_NONE
-	bulk.text = "Salvage all below Rare"
+	bulk.text = Loc.t("Salvage all below Rare")
 	bulk.pressed.connect(func(): Game.salvage_below("rare"))
 	actions.add_child(bulk)
 	var rules := HBoxContainer.new()
 	right.add_child(rules)
 	_auto_equip = CheckBox.new()
 	_auto_equip.focus_mode = Control.FOCUS_NONE
-	_auto_equip.text = "Auto-equip upgrades"
+	_auto_equip.text = Loc.t("Auto-equip upgrades")
 	_auto_equip.toggled.connect(func(on): Game.set_setting("auto_equip", on))
 	rules.add_child(_auto_equip)
 	# Gear is always equipped by hand now.
 	_auto_equip.visible = false
 	var al := Label.new()
-	al.text = "  Auto-salvage below:"
+	al.text = Loc.t("  Auto-salvage below:")
 	rules.add_child(al)
 	_auto_salvage = OptionButton.new()
 	_auto_salvage.focus_mode = Control.FOCUS_NONE
@@ -194,9 +195,9 @@ func _rebuild() -> void:
 		cell.is_selected = cell.item != null and int(cell.item["uid"]) == _selected_uid
 	var st := StatCalc.hero_stats(Game.state, hero)
 	var magic: bool = st["damage_type"] == "magic"
-	_hero_info.text = "Lv %d %s   ·   Power %s\nHP %s   %s %s   DEF %s   Crit %s" % [
+	_hero_info.text = Loc.t("Lv %d %s   ·   Power %s\nHP %s   %s %s   DEF %s   Crit %s") % [
 		hero["level"], DataDB.classes()[hero["class"]]["name"], UiUtil.num(StatCalc.power_rating(st)),
-		UiUtil.num(st["hp"]), "MAG" if magic else "ATK", UiUtil.num(st["magic_power"] if magic else st["attack"]),
+		UiUtil.num(st["hp"]), Loc.t("MAG") if magic else Loc.t("ATK"), UiUtil.num(st["magic_power"] if magic else st["attack"]),
 		UiUtil.num(st["defense"]), UiUtil.pct(st["crit_chance"])]
 	var sets := DataDB.sets()
 	var lines := []
@@ -225,7 +226,7 @@ func _rebuild() -> void:
 		var empty = ItemSlot.new()
 		empty.setup(null, -1, "", 48.0)
 		_grid.add_child(empty)
-	_bag_label.text = "Bag %d/%d  " % [Game.state["inventory"].size(), int(DataDB.balance()["inventory_cap"])]
+	_bag_label.text = Loc.t("Bag %d/%d  ") % [Game.state["inventory"].size(), int(DataDB.balance()["inventory_cap"])]
 	_auto_equip.set_pressed_no_signal(Game.state["settings"].get("auto_equip", true))
 	var rule: String = Game.state["settings"].get("auto_salvage_below", "uncommon")
 	for i in _auto_salvage.item_count:
@@ -241,7 +242,7 @@ func _rebuild_supplies() -> void:
 	for c in _supplies.get_children():
 		c.queue_free()
 	var l := Label.new()
-	l.text = "Supplies:"
+	l.text = Loc.t("Supplies:")
 	_supplies.add_child(l)
 	var table: Dictionary = DataDB.items().get("consumables", {})
 	var bag: Dictionary = Game.state.get("consumables", {})
@@ -255,16 +256,16 @@ func _rebuild_supplies() -> void:
 		b.focus_mode = Control.FOCUS_NONE
 		b.icon = PixelArt.frames(table[id]["icon"])[0]
 		b.text = "x%d" % n
-		b.tooltip_text = "%s\n%s\n\n(click to use)" % [table[id]["name"], table[id]["text"]]
+		b.tooltip_text = Loc.t("%s\n%s\n\n(click to use)") % [table[id]["name"], table[id]["text"]]
 		b.pressed.connect(func(): Game.use_consumable(id))
 		_supplies.add_child(b)
 	if not any:
 		var e := Label.new()
-		e.text = "none (they drop from monsters and are sold in the Market)"
+		e.text = Loc.t("none (they drop from monsters and are sold in the Market)")
 		e.add_theme_color_override("font_color", Color("#5a566a"))
 		_supplies.add_child(e)
 	var auto := CheckBox.new()
-	auto.text = "Auto-use in fights"
+	auto.text = Loc.t("Auto-use in fights")
 	auto.focus_mode = Control.FOCUS_NONE
 	auto.button_pressed = Game.state["settings"].get("auto_supplies", true)
 	auto.toggled.connect(func(on): Game.set_setting("auto_supplies", on))
@@ -293,9 +294,9 @@ func _show_detail() -> void:
 	_equip_btn.disabled = sel == null
 	_salvage_btn.disabled = sel == null or sel["equipped"]
 	if sel == null:
-		_detail.text = "[color=#9a96a8]Drag items onto the hero's slots, or double-click to equip.\nDrag an equipped item back to the bag to remove it.[/color]"
-		_equip_btn.text = "Equip"
-		_salvage_btn.text = "Salvage"
+		_detail.text = Loc.t("[color=#9a96a8]Drag items onto the hero's slots, or double-click to equip.\nDrag an equipped item back to the bag to remove it.[/color]")
+		_equip_btn.text = Loc.t("Equip")
+		_salvage_btn.text = Loc.t("Salvage")
 		return
 	var item: Dictionary = sel["item"]
 	var tip := PartyTab.item_tooltip(item).split("\n")
@@ -304,23 +305,23 @@ func _show_detail() -> void:
 	lines.append_array(tip.slice(1))
 	var hero: Dictionary = Game.state["heroes"][hero_idx]
 	if sel["equipped"]:
-		_equip_btn.text = "Unequip"
+		_equip_btn.text = Loc.t("Unequip")
 	else:
-		_equip_btn.text = "Equip on " + hero["name"]
+		_equip_btn.text = Loc.t("Equip on ") + hero["name"]
 		if Loot.can_equip(item, hero["class"]):
 			var mods := StatCalc.party_mods(Game.state)
 			var now := StatCalc.power_rating(StatCalc.hero_stats(Game.state, hero, mods))
 			var delta := Inventory.power_with(Game.state, hero, item["slot"], item, mods) / maxf(now, 0.001) - 1.0
 			var worn = hero["equipment"][item["slot"]]
 			lines.append("")
-			lines.append("[b]vs %s[/b]" % (worn["name"] if worn != null else "empty slot"))
+			lines.append("[b]vs %s[/b]" % (worn["name"] if worn != null else Loc.t("empty slot")))
 			for c in PartyTab.compare_lines(item, worn):
 				lines.append("[color=%s]%s[/color]" % ["#5fd35f" if c[1] else "#ff6b6b", c[0]])
-			lines.append("[color=%s][b]%s%s overall power for %s[/b][/color]" % ["#5fd35f" if delta >= 0.0 else "#ff6b6b", "+" if delta >= 0.0 else "", UiUtil.pct(delta, 1), hero["name"]])
+			lines.append(Loc.t("[color=%s][b]%s%s overall power for %s[/b][/color]") % ["#5fd35f" if delta >= 0.0 else "#ff6b6b", "+" if delta >= 0.0 else "", UiUtil.pct(delta, 1), hero["name"]])
 		else:
 			_equip_btn.disabled = true
-			lines.append("[color=#ff6b6b]%s cannot use this.[/color]" % hero["name"])
-		_salvage_btn.text = "Salvage (+%s gold)" % UiUtil.num(Loot.salvage_value(item))
+			lines.append(Loc.t("[color=#ff6b6b]%s cannot use this.[/color]") % hero["name"])
+		_salvage_btn.text = Loc.t("Salvage (+%s gold)") % UiUtil.num(Loot.salvage_value(item))
 	_detail.text = "\n".join(lines)
 
 

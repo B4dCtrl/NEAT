@@ -171,6 +171,16 @@ func _run() -> void:
 			if not sheet_imgs.has("gems"):
 				sheet_imgs["gems"] = []
 			sheet_imgs["gems"].append(gi)
+	for cid in DataDB.items()["consumables"]:
+		var cd: Dictionary = DataDB.items()["consumables"][cid]
+		if not cd.has("icon_art"):
+			continue
+		var ci := _consumable(cd["icon_art"])
+		ci.save_png(out_dir.path_join(String(cd["icon"]) + ".png"))
+		if sheet_dir != "":
+			if not sheet_imgs.has("consumables"):
+				sheet_imgs["consumables"] = []
+			sheet_imgs["consumables"].append(ci)
 	if sheet_dir != "":
 		DirAccess.make_dir_recursive_absolute(sheet_dir)
 		for key in sheet_imgs:
@@ -726,3 +736,41 @@ func _gem(spec: Dictionary) -> Image:
 		if c.at(p.x, p.y) != 0:
 			img.set_pixel(p.x, p.y, Color.WHITE)
 	return img
+
+
+# ------------------------------------------------------------------ consumables
+
+func _consumable(spec: Dictionary) -> Image:
+	var c := Canvas.new()
+	match String(spec["shape"]):
+		"scroll":
+			c.rect(8, 6, 16, 20, 1)          # parchment
+			c.rect(5, 4, 22, 4, 2)           # top roll
+			c.rect(5, 24, 22, 4, 2)          # bottom roll
+			c.rect(12, 12, 8, 2, 3)          # text lines
+			c.rect(11, 16, 10, 2, 3)
+			c.rect(13, 20, 6, 2, 3)
+		"stone":
+			c.poly([Vector2(16, 3), Vector2(25, 11), Vector2(22, 27), Vector2(10, 27), Vector2(7, 11)], 1)
+			c.poly([Vector2(16, 3), Vector2(16, 27), Vector2(10, 27), Vector2(7, 11)], 3)
+			c.rect(14, 12, 4, 10, 4)         # glowing rune
+			c.rect(12, 15, 8, 3, 4)
+		"hourglass":
+			c.rect(7, 3, 18, 3, 2)
+			c.rect(7, 26, 18, 3, 2)
+			c.poly([Vector2(9, 6), Vector2(23, 6), Vector2(17, 16), Vector2(15, 16)], 4)
+			c.poly([Vector2(15, 16), Vector2(17, 16), Vector2(23, 26), Vector2(9, 26)], 4)
+			c.rect(14, 22, 4, 4, 1)
+			c.rect(9, 6, 1, 20, 3)
+			c.rect(22, 6, 1, 20, 3)
+	var pal := {"main": spec["accent"], "accent": spec["color"], "dark": Color(spec["accent"]).darkened(0.5).to_html(), "glow": spec["color"]}
+	if spec["shape"] == "scroll":
+		pal = {"main": "#efe3c0", "accent": spec["accent"], "dark": "#6b5030", "glow": spec["color"]}
+	elif spec["shape"] == "stone":
+		pal = {"main": "#6a5a8a", "accent": spec["accent"], "dark": "#2a2040", "glow": spec["color"]}
+	elif spec["shape"] == "hourglass":
+		pal = {"main": "#d8b060", "accent": "#8a5a1c", "dark": "#3a2a10", "glow": spec["color"]}
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 1
+	var art := {"main": pal["main"], "accent": pal["accent"], "dark": pal["dark"], "glow": pal["glow"], "motif": "none"}
+	return _render(c, art, rng, "cons")

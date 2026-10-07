@@ -4,6 +4,7 @@ extends MarginContainer
 const DataDB = preload("res://core/data_db.gd")
 const Progression = preload("res://core/progression.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
+const Loc = preload("res://core/loc.gd")
 
 var _info: Label
 var _ascend_btn: Button
@@ -26,8 +27,8 @@ func _ready() -> void:
 	top.add_child(_ascend_btn)
 
 	_confirm = ConfirmationDialog.new()
-	_confirm.title = "Ascend?"
-	_confirm.dialog_text = "Your party returns to the base of the tower.\nLevels, gear, gold and training are lost.\nSouls, Crystals, Gems and the Ascension Tree are kept."
+	_confirm.title = Loc.t("Ascend?")
+	_confirm.dialog_text = Loc.t("Your party returns to the base of the tower.\nLevels, gear, gold and training are lost.\nSouls, Crystals, Gems and the Ascension Tree are kept.")
 	_confirm.confirmed.connect(func(): Game.ascend())
 	add_child(_confirm)
 
@@ -75,10 +76,10 @@ func _refresh() -> void:
 	var s: Dictionary = Game.state
 	var souls := Progression.souls_for_ascension(s)
 	var min_floor := int(DataDB.balance()["ascension_min_floor"])
-	_info.text = "Souls: %s   ·   Ascensions: %d   ·   Best floor ever: %d\nAscending now would grant %s Souls (based on max floor %d this run%s)." % [
+	_info.text = Loc.t("Souls: %s   ·   Ascensions: %d   ·   Best floor ever: %d\nAscending now would grant %s Souls (based on max floor %d this run%s).") % [
 		UiUtil.num(s["souls"]), s["ascensions"], s["best_floor_ever"], UiUtil.num(souls), s["max_floor"],
-		"" if souls > 0 else ", requires floor %d" % min_floor]
-	_ascend_btn.text = "  ASCEND (+%s Souls)  " % UiUtil.num(souls)
+		"" if souls > 0 else Loc.t(", requires floor %d") % min_floor]
+	_ascend_btn.text = Loc.t("  ASCEND (+%s Souls)  ") % UiUtil.num(souls)
 	_ascend_btn.disabled = souls <= 0
 	var nodes := DataDB.ascension_nodes()
 	for id in _node_buttons:
@@ -92,5 +93,5 @@ func _refresh() -> void:
 		for req in n["requires"]:
 			reqs.append("%s %d" % [nodes[req]["name"], n["requires"][req]])
 		b.text = "%s  [%d/%d]\n%s\n%s" % [n["name"], lvl, n["max"], n["text"],
-			"MAX" if maxed else ("Cost: %d Souls" % cost if unlocked else "Requires " + ", ".join(reqs))]
+			Loc.t("MAX") if maxed else (Loc.t("Cost: %d Souls") % cost if unlocked else Loc.t("Requires ") + ", ".join(reqs))]
 		b.disabled = maxed or not unlocked or int(s["souls"]) < cost

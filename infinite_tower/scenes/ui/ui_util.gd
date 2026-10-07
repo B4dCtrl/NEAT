@@ -2,6 +2,7 @@ extends RefCounted
 ## Formatting helpers shared by all views.
 
 const DataDB = preload("res://core/data_db.gd")
+const Loc = preload("res://core/loc.gd")
 
 const SUFFIXES := ["", "k", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]
 
@@ -40,14 +41,14 @@ static func duration(seconds: float) -> String:
 ## Human-readable stat line for item tooltips ("+12.5% Attack").
 static func stat_line(key: String, value: float) -> String:
 	var names := {
-		"power": "Power (Attack & Magic)",
-		"hp": "HP", "attack": "Attack", "defense": "Defense", "magic_power": "Magic Power",
-		"attack_speed_pct": "Attack Speed", "crit_chance": "Crit Chance", "crit_damage": "Crit Damage",
-		"dodge": "Dodge", "hp_pct": "HP", "attack_pct": "Attack", "defense_pct": "Defense",
-		"magic_power_pct": "Magic Power", "damage_pct": "Damage", "fire_damage_pct": "Fire Damage",
-		"gold_pct": "Gold Find", "drop_pct": "Drop Chance", "move_speed_pct": "Movement Speed",
-		"xp_pct": "XP", "soul_pct": "Souls", "cdr": "Cooldown Reduction",
-		"lifesteal": "Lifesteal", "thorns": "Thorns", "regen": "HP regen/s", "mana_regen_pct": "Mana Regen",
+		"power": Loc.t("Power (Attack & Magic)"),
+		"hp": "HP", "attack": Loc.t("Attack"), "defense": Loc.t("Defense"), "magic_power": Loc.t("Magic Power"),
+		"attack_speed_pct": Loc.t("Attack Speed"), "crit_chance": Loc.t("Crit Chance"), "crit_damage": Loc.t("Crit Damage"),
+		"dodge": Loc.t("Dodge"), "hp_pct": "HP", "attack_pct": Loc.t("Attack"), "defense_pct": Loc.t("Defense"),
+		"magic_power_pct": Loc.t("Magic Power"), "damage_pct": Loc.t("Damage"), "fire_damage_pct": Loc.t("Fire Damage"),
+		"gold_pct": Loc.t("Gold Find"), "drop_pct": Loc.t("Drop Chance"), "move_speed_pct": Loc.t("Movement Speed"),
+		"xp_pct": "XP", "soul_pct": Loc.t("Souls"), "cdr": Loc.t("Cooldown Reduction"),
+		"lifesteal": Loc.t("Lifesteal"), "thorns": Loc.t("Thorns"), "regen": Loc.t("HP regen/s"), "mana_regen_pct": Loc.t("Mana Regen"),
 	}
 	var label: String = names.get(key, key.capitalize())
 	if key in ["hp", "attack", "defense", "magic_power", "power"]:

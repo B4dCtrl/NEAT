@@ -244,7 +244,7 @@ func test_roster_and_skills() -> void:
 	check(int(Heroes.mint_cost(state)) == 650, "5th hero costs 650")
 	check(int(Heroes.hire_price(state)) > 650, "buying a known hero costs more than minting")
 	state["best_floor_ever"] = 10
-	check(Heroes.mint_blocker(state) == "Reach floor 50 first", "5th hero needs floor 50")
+	check(Heroes.mint_blocker(state) != "" and Heroes.mint_floor_required(state) == 50, "5th hero needs floor 50")
 	state["best_floor_ever"] = 9999
 	check(not h1.is_empty() and h1["class"] != "stairborn", "mint creates a hireable hero")
 	check(state["heroes"].size() == 3 and state["bench"].size() == 1, "two extra slots, then the bench")
@@ -475,7 +475,22 @@ func test_quests_and_languages() -> void:
 	Loc.lang = "es"
 	check(Loc.t("panel.quests") == "MISIONES", "Spanish pack")
 	check(Loc.t("does.not.exist") == "does.not.exist", "unknown key falls back to itself")
+	# Data texts (names, descriptions, set bonuses) follow the language too.
+	for code in ["pt", "es"]:
+		Loc.lang = code
+		DataDB.reload_language()
+		check(DataDB.classes()["knight"]["name"] != "Knight", "%s: class names translated" % code)
+		check(DataDB.items()["bases"][0]["name"] != "Iron Sword", "%s: item names translated" % code)
+		check(DataDB.items()["bases"][0]["name_en"] == "Iron Sword", "%s: English name is kept" % code)
+		check(DataDB.rarities()["epic"]["name"] != "Epic", "%s: rarity names translated" % code)
+		var bonus_text: String = DataDB.sets()["frostbound"]["bonuses"]["2"]["text"]
+		check(bonus_text != "" and not "Defense" in bonus_text, "%s: set bonus text composed in the language (%s)" % [code, bonus_text])
+		var gem_item := {"base": "iron_sword", "name": "Iron Sword of Fury", "suffix_en": "of Fury"}
+		DataDB.localize_item(gem_item)
+		check(not "Iron Sword" in gem_item["name"] and not "of Fury" in gem_item["name"], "%s: item name relocalized (%s)" % [code, gem_item["name"]])
 	Loc.lang = "en"
+	DataDB.reload_language()
+	check(DataDB.classes()["knight"]["name"] == "Knight", "English restored")
 
 
 ## Long run with no player input: how far does the idle loop get?

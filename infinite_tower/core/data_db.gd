@@ -2,6 +2,11 @@ extends RefCounted
 ## Read-only access to the JSON data tables in res://data.
 ## Everything balance-related lives in those files, never in code.
 
+const Loc = preload("res://core/loc.gd")
+
+## Tables whose texts are translated when loaded.
+const LOCALIZED := ["classes", "enemies", "items", "floor_rules", "ascension", "skills", "quests"]
+
 const FILES := {
 	"classes": "res://data/classes.json",
 	"enemies": "res://data/enemies.json",
@@ -19,8 +24,47 @@ static var _cache: Dictionary = {}
 
 static func table(table_name: String) -> Dictionary:
 	if not _cache.has(table_name):
-		_cache[table_name] = _load_json(FILES[table_name])
+		var data := _load_json(FILES[table_name])
+		if table_name in LOCALIZED:
+			Loc.localize(data)
+			if table_name == "items":
+				_compose_bonus_texts(data)
+		_cache[table_name] = data
 	return _cache[table_name]
+
+
+## Forget the loaded tables so the next access re-reads them in the current language.
+static func reload_language() -> void:
+	for n in LOCALIZED:
+		_cache.erase(n)
+	_base_by_id = {}
+
+
+static func _compose_bonus_texts(items_data: Dictionary) -> void:
+	for sid in items_data["sets"]:
+		var bonuses: Dictionary = items_data["sets"][sid]["bonuses"]
+		for th in bonuses:
+			bonuses[th]["text"] = Loc.bonus_text(bonuses[th].get("stats", {}), bonuses[th].get("specials", []))
+
+
+static var _base_by_id: Dictionary = {}
+
+
+## Re-writes an item's name in the current language: translated base name plus
+## its translated affix suffix (an item keeps its English parts in "suffix_en").
+static func localize_item(item: Dictionary) -> void:
+	if _base_by_id.is_empty():
+		for b in items()["bases"]:
+			_base_by_id[b["id"]] = b
+	var b: Dictionary = _base_by_id.get(item.get("base", ""), {})
+	if b.is_empty():
+		return
+	var en_base: String = b.get("name_en", b["name"])
+	if not item.has("suffix_en"):
+		var nm: String = item.get("name", "")
+		item["suffix_en"] = nm.substr(en_base.length()).strip_edges() if nm.begins_with(en_base) else ""
+	var suffix: String = item["suffix_en"]
+	item["name"] = b["name"] + ((" " + Loc.t(suffix)) if suffix != "" else "")
 
 
 static func classes() -> Dictionary:

@@ -10,6 +10,7 @@ extends RefCounted
 
 const DataDB = preload("res://core/data_db.gd")
 const Loot = preload("res://core/loot_calculator.gd")
+const Loc = preload("res://core/loc.gd")
 
 
 static func recipes() -> Dictionary:
@@ -29,8 +30,8 @@ static func kind_name(key: String) -> String:
 	var slot := key.get_slice("/", 0)
 	var cls := key.get_slice("/", 1)
 	if cls != "":
-		return "%s (%s)" % [slot.capitalize(), DataDB.classes().get(cls, {}).get("name", cls.capitalize())]
-	return slot.capitalize()
+		return "%s (%s)" % [Loc.t(slot.capitalize()), DataDB.classes().get(cls, {}).get("name", cls.capitalize())]
+	return Loc.t(slot.capitalize())
 
 
 ## The merge candidates of one rarity and kind: weakest first, bag only.

@@ -24,40 +24,40 @@ func _ready() -> void:
 	grid.add_theme_constant_override("v_separation", 8)
 	scroll.add_child(grid)
 
-	_section(grid, "Taskbar window")
-	_option(grid, "art_style", "Art style", [["1-bit (monochrome)", "mono"], ["Color (biome palettes)", "color"]])
-	_check(grid, "always_on_top", "Always on top")
-	_label(grid, "Window position")
+	_section(grid, Loc.t("Taskbar window"))
+	_option(grid, "art_style", Loc.t("Art style"), [[Loc.t("1-bit (monochrome)"), "mono"], [Loc.t("Color (biome palettes)"), "color"]])
+	_check(grid, "always_on_top", Loc.t("Always on top"))
+	_label(grid, Loc.t("Window position"))
 	var reset_pos := Button.new()
-	reset_pos.text = "Back to the taskbar corner"
+	reset_pos.text = Loc.t("Back to the taskbar corner")
 	reset_pos.focus_mode = Control.FOCUS_NONE
-	reset_pos.tooltip_text = "Drag the tower to move it anywhere (any monitor); this puts it back in the corner."
+	reset_pos.tooltip_text = Loc.t("Drag the tower to move it anywhere (any monitor); this puts it back in the corner.")
 	reset_pos.pressed.connect(func(): WindowManager.reset_bar_position())
 	grid.add_child(reset_pos)
-	_slider(grid, "bar_height", "Window height", 110, 260, 10)
-	_slider(grid, "bar_opacity", "HUD backdrop opacity", 0.0, 1.0, 0.05)
-	_option(grid, "fps_taskbar", "Taskbar FPS (battery)", [["15", 15], ["30", 30], ["60", 60]])
+	_slider(grid, "bar_height", Loc.t("Window height"), 110, 260, 10)
+	_slider(grid, "bar_opacity", Loc.t("HUD backdrop opacity"), 0.0, 1.0, 0.05)
+	_option(grid, "fps_taskbar", Loc.t("Taskbar FPS (battery)"), [["15", 15], ["30", 30], ["60", 60]])
 
-	_section(grid, "Notifications")
-	_check(grid, "notify_glow", "Glow on rare events (never steals focus)")
-	_check(grid, "show_damage_numbers", "Damage numbers in Expedition view")
+	_section(grid, Loc.t("Notifications"))
+	_check(grid, "notify_glow", Loc.t("Glow on rare events (never steals focus)"))
+	_check(grid, "show_damage_numbers", Loc.t("Damage numbers in Expedition view"))
 
-	_section(grid, "Audio")
-	_slider(grid, "master_volume", "Master volume", 0.0, 1.0, 0.05)
-	_slider(grid, "music_volume", "Music", 0.0, 1.0, 0.05)
-	_slider(grid, "sfx_volume", "Sound effects", 0.0, 1.0, 0.05)
+	_section(grid, Loc.t("Audio"))
+	_slider(grid, "master_volume", Loc.t("Master volume"), 0.0, 1.0, 0.05)
+	_slider(grid, "music_volume", Loc.t("Music"), 0.0, 1.0, 0.05)
+	_slider(grid, "sfx_volume", Loc.t("Sound effects"), 0.0, 1.0, 0.05)
 
-	_section(grid, "Loot")
-	_check(grid, "auto_train", "Auto-train with spare gold")
-	_check(grid, "auto_skills", "Auto-spend skill points")
+	_section(grid, Loc.t("Loot"))
+	_check(grid, "auto_train", Loc.t("Auto-train with spare gold"))
+	_check(grid, "auto_skills", Loc.t("Auto-spend skill points"))
 
-	_section(grid, "Hotkeys")
-	_info(grid, "Tab / F1", "Toggle Taskbar / Expedition")
-	_info(grid, "Esc", "Back to Taskbar")
-	_info(grid, "Click on the tower", "Open / close the menu (drag it anywhere, even to another monitor)")
-	_info(grid, "Close (X)", "Hides in the system tray; the climb continues")
+	_section(grid, Loc.t("Hotkeys"))
+	_info(grid, Loc.t("Tab / F1"), Loc.t("Toggle Taskbar / Expedition"))
+	_info(grid, Loc.t("Esc"), Loc.t("Back to Taskbar"))
+	_info(grid, Loc.t("Click on the tower"), Loc.t("Open / close the menu (drag it anywhere, even to another monitor)"))
+	_info(grid, Loc.t("Close (X)"), Loc.t("Hides in the system tray; the climb continues"))
 
-	_section(grid, "Story")
+	_section(grid, Loc.t("Story"))
 	var intro := Button.new()
 	intro.text = StoryText.ui("replay_intro")
 	intro.focus_mode = Control.FOCUS_NONE
@@ -91,37 +91,37 @@ func _ready() -> void:
 	var logout := Button.new()
 	logout.text = Loc.t("settings.logout")
 	logout.focus_mode = Control.FOCUS_NONE
-	logout.tooltip_text = "Saves and returns to the login screen (another player can sign in)"
+	logout.tooltip_text = Loc.t("Saves and returns to the login screen (another player can sign in)")
 	logout.pressed.connect(func(): Game.logout())
 	# On Steam the Steam login is the account: there is nothing to log out of.
 	logout.visible = PlatformServices.steam_user().is_empty()
 	grid.add_child(logout)
 
-	_section(grid, "Save")
+	_section(grid, Loc.t("Save"))
 	var save_now := Button.new()
-	save_now.text = "Save now"
+	save_now.text = Loc.t("Save now")
 	save_now.focus_mode = Control.FOCUS_NONE
 	save_now.pressed.connect(func(): Game.save())
 	grid.add_child(save_now)
 	var open_dir := Button.new()
-	open_dir.text = "Open save folder"
+	open_dir.text = Loc.t("Open save folder")
 	open_dir.focus_mode = Control.FOCUS_NONE
 	open_dir.pressed.connect(func(): OS.shell_open(ProjectSettings.globalize_path("user://")))
 	grid.add_child(open_dir)
 	var reset := Button.new()
-	reset.text = "Reset progress..."
+	reset.text = Loc.t("Reset progress...")
 	reset.focus_mode = Control.FOCUS_NONE
 	reset.add_theme_color_override("font_color", Color("#ff6b6b"))
 	reset.pressed.connect(func(): _reset_confirm.popup_centered())
 	grid.add_child(reset)
 	var quit := Button.new()
-	quit.text = "Quit game"
+	quit.text = Loc.t("Quit game")
 	quit.focus_mode = Control.FOCUS_NONE
-	quit.tooltip_text = "Saves and closes Stairborn completely"
+	quit.tooltip_text = Loc.t("Saves and closes Stairborn completely")
 	quit.pressed.connect(func(): Game.save(); get_tree().quit())
 	grid.add_child(quit)
 	_reset_confirm = ConfirmationDialog.new()
-	_reset_confirm.dialog_text = "Delete the save and start a brand new expedition?\nThis cannot be undone."
+	_reset_confirm.dialog_text = Loc.t("Delete the save and start a brand new expedition?\nThis cannot be undone.")
 	_reset_confirm.confirmed.connect(func(): Game.reset_save())
 	add_child(_reset_confirm)
 

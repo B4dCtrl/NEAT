@@ -7,6 +7,7 @@ const DataDB = preload("res://core/data_db.gd")
 const TowerGen = preload("res://core/tower_generator.gd")
 const Expedition = preload("res://core/expedition.gd")
 
+const Loc = preload("res://core/loc.gd")
 const LEVELS := [
 	{"name": "Easy", "color": "#7ee07e"},
 	{"name": "Fair", "color": "#e8d44d"},
@@ -43,6 +44,7 @@ static func next_guardian(floor_num: int) -> int:
 
 static func _grade(level: int, floor_num: int) -> Dictionary:
 	var d: Dictionary = LEVELS[level].duplicate()
+	d["name"] = Loc.t(d["name"])
 	d["level"] = level
 	d["floor"] = floor_num
 	return d

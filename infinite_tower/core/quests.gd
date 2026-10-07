@@ -8,6 +8,7 @@ extends RefCounted
 ## Rewards are mostly the items that speed the climb up (scrolls, warp stones,
 ## hourglasses), so the grind and the shortcuts feed each other.
 
+const Loc = preload("res://core/loc.gd")
 const DataDB = preload("res://core/data_db.gd")
 const Loot = preload("res://core/loot_calculator.gd")
 
@@ -115,13 +116,13 @@ static func reward_text(reward: Dictionary, state: Dictionary) -> String:
 	var cons: Dictionary = DataDB.items()["consumables"]
 	for k in reward:
 		if k == "gold_floors":
-			parts.append("%d gold" % int(floor_gold(state) * float(reward[k])))
+			parts.append(Loc.t("%d gold") % int(floor_gold(state) * float(reward[k])))
 		elif k == "gold":
-			parts.append("%d gold" % int(reward[k]))
+			parts.append(Loc.t("%d gold") % int(reward[k]))
 		elif k == "crystals":
-			parts.append("%d crystals" % int(reward[k]))
+			parts.append(Loc.t("%d crystals") % int(reward[k]))
 		elif k == "item":
-			parts.append(String(reward[k]).capitalize() + " item" if not reward[k] is String or not " " in String(reward[k]) else String(reward[k]))
+			parts.append(Loc.t("%s item") % Loc.t(String(reward[k]).capitalize()) if not reward[k] is String or not " " in String(reward[k]) else String(reward[k]))
 		elif cons.has(k):
 			parts.append("%d× %s" % [int(reward[k]), cons[k]["name"]])
 	return ", ".join(parts)

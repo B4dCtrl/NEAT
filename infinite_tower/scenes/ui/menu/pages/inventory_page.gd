@@ -13,6 +13,7 @@ const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const ItemSlot = preload("res://scenes/ui/item_slot.gd")
 const HeroPicker = preload("res://scenes/ui/menu/hero_picker.gd")
 const Forge = preload("res://core/forge.gd")
+const Loc = preload("res://core/loc.gd")
 
 const CELL := 38.0
 const COLS := 7
@@ -78,10 +79,10 @@ func _ready() -> void:
 
 	var bag_head := HBoxContainer.new()
 	add_child(bag_head)
-	_bag_label = Ornate.header_label("Bag")
+	_bag_label = Ornate.header_label(Loc.t("Bag"))
 	_bag_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bag_head.add_child(_bag_label)
-	bag_head.add_child(Ornate.small_label("equip by hand: drag or double-click", Ornate.TEXT_DIM, 11))
+	bag_head.add_child(Ornate.small_label(Loc.t("equip by hand: drag or double-click"), Ornate.TEXT_DIM, 11))
 
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -100,15 +101,15 @@ func _ready() -> void:
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 4)
 	add_child(actions)
-	_equip_btn = _button(actions, "Equip", _equip_selected)
-	_salvage_btn = _button(actions, "Salvage", _salvage_selected)
+	_equip_btn = _button(actions, Loc.t("Equip"), _equip_selected)
+	_salvage_btn = _button(actions, Loc.t("Salvage"), _salvage_selected)
 	_merge_opt = OptionButton.new()
 	_merge_opt.focus_mode = Control.FOCUS_NONE
 	_merge_opt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_merge_opt.clip_text = true
 	_merge_opt.item_selected.connect(func(_i): _selected_uid = -1; _dirty = true)
 	actions.add_child(_merge_opt)
-	_merge_btn = _button(actions, "Merge", _merge)
+	_merge_btn = _button(actions, Loc.t("Merge"), _merge)
 
 	Game.inventory_changed.connect(func(): _dirty = true)
 	Game.party_changed.connect(func(): _picker.rebuild(); _dirty = true)
@@ -156,7 +157,7 @@ func _rebuild() -> void:
 		cell.setup(hero["equipment"][slot], hero_idx, slot, CELL)
 		cell.is_selected = cell.item != null and int(cell.item["uid"]) == _selected_uid
 		cell.queue_redraw()
-	_power.text = "Power %s" % UiUtil.num(StatCalc.power_rating(StatCalc.hero_stats(Game.state, hero)))
+	_power.text = Loc.t("Power %s") % UiUtil.num(StatCalc.power_rating(StatCalc.hero_stats(Game.state, hero)))
 	for c in _grid.get_children():
 		c.queue_free()
 	var items: Array = Game.state["inventory"].duplicate()
@@ -180,7 +181,7 @@ func _rebuild() -> void:
 		var empty = ItemSlot.new()
 		empty.setup(null, -1, "", CELL)
 		_grid.add_child(empty)
-	_bag_label.text = "Bag %d/%d" % [Game.state["inventory"].size(), int(DataDB.balance()["inventory_cap"])]
+	_bag_label.text = Loc.t("Bag %d/%d") % [Game.state["inventory"].size(), int(DataDB.balance()["inventory_cap"])]
 	_refresh_actions()
 	_refresh_supplies()
 
@@ -207,11 +208,11 @@ func _refresh_supplies() -> void:
 		b.icon = PixelArt.frames(table[id]["icon"])[0]
 		b.expand_icon = false
 		b.text = str(n)
-		b.tooltip_text = "%s\n%s\n(click to use)" % [table[id]["name"], table[id]["text"]]
+		b.tooltip_text = Loc.t("%s\n%s\n(click to use)") % [table[id]["name"], table[id]["text"]]
 		b.pressed.connect(func(): Game.use_consumable(id))
 		_supplies.add_child(b)
 	if not any:
-		_supplies.add_child(Ornate.small_label("No supplies: monsters and the Market have them.", Ornate.TEXT_DIM, 11))
+		_supplies.add_child(Ornate.small_label(Loc.t("No supplies: monsters and the Market have them."), Ornate.TEXT_DIM, 11))
 
 
 func _on_selected(cell) -> void:
@@ -236,27 +237,27 @@ func _refresh_actions() -> void:
 	var hero: Dictionary = Game.state["heroes"][hero_idx]
 	_equip_btn.disabled = sel == null
 	_salvage_btn.disabled = sel == null or sel["equipped"]
-	_equip_btn.text = "Equip"
+	_equip_btn.text = Loc.t("Equip")
 	_salvage_btn.tooltip_text = ""
 	if sel == null:
-		_info.text = "Select an item: equip it, salvage it or merge it."
+		_info.text = Loc.t("Select an item: equip it, salvage it or merge it.")
 		_info.add_theme_color_override("font_color", Ornate.TEXT_DIM)
 	else:
 		var it: Dictionary = sel["item"]
-		var bound := "  [bound]" if it.get("bound", false) else ""
+		var bound := Loc.t("  [bound]") if it.get("bound", false) else ""
 		if sel["equipped"]:
-			_equip_btn.text = "Unequip"
+			_equip_btn.text = Loc.t("Unequip")
 			_info.text = it["name"] + bound
 		else:
-			_salvage_btn.tooltip_text = "Destroy for +%s gold" % UiUtil.num(Loot.salvage_value(it))
+			_salvage_btn.tooltip_text = Loc.t("Destroy for +%s gold") % UiUtil.num(Loot.salvage_value(it))
 			if Loot.can_equip(it, hero["class"]):
 				var mods := StatCalc.party_mods(Game.state)
 				var now := StatCalc.power_rating(StatCalc.hero_stats(Game.state, hero, mods))
 				var delta := Inventory.power_with(Game.state, hero, it["slot"], it, mods) / maxf(now, 0.001) - 1.0
-				_info.text = "%s  (%s%s power)%s" % [it["name"], "+" if delta >= 0.0 else "", UiUtil.pct(delta, 1), bound]
+				_info.text = Loc.t("%s  (%s%s power)%s") % [it["name"], "+" if delta >= 0.0 else "", UiUtil.pct(delta, 1), bound]
 			else:
 				_equip_btn.disabled = true
-				_info.text = "%s — %s cannot use it" % [it["name"], hero["name"]]
+				_info.text = Loc.t("%s — %s cannot use it") % [it["name"], hero["name"]]
 		_info.add_theme_color_override("font_color", UiUtil.rarity_color(it["rarity"]))
 	_refresh_merge(sel)
 
@@ -276,24 +277,24 @@ func _refresh_merge(sel: Variant) -> void:
 	var pick := 0
 	var sets := DataDB.sets()
 	for g in Forge.groups(Game.state):
-		_merge_opt.add_item("Refine %s %s  %d/%d" % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), g["have"], g["need"]])
+		_merge_opt.add_item(Loc.t("Refine %s %s  %d/%d") % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), g["have"], g["need"]])
 		var id: String = "R|%s|%s" % [g["rarity"], g["key"]]
 		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id)
 		if id == want:
 			pick = _merge_opt.item_count - 1
 	for g in Forge.evolve_groups(Game.state):
-		_merge_opt.add_item("Evolve %s %s (%s→)  %d/%d" % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), sets[g["set"]]["name"], g["have"], g["need"]])
+		_merge_opt.add_item(Loc.t("Evolve %s %s (%s→)  %d/%d") % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), sets[g["set"]]["name"], g["have"], g["need"]])
 		var id2: String = "E|%s|%s|%s" % [g["set"], g["rarity"], g["key"]]
 		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id2)
 		if id2 == want:
 			pick = _merge_opt.item_count - 1
 	if _merge_opt.item_count == 0:
-		_merge_opt.add_item("Nothing to merge")
+		_merge_opt.add_item(Loc.t("Nothing to merge"))
 		_merge_opt.set_item_metadata(0, "")
 		_merge_opt.disabled = true
 		_merge_btn.disabled = true
-		_merge_btn.text = "Merge"
-		_merge_btn.tooltip_text = "Refine: 4 items of one kind and rarity → 1 of the next rarity.\nEvolve: 3 items of one set, kind and rarity → 1 of the next set."
+		_merge_btn.text = Loc.t("Merge")
+		_merge_btn.tooltip_text = Loc.t("Refine: 4 items of one kind and rarity → 1 of the next rarity.\nEvolve: 3 items of one set, kind and rarity → 1 of the next set.")
 		return
 	_merge_opt.disabled = false
 	_merge_opt.select(pick)
@@ -303,27 +304,27 @@ func _refresh_merge(sel: Variant) -> void:
 		var r: String = parts[1]
 		var key: String = parts[2]
 		var q := Forge.quote(Game.state, r, key)
-		_merge_btn.text = "Refine %d→1" % q["count"]
+		_merge_btn.text = Loc.t("Refine %d→1") % q["count"]
 		_merge_btn.disabled = not q["ok"]
-		_merge_btn.tooltip_text = "REFINE: fuses the %d weakest %s %s items in the bag (you have %d)\ninto ONE random %s %s (item level %d), keeping the best set among them.\nCost: %s gold%s. The merged items are destroyed for good." % [
+		_merge_btn.tooltip_text = Loc.t("REFINE: fuses the %d weakest %s %s items in the bag (you have %d)\ninto ONE random %s %s (item level %d), keeping the best set among them.\nCost: %s gold%s. The merged items are destroyed for good.") % [
 			q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), q["have"], DataDB.rarities()[q["to"]]["name"], Forge.kind_name(key), q["ilvl"],
-			UiUtil.num(q["gold"]), (" + %d crystals" % q["crystals"]) if int(q["crystals"]) > 0 else ""]
+			UiUtil.num(q["gold"]), (Loc.t(" + %d crystals") % q["crystals"]) if int(q["crystals"]) > 0 else ""]
 		if sel == null:
-			_info.text = "Refine %d %s %s → 1 %s · %s gold" % [q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), DataDB.rarities()[q["to"]]["name"], UiUtil.num(q["gold"])]
+			_info.text = Loc.t("Refine %d %s %s → 1 %s · %s gold") % [q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), DataDB.rarities()[q["to"]]["name"], UiUtil.num(q["gold"])]
 	else:
 		var set_id: String = parts[1]
 		var rr: String = parts[2]
 		var kk: String = parts[3]
 		var qe := Forge.evolve_quote(Game.state, rr, set_id, kk)
 		var to_name: String = sets[qe["to_set"]]["name"] if qe["to_set"] != "" else "—"
-		_merge_btn.text = "Evolve %d→1" % qe["count"]
+		_merge_btn.text = Loc.t("Evolve %d→1") % qe["count"]
 		_merge_btn.disabled = not qe["ok"]
-		_merge_btn.tooltip_text = "EVOLVE: burns the %d weakest %s %s items of the %s set (you have %d)\ninto ONE %s item of the %s set (item level %d).%s\nCost: %s gold%s." % [
+		_merge_btn.tooltip_text = Loc.t("EVOLVE: burns the %d weakest %s %s items of the %s set (you have %d)\ninto ONE %s item of the %s set (item level %d).%s\nCost: %s gold%s.") % [
 			qe["count"], DataDB.rarities()[rr]["name"], Forge.kind_name(kk), sets[set_id]["name"], qe["have"], DataDB.rarities()[rr]["name"], to_name, qe["ilvl"],
-			"\nWeapons have a %d%% chance to come out as another class." % int(Forge.evolve_rules()["class_change"] * 100.0) if kk.begins_with("weapon") else "",
-			UiUtil.num(qe["gold"]), (" + %d crystals" % qe["crystals"]) if int(qe["crystals"]) > 0 else ""]
+			Loc.t("\nWeapons have a %d%% chance to come out as another class.") % int(Forge.evolve_rules()["class_change"] * 100.0) if kk.begins_with("weapon") else "",
+			UiUtil.num(qe["gold"]), (Loc.t(" + %d crystals") % qe["crystals"]) if int(qe["crystals"]) > 0 else ""]
 		if sel == null:
-			_info.text = "Evolve %d %s %s: %s → %s · %s gold" % [qe["count"], DataDB.rarities()[rr]["name"], Forge.kind_name(kk), sets[set_id]["name"], to_name, UiUtil.num(qe["gold"])]
+			_info.text = Loc.t("Evolve %d %s %s: %s → %s · %s gold") % [qe["count"], DataDB.rarities()[rr]["name"], Forge.kind_name(kk), sets[set_id]["name"], to_name, UiUtil.num(qe["gold"])]
 
 
 func _equip_selected() -> void:

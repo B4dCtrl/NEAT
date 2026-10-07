@@ -12,6 +12,7 @@ const Loot = preload("res://core/loot_calculator.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const PartyTab = preload("res://scenes/ui/tabs/party_tab.gd")
+const Loc = preload("res://core/loc.gd")
 
 var item = null              # Dictionary or null
 var hero_idx := -1
@@ -25,7 +26,7 @@ func setup(item_: Variant, hero_idx_: int, slot_name_: String, cell: float = 48.
 	hero_idx = hero_idx_
 	slot_name = slot_name_
 	custom_minimum_size = Vector2(cell, cell)
-	tooltip_text = PartyTab.item_tooltip(item) if item != null else (slot_name.capitalize() + " (empty)" if slot_name != "" else "")
+	tooltip_text = PartyTab.item_tooltip(item) if item != null else (Loc.t("%s (empty)") % Loc.t(slot_name.capitalize()) if slot_name != "" else "")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	queue_redraw()
 
@@ -72,7 +73,7 @@ func _draw() -> void:
 			draw_rect(Rect2(size.x - 9, 3, 6, 6), Color(DataDB.sets()[item["set"]]["art"]["accent"]) if DataDB.sets().has(item["set"]) else Color("#5fd35f"))
 	elif slot_name != "":
 		# Faded silhouette of what goes here.
-		var ghost := PixelArt.frames("item_" + slot_name if slot_name != "weapon" else "item_sword", {}, true)
+		var ghost := PixelArt.frames({"weapon": "iron_sword"}.get(slot_name, "wayfarer_" + slot_name), {}, true)
 		if not ghost.is_empty():
 			draw_texture_rect(ghost[0], r.grow(-size.x * 0.2), false, Color(1, 1, 1, 0.18))
 	draw_rect(r, border, false, 3.0 if is_selected else 1.5)

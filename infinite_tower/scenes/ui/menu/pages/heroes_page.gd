@@ -38,8 +38,8 @@ func _ready() -> void:
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	add_child(v)
 
-	v.add_child(Ornate.header_label("Party · %d slots" % Heroes.party_slots()))
-	var hint := Ornate.small_label("These heroes climb and fight. Click a portrait to select it; a reserve hero swaps in for the selected one.", Ornate.TEXT_DIM, 11)
+	v.add_child(Ornate.header_label(Loc.t("Party · %d slots") % Heroes.party_slots()))
+	var hint := Ornate.small_label(Loc.t("These heroes climb and fight. Click a portrait to select it; a reserve hero swaps in for the selected one."), Ornate.TEXT_DIM, 11)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint.custom_minimum_size = Vector2(200, 0)
 	v.add_child(hint)
@@ -65,8 +65,8 @@ func _ready() -> void:
 	v.add_child(mint)
 	var mv := VBoxContainer.new()
 	mint.add_child(mv)
-	mv.add_child(Ornate.header_label("Mint a new hero"))
-	var how := Ornate.small_label("Creates a random hero: class (Knight, Ranger or Arcanist), name and rarity. Rarer heroes have better stats for life. New heroes join an empty party slot, otherwise the reserve.", Ornate.TEXT, 11)
+	mv.add_child(Ornate.header_label(Loc.t("Mint a new hero")))
+	var how := Ornate.small_label(Loc.t("Creates a random hero: class (Knight, Ranger or Arcanist), name and rarity. Rarer heroes have better stats for life. New heroes join an empty party slot, otherwise the reserve."), Ornate.TEXT, 11)
 	how.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	how.custom_minimum_size = Vector2(200, 0)
 	mv.add_child(how)
@@ -84,7 +84,7 @@ func _ready() -> void:
 	_mint_info.custom_minimum_size = Vector2(200, 0)
 	mv.add_child(_mint_info)
 
-	v.add_child(Ornate.header_label("Reserve"))
+	v.add_child(Ornate.header_label(Loc.t("Reserve")))
 	_reserve = VBoxContainer.new()
 	_reserve.add_theme_constant_override("separation", 3)
 	v.add_child(_reserve)
@@ -121,7 +121,7 @@ func _rebuild() -> void:
 			_party.add_child(_hero_row(s["heroes"][i], i, true))
 		else:
 			var empty := PanelContainer.new()
-			var l := Ornate.small_label("Empty slot — mint a hero below or swap one in from the reserve.", Ornate.TEXT_DIM, 11)
+			var l := Ornate.small_label(Loc.t("Empty slot — mint a hero below or swap one in from the reserve."), Ornate.TEXT_DIM, 11)
 			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			l.custom_minimum_size = Vector2(200, 0)
 			empty.add_child(l)
@@ -129,7 +129,7 @@ func _rebuild() -> void:
 	for c in _reserve.get_children():
 		c.queue_free()
 	if s["bench"].is_empty():
-		var none := Ornate.small_label("Nobody waiting. Minted heroes land here when the party is full.", Ornate.TEXT_DIM, 11)
+		var none := Ornate.small_label(Loc.t("Nobody waiting. Minted heroes land here when the party is full."), Ornate.TEXT_DIM, 11)
 		none.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		none.custom_minimum_size = Vector2(200, 0)
 		_reserve.add_child(none)
@@ -159,10 +159,10 @@ func _hero_row(h: Dictionary, idx: int, in_party: bool) -> Control:
 	name_l.clip_text = true
 	info.add_child(name_l)
 	var st := StatCalc.hero_stats(Game.state, h)
-	var l1 := Ornate.small_label("%s · %s · Lv %d" % [cdef["name"], String(h.get("rarity", "common")).capitalize(), h["level"]], Ornate.TEXT_DIM, 11)
+	var l1 := Ornate.small_label("%s · %s · Lv %d" % [cdef["name"], Loc.t(String(h.get("rarity", "common")).capitalize()), h["level"]], Ornate.TEXT_DIM, 11)
 	l1.clip_text = true
 	info.add_child(l1)
-	var l2 := Ornate.small_label("Power %s" % UiUtil.num(StatCalc.power_rating(st)), Ornate.TEXT_DIM, 11)
+	var l2 := Ornate.small_label(Loc.t("Power %s") % UiUtil.num(StatCalc.power_rating(st)), Ornate.TEXT_DIM, 11)
 	l2.clip_text = true
 	info.add_child(l2)
 	if in_party:
@@ -170,17 +170,17 @@ func _hero_row(h: Dictionary, idx: int, in_party: bool) -> Control:
 		if Game.state["heroes"].size() > 1:
 			var bench := Button.new()
 			bench.focus_mode = Control.FOCUS_NONE
-			bench.text = "Rest"
-			bench.tooltip_text = "Send to the reserve (keeps level and gear)"
+			bench.text = Loc.t("Rest")
+			bench.tooltip_text = Loc.t("Send to the reserve (keeps level and gear)")
 			bench.pressed.connect(func(): Game.bench_hero(idx); hero_idx = 0)
 			row.add_child(bench)
 	else:
 		var sw := Button.new()
 		sw.focus_mode = Control.FOCUS_NONE
 		var full: bool = Game.state["heroes"].size() >= Heroes.party_slots()
-		sw.text = "Swap in" if full else "Join"
+		sw.text = Loc.t("Swap in") if full else Loc.t("Join")
 		var target: int = hero_idx if full else Game.state["heroes"].size()
-		sw.tooltip_text = ("Takes the place of %s in the party" % Game.state["heroes"][hero_idx]["name"]) if full else "Joins the empty party slot"
+		sw.tooltip_text = (Loc.t("Takes the place of %s in the party") % Game.state["heroes"][hero_idx]["name"]) if full else Loc.t("Joins the empty party slot")
 		sw.pressed.connect(func(): Game.swap_hero(target, idx))
 		row.add_child(sw)
 	return panel
@@ -201,20 +201,20 @@ func _odds_table() -> void:
 	for k in table:
 		total += float(table[k]["weight"])
 	for k in table:
-		_odds.add_child(Ornate.small_label(String(k).capitalize(), UiUtil.rarity_color(k), 11))
+		_odds.add_child(Ornate.small_label(Loc.t(String(k).capitalize()), UiUtil.rarity_color(k), 11))
 		_odds.add_child(Ornate.small_label("%d%%" % roundi(100.0 * float(table[k]["weight"]) / total), Ornate.TEXT, 11))
-		_odds.add_child(Ornate.small_label("stats x%.2f" % float(table[k]["potential"]), Ornate.TEXT_DIM, 11))
+		_odds.add_child(Ornate.small_label(Loc.t("stats x%.2f") % float(table[k]["potential"]), Ornate.TEXT_DIM, 11))
 
 
 func _refresh_mint() -> void:
 	if _mint_btn == null or not is_visible_in_tree():
 		return
 	var cost := Heroes.mint_cost(Game.state)
-	_mint_btn.text = "Mint hero  (%s gold)" % UiUtil.num(cost)
+	_mint_btn.text = Loc.t("Mint hero  (%s gold)") % UiUtil.num(cost)
 	var why := Heroes.mint_blocker(Game.state)
 	_mint_btn.disabled = why != ""
 	if _last_minted == "":
-		_mint_info.text = "You have %s gold. Hero #%d costs more than the last (%s)." % [UiUtil.num(Game.state["gold"]), Heroes.total_heroes(Game.state) + 1, why if why != "" else "ready"]
+		_mint_info.text = Loc.t("You have %s gold. Hero #%d costs more than the last (%s).") % [UiUtil.num(Game.state["gold"]), Heroes.total_heroes(Game.state) + 1, why if why != "" else "ready"]
 
 
 func _mint() -> void:
@@ -224,9 +224,9 @@ func _mint() -> void:
 	if all.size() > before:
 		var h: Dictionary = all.filter(func(x): return x["id"] == _newest_id(all))[0]
 		var in_party: bool = Game.state["heroes"].any(func(x): return x["id"] == h["id"])
-		var where := "joined the party" if in_party else "is waiting in the reserve"
+		var where := Loc.t("joined the party") if in_party else Loc.t("is waiting in the reserve")
 		_last_minted = h["id"]
-		_mint_info.text = "New hero: %s the %s (%s) %s!" % [h["name"], DataDB.classes()[h["class"]]["name"], String(h["rarity"]).capitalize(), where]
+		_mint_info.text = Loc.t("New hero: %s the %s (%s) %s!") % [h["name"], DataDB.classes()[h["class"]]["name"], Loc.t(String(h["rarity"]).capitalize()), where]
 		_mint_info.add_theme_color_override("font_color", UiUtil.rarity_color(h["rarity"]))
 		Game.sfx_requested.emit("fanfare")
 	_sig = ""

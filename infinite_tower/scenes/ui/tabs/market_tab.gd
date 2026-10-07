@@ -9,6 +9,7 @@ const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const PartyTab = preload("res://scenes/ui/tabs/party_tab.gd")
 const ItemSlot = preload("res://scenes/ui/item_slot.gd")
+const Loc = preload("res://core/loc.gd")
 
 var _grid: GridContainer
 var _timer: Label
@@ -30,7 +31,7 @@ func _ready() -> void:
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	top.add_child(icon)
 	var title := Label.new()
-	title.text = "Tower Market"
+	title.text = Loc.t("Tower Market")
 	title.add_theme_color_override("font_color", Color("#f2c14e"))
 	top.add_child(title)
 	_timer = Label.new()
@@ -60,7 +61,7 @@ func _ready() -> void:
 	sv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sh.add_child(sv)
 	var st := Label.new()
-	st.text = "Steam Community Market"
+	st.text = Loc.t("Steam Community Market")
 	st.add_theme_color_override("font_color", Color("#7fb2d9"))
 	sv.add_child(st)
 	_steam_status = Label.new()
@@ -70,15 +71,15 @@ func _ready() -> void:
 	sv.add_child(_steam_status)
 	var open := Button.new()
 	open.focus_mode = Control.FOCUS_NONE
-	open.text = "Open Steam Market"
+	open.text = Loc.t("Open Steam Market")
 	open.pressed.connect(func(): PlatformServices.open_market())
 	sh.add_child(open)
 	var sync := Button.new()
 	sync.focus_mode = Control.FOCUS_NONE
-	sync.text = "Sync Steam inventory"
+	sync.text = Loc.t("Sync Steam inventory")
 	sync.pressed.connect(func():
 		if not PlatformServices.request_inventory():
-			Game.notified.emit("info", "Steam is not available"))
+			Game.notified.emit("info", Loc.t("Steam is not available")))
 	sh.add_child(sync)
 
 	Game.state_changed.connect(_tick)
@@ -89,11 +90,11 @@ func _tick() -> void:
 	if not is_visible_in_tree():
 		return
 	var now := int(Time.get_unix_time_from_system())
-	_timer.text = "   New stock in %s" % UiUtil.duration(Market.seconds_to_rotation(now))
+	_timer.text = Loc.t("   New stock in %s") % UiUtil.duration(Market.seconds_to_rotation(now))
 	if Market.rotation_id(now) != _rotation:
 		_dirty = true
 	var cost := int(Market.rules()["reroll_crystals"])
-	_reroll.text = "Reroll stock (%d crystals)" % cost
+	_reroll.text = Loc.t("Reroll stock (%d crystals)") % cost
 	_reroll.disabled = int(Game.state["crystals"]) < cost
 	for row in _grid.get_children():
 		if row.has_meta("offer"):
@@ -111,7 +112,7 @@ func _process(_delta: float) -> void:
 func _rebuild() -> void:
 	var offers := Game.market_offers()
 	_rotation = int(Game.state["market"]["rotation"])
-	_steam_status.text = PlatformServices.status_text() + ". Gems and set pieces are Steam items: once the Steam app is live they can be traded there."
+	_steam_status.text = PlatformServices.status_text() + Loc.t(". Gems and set pieces are Steam items: once the Steam app is live they can be traded there.")
 	for c in _grid.get_children():
 		c.queue_free()
 	for i in offers.size():
@@ -134,7 +135,7 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 		cell.mouse_filter = Control.MOUSE_FILTER_PASS
 		h.add_child(cell)
 		title = offer["item"]["name"]
-		sub = "%s %s · iLvl %d" % [DataDB.rarities()[offer["item"]["rarity"]]["name"], offer["item"]["slot"].capitalize(), offer["item"]["ilvl"]]
+		sub = Loc.t("%s %s · iLvl %d") % [DataDB.rarities()[offer["item"]["rarity"]]["name"], Loc.t(offer["item"]["slot"].capitalize()), offer["item"]["ilvl"]]
 		color = UiUtil.rarity_color(offer["item"]["rarity"])
 		panel.tooltip_text = PartyTab.item_tooltip(offer["item"])
 	elif offer.has("consumable"):
@@ -148,15 +149,15 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 		var hero: Dictionary = offer["hero"]
 		var cdef: Dictionary = DataDB.classes()[hero["class"]]
 		h.add_child(_icon(PixelArt.unit_frames(hero["class"], cdef["sprite"], {}, false)[0]))
-		title = "%s the %s" % [hero["name"], cdef["name"]]
-		sub = "Hero · %s potential (x%.2f stats)" % [hero["rarity"].capitalize(), hero["potential"]]
+		title = Loc.t("%s the %s") % [hero["name"], cdef["name"]]
+		sub = Loc.t("Hero · %s potential (x%.2f stats)") % [Loc.t(hero["rarity"].capitalize()), hero["potential"]]
 		color = UiUtil.rarity_color(hero["rarity"])
 		panel.tooltip_text = "%s\n%s" % [cdef["role"], cdef["skill"]["description"]]
 	else:
 		var relic: Dictionary = DataDB.relics()[offer["relic"]]
 		h.add_child(_icon(PixelArt.gem(String(offer["relic"]))))
 		title = relic["name"]
-		sub = "GEM · " + relic["description"]
+		sub = Loc.t("GEM · ") + relic["description"]
 		color = UiUtil.rarity_color("relic")
 	var text := VBoxContainer.new()
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -177,7 +178,7 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 	buy.focus_mode = Control.FOCUS_NONE
 	buy.custom_minimum_size = Vector2(120, 0)
 	if offer["sold"]:
-		buy.text = "Sold"
+		buy.text = Loc.t("Sold")
 	else:
 		buy.text = "%s %s" % [UiUtil.num(offer["price"]), "gold" if offer["currency"] == "gold" else "crystals"]
 		buy.icon = PixelArt.icon("coin" if offer["currency"] == "gold" else "crystal")

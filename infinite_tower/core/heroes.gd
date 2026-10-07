@@ -6,6 +6,7 @@ extends RefCounted
 
 const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
+const Loc = preload("res://core/loc.gd")
 
 const FOUNDER_CLASS := "stairborn"
 
@@ -149,9 +150,9 @@ static func mint_floor_required(state: Dictionary) -> int:
 static func mint_blocker(state: Dictionary) -> String:
 	var need := mint_floor_required(state)
 	if int(state.get("best_floor_ever", 1)) < need:
-		return "Reach floor %d first" % need
+		return Loc.t("Reach floor %d first") % need
 	if float(state["gold"]) < mint_cost(state):
-		return "Not enough gold"
+		return Loc.t("Not enough gold")
 	return ""
 
 
@@ -322,7 +323,7 @@ static func describe(node_id: String, rank: int) -> String:
 	text = text.replace("{value}", str(roundi(float(sk.get("value", 0.0)) * 100.0)))
 	text = text.replace("{duration}", String.num(float(sk.get("duration", 0.0)), 1))
 	text = text.replace("{hits}", str(int(sk.get("hits", 0))))
-	return "%s · %d mana · %ss cooldown" % [text, int(sk["mana"]), String.num(float(sk.get("cooldown", 0.0)), 0)]
+	return Loc.t("%s · %d mana · %ss cooldown") % [text, int(sk["mana"]), String.num(float(sk.get("cooldown", 0.0)), 0)]
 
 
 ## Active nodes of a class (ids), in tree order.

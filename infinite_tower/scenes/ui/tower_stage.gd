@@ -17,6 +17,7 @@ const EnemySprite = preload("res://scenes/entities/enemy_sprite.tscn")
 const UiNum = preload("res://scenes/ui/ui_util.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const CombatFx = preload("res://scenes/ui/combat_fx.gd")
+const Loc = preload("res://core/loc.gd")
 
 ## Size of one art pixel on screen.
 @export var px := 2.0
@@ -400,7 +401,7 @@ func _consume_combat_events() -> void:
 				if ev["crit"]:
 					_fx.spawn("crit", b, b, Color("#ffd23f"), 1.0, 0.35)
 					_fx.add_shake(0.35)
-					_float_text(dst, "CRIT!", Color("#ffd23f"), true, true)
+					_float_text(dst, Loc.t("CRIT!"), Color("#ffd23f"), true, true)
 				if numbers:
 					_float_at(dst, UiNum.num(ev["dmg"]), Color("#ffd23f") if ev["crit"] else Color.WHITE, ev["crit"])
 				Game.sfx_requested.emit("crit" if ev["crit"] else ("hit" if tag == "" else ""))
@@ -409,7 +410,7 @@ func _consume_combat_events() -> void:
 				if dst != null:
 					dst.dodge()
 					_fx.spawn("whoosh", _center(dst), _center(dst), Color("#c9d1d9"), 1.0, 0.3)
-					_float_text(dst, "MISS", Color("#9aa4b2"), false, true)
+					_float_text(dst, Loc.t("MISS"), Color("#9aa4b2"), false, true)
 				Game.sfx_requested.emit("miss")
 			"skill":
 				if src != null:
@@ -446,12 +447,12 @@ func _consume_combat_events() -> void:
 				if src != null:
 					src.cast(Color("#ff9d2a"))
 					_fx.spawn("burst", _center(src), _center(src), Color("#ff9d2a"), 2.0, 0.6)
-					_float_at(src, "REVIVE", Color("#ff9d2a"), true)
+					_float_at(src, Loc.t("REVIVE"), Color("#ff9d2a"), true)
 			"enrage":
 				if src != null:
 					src.cast(Color("#ff4f4f"))
 					_fx.spawn("aura", _center(src), _center(src), Color("#ff3030"), 1.4, 0.9)
-					_float_at(src, "ENRAGE", Color("#ff4f4f"), true)
+					_float_at(src, Loc.t("ENRAGE"), Color("#ff4f4f"), true)
 				Game.sfx_requested.emit("enrage")
 
 

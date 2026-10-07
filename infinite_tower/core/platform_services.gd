@@ -4,6 +4,7 @@ extends RefCounted
 ## Without a backend every call is a harmless no-op.
 
 const DataDB = preload("res://core/data_db.gd")
+const Loc = preload("res://core/loc.gd")
 
 static var _steam = null
 
@@ -85,7 +86,7 @@ static func trigger_playtime_drop() -> bool:
 
 static func status_text() -> String:
 	if _steam != null:
-		return "Steam connected (app %d)" % app_id()
+		return Loc.t("Steam connected (app %d)") % app_id()
 	if app_id() <= 0:
-		return "Steam not configured: set steam_app_id in data/platform.json and install GodotSteam"
-	return "Steam not running: start Steam to trade on the Community Market"
+		return Loc.t("Steam not configured: set steam_app_id in data/platform.json and install GodotSteam")
+	return Loc.t("Steam not running: start Steam to trade on the Community Market")

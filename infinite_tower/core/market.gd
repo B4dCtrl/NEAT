@@ -8,6 +8,7 @@ const Loot = preload("res://core/loot_calculator.gd")
 const Inventory = preload("res://core/inventory.gd")
 const GameState = preload("res://core/game_state.gd")
 const Heroes = preload("res://core/heroes.gd")
+const Loc = preload("res://core/loc.gd")
 
 const HERO_RARITY_PRICE := {"common": 1.0, "uncommon": 1.4, "rare": 2.0, "epic": 3.5, "legendary": 6.0}
 
@@ -90,13 +91,13 @@ static func buy(state: Dictionary, index: int) -> bool:
 	elif offer.has("hero"):
 		var hero: Dictionary = offer["hero"]
 		var where := Heroes.add_hero(state, hero)
-		GameState.add_history(state, "info", "%s the %s joined the %s" % [hero["name"], DataDB.classes()[hero["class"]]["name"], where])
+		GameState.add_history(state, "info", Loc.t("%s the %s %s") % [hero["name"], DataDB.classes()[hero["class"]]["name"], Loc.t("joined the party") if where == "party" else Loc.t("is waiting in the reserve")])
 	elif offer.has("relic"):
 		Inventory.receive_relic(state, offer["relic"])
-		GameState.add_history(state, "relic", "Bought relic: %s" % DataDB.relics()[offer["relic"]]["name"])
+		GameState.add_history(state, "relic", Loc.t("Bought gem: %s") % DataDB.relics()[offer["relic"]]["name"])
 	else:
 		state["inventory"].append(offer["item"])
-		GameState.add_history(state, "loot", "Bought %s" % offer["item"]["name"])
+		GameState.add_history(state, "loot", Loc.t("Bought %s") % offer["item"]["name"])
 	return true
 
 

@@ -3472,7 +3472,7 @@
 		},
 		"fortune_scroll": {
 			"name": "Scroll of Fortune",
-			"icon": "cons_scroll",
+			"icon": "cons_fortune_scroll",
 			"kind": "buff",
 			"stats": {
 				"gold_pct": 0.5,
@@ -3481,11 +3481,16 @@
 			"floors": 10,
 			"price": 60,
 			"weight": 2,
-			"text": "+50% Gold and double drop chance for 10 floors."
+			"text": "+50% Gold and double drop chance for 10 floors.",
+			"icon_art": {
+				"shape": "scroll",
+				"color": "#f2e6b0",
+				"accent": "#e0a020"
+			}
 		},
 		"climbing_scroll": {
 			"name": "Scroll of Haste",
-			"icon": "cons_scroll",
+			"icon": "cons_haste_scroll",
 			"kind": "buff",
 			"stats": {
 				"move_speed_pct": 0.6
@@ -3493,25 +3498,40 @@
 			"floors": 10,
 			"price": 50,
 			"weight": 2,
-			"text": "Climb 60% faster for 10 floors."
+			"text": "Climb 60% faster for 10 floors.",
+			"icon_art": {
+				"shape": "scroll",
+				"color": "#8fe8a0",
+				"accent": "#2f9a5a"
+			}
 		},
 		"warp_stone": {
 			"name": "Warp Stone",
-			"icon": "icon_crystal",
+			"icon": "cons_warp_stone",
 			"kind": "warp",
 			"price": 120,
 			"weight": 0.8,
-			"text": "Teleports the party to the highest bonfire it has ever reached (great after a fall)."
+			"text": "Teleports the party to the highest bonfire it has ever reached (great after a fall).",
+			"icon_art": {
+				"shape": "stone",
+				"color": "#b388ff",
+				"accent": "#e8d8ff"
+			}
 		},
 		"hourglass": {
 			"name": "Hourglass of Haste",
-			"icon": "icon_floor",
+			"icon": "cons_hourglass",
 			"kind": "time",
 			"value": 2.0,
 			"seconds": 600,
 			"price": 200,
 			"weight": 0.4,
-			"text": "Time flows twice as fast for the party for 10 minutes (while the game is open)."
+			"text": "Time flows twice as fast for the party for 10 minutes (while the game is open).",
+			"icon_art": {
+				"shape": "hourglass",
+				"color": "#f2c14e",
+				"accent": "#8a5a1c"
+			}
 		}
 	},
 	"consumable_drop_chance": 0.05,

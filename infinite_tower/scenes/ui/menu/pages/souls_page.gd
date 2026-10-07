@@ -8,6 +8,7 @@ const Progression = preload("res://core/progression.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const IconTile = preload("res://scenes/ui/menu/icon_tile.gd")
+const Loc = preload("res://core/loc.gd")
 
 const COLUMNS := ["Founder", "Guild", "Climb", "Fortune"]
 const COL_COLORS := [Color("#6a2c24"), Color("#4a3a1e"), Color("#24456e"), Color("#2d5a2a")]
@@ -40,8 +41,8 @@ func _ready() -> void:
 	_ascend.pressed.connect(func(): _confirm.popup_centered())
 	add_child(_ascend)
 	_confirm = ConfirmationDialog.new()
-	_confirm.title = "Ascend?"
-	_confirm.dialog_text = "The party goes back to the base of the tower.\nLevels, gear, gold and training are lost.\nSouls, Crystals, Gems, heroes and this tree are kept."
+	_confirm.title = Loc.t("Ascend?")
+	_confirm.dialog_text = Loc.t("The party goes back to the base of the tower.\nLevels, gear, gold and training are lost.\nSouls, Crystals, Gems, heroes and this tree are kept.")
 	_confirm.confirmed.connect(func(): Game.ascend())
 	add_child(_confirm)
 
@@ -111,12 +112,12 @@ func _refresh() -> void:
 	var s: Dictionary = Game.state
 	var souls := Progression.souls_for_ascension(s)
 	var min_floor := int(DataDB.balance()["ascension_min_floor"])
-	_souls.text = "Souls: %s   ·   Ascensions: %d" % [UiUtil.num(s["souls"]), s["ascensions"]]
+	_souls.text = Loc.t("Souls: %s   ·   Ascensions: %d") % [UiUtil.num(s["souls"]), s["ascensions"]]
 	if souls > 0:
-		_info.text = "Ascending now: +%s Souls (best floor this run: %d). The deeper you climb, the more Souls." % [UiUtil.num(souls), s["max_floor"]]
+		_info.text = Loc.t("Ascending now: +%s Souls (best floor this run: %d). The deeper you climb, the more Souls.") % [UiUtil.num(souls), s["max_floor"]]
 	else:
-		_info.text = "Reach floor %d to Ascend (best this run: %d). Ascending restarts the climb for Souls; Souls buy permanent bonuses below." % [min_floor, s["max_floor"]]
-	_ascend.text = "ASCEND  (+%s Souls)" % UiUtil.num(souls)
+		_info.text = Loc.t("Reach floor %d to Ascend (best this run: %d). Ascending restarts the climb for Souls; Souls buy permanent bonuses below.") % [min_floor, s["max_floor"]]
+	_ascend.text = Loc.t("ASCEND  (+%s Souls)") % UiUtil.num(souls)
 	_ascend.disabled = souls <= 0
 	var nodes := DataDB.ascension_nodes()
 	for id in _tiles:
@@ -133,6 +134,6 @@ func _refresh() -> void:
 		for req in n["requires"]:
 			reqs.append("%s %d" % [nodes[req]["name"], n["requires"][req]])
 		t.tooltip_text = "%s  [%d/%d]\n%s\n%s" % [n["name"], lvl, n["max"], n["text"],
-			"MAX" if t.maxed else ("Cost: %d Souls" % cost if unlocked else "Requires " + ", ".join(reqs))]
+			Loc.t("MAX") if t.maxed else (Loc.t("Cost: %d Souls") % cost if unlocked else Loc.t("Requires ") + ", ".join(reqs))]
 		t.queue_redraw()
 	_grid.queue_redraw()
