@@ -232,7 +232,10 @@
 			"hue": 0.22,
 			"traits": {
 				"regen": 0.02
-			}
+			},
+			"fx": [
+				"moss"
+			]
 		},
 		"thorn_sprout": {
 			"name": "Thorn Sprout",
@@ -250,7 +253,10 @@
 			"hue": 0.3,
 			"traits": {
 				"thorns": 0.15
-			}
+			},
+			"fx": [
+				"thorn"
+			]
 		},
 		"rot_bat": {
 			"name": "Rot Bat",
@@ -268,7 +274,10 @@
 			"hue": 0.08,
 			"traits": {
 				"lifesteal": 0.2
-			}
+			},
+			"fx": [
+				"rot"
+			]
 		},
 		"shard_bat": {
 			"name": "Shard Bat",
@@ -283,7 +292,10 @@
 			"gold": 3,
 			"xp": 4,
 			"art": "bat",
-			"hue": 0.52
+			"hue": 0.52,
+			"fx": [
+				"shard"
+			]
 		},
 		"prism_slime": {
 			"name": "Prism Slime",
@@ -301,7 +313,10 @@
 			"hue": 0.8,
 			"traits": {
 				"regen": 0.03
-			}
+			},
+			"fx": [
+				"prism"
+			]
 		},
 		"geode_crawler": {
 			"name": "Geode Crawler",
@@ -317,7 +332,10 @@
 			"xp": 7,
 			"art": "crystal_golem",
 			"hue": 0.85,
-			"scale": 0.8
+			"scale": 0.8,
+			"fx": [
+				"geode"
+			]
 		},
 		"cinder_skeleton": {
 			"name": "Cinder Skeleton",
@@ -335,7 +353,10 @@
 			"hue": 0.05,
 			"traits": {
 				"thorns": 0.2
-			}
+			},
+			"fx": [
+				"ember"
+			]
 		},
 		"magma_slime": {
 			"name": "Magma Slime",
@@ -350,7 +371,10 @@
 			"gold": 3,
 			"xp": 4,
 			"art": "slime",
-			"hue": 0.04
+			"hue": 0.04,
+			"fx": [
+				"lava"
+			]
 		},
 		"slag_golem": {
 			"name": "Slag Golem",
@@ -365,7 +389,10 @@
 			"gold": 6,
 			"xp": 7,
 			"art": "crystal_golem",
-			"hue": 0.07
+			"hue": 0.07,
+			"fx": [
+				"slag"
+			]
 		},
 		"frost_skeleton": {
 			"name": "Frost Skeleton",
@@ -380,7 +407,10 @@
 			"gold": 4,
 			"xp": 5,
 			"art": "skeleton",
-			"hue": 0.55
+			"hue": 0.55,
+			"fx": [
+				"frost"
+			]
 		},
 		"snow_bat": {
 			"name": "Snow Bat",
@@ -395,7 +425,10 @@
 			"gold": 3,
 			"xp": 4,
 			"art": "bat",
-			"hue": 0.58
+			"hue": 0.58,
+			"fx": [
+				"frost"
+			]
 		},
 		"ice_imp": {
 			"name": "Ice Imp",
@@ -410,7 +443,10 @@
 			"gold": 5,
 			"xp": 6,
 			"art": "ember_imp",
-			"hue": 0.55
+			"hue": 0.55,
+			"fx": [
+				"frost"
+			]
 		},
 		"void_hound": {
 			"name": "Void Hound",
@@ -428,7 +464,10 @@
 			"hue": 0.75,
 			"traits": {
 				"lifesteal": 0.15
-			}
+			},
+			"fx": [
+				"void"
+			]
 		},
 		"abyss_slime": {
 			"name": "Abyss Slime",
@@ -446,7 +485,10 @@
 			"hue": 0.72,
 			"traits": {
 				"lifesteal": 0.25
-			}
+			},
+			"fx": [
+				"abyss"
+			]
 		},
 		"null_imp": {
 			"name": "Null Imp",
@@ -461,7 +503,10 @@
 			"gold": 5,
 			"xp": 6,
 			"art": "ember_imp",
-			"hue": 0.85
+			"hue": 0.85,
+			"fx": [
+				"void"
+			]
 		},
 		"shade_troll": {
 			"name": "Shade Troll",
@@ -479,7 +524,10 @@
 			"hue": 0.75,
 			"traits": {
 				"regen": 0.02
-			}
+			},
+			"fx": [
+				"shade"
+			]
 		}
 	},
 	"bosses": {
@@ -698,6 +746,9 @@
 					"cooldown": 10.0,
 					"mult": 1.2
 				}
+			],
+			"fx": [
+				"crown"
 			]
 		},
 		"bat_matriarch": {
@@ -731,6 +782,10 @@
 					"count": 2,
 					"max": 4
 				}
+			],
+			"fx": [
+				"crown",
+				"shade"
 			]
 		},
 		"prism_golem": {
@@ -762,6 +817,10 @@
 					"cooldown": 9.0,
 					"mult": 1.3
 				}
+			],
+			"fx": [
+				"prism",
+				"shard"
 			]
 		},
 		"eye_of_ages": {
@@ -793,6 +852,9 @@
 					"value": 1.6,
 					"duration": 4.0
 				}
+			],
+			"fx": [
+				"halo"
 			]
 		},
 		"forge_behemoth": {
@@ -824,6 +886,10 @@
 					"cooldown": 9.0,
 					"mult": 1.3
 				}
+			],
+			"fx": [
+				"lava",
+				"horns"
 			]
 		},
 		"imp_warlord": {
@@ -857,6 +923,10 @@
 					"mult": 0.8,
 					"value": 0.5
 				}
+			],
+			"fx": [
+				"ember",
+				"horns"
 			]
 		},
 		"troll_chieftain": {
@@ -887,6 +957,10 @@
 					"cooldown": 9.0,
 					"mult": 1.3
 				}
+			],
+			"fx": [
+				"frost",
+				"horns"
 			]
 		},
 		"wisp_matron": {
@@ -920,6 +994,10 @@
 					"value": 0.5,
 					"duration": 4.0
 				}
+			],
+			"fx": [
+				"frost",
+				"crown"
 			]
 		},
 		"wraith_lord": {
@@ -952,6 +1030,10 @@
 					"value": 1.5,
 					"duration": 4.0
 				}
+			],
+			"fx": [
+				"shade",
+				"crown"
 			]
 		},
 		"watcher_prime": {
@@ -984,6 +1066,10 @@
 					"count": 2,
 					"max": 4
 				}
+			],
+			"fx": [
+				"void",
+				"halo"
 			]
 		}
 	},

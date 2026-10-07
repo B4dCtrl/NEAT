@@ -451,7 +451,7 @@ func _grant_drop(drop: Dictionary) -> void:
 		var item: Dictionary = drop["item"]
 		state["stats"]["items_found"] += 1
 		var result := Inventory.receive_item(state, item)
-		if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") or item.get("set", "") != "":
+		if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("epic"):
 			GameState.add_history(state, "loot", "Found %s [%s]" % [item["name"], DataDB.rarities()[item["rarity"]]["name"]])
 		events.append({"type": "loot", "item": item, "result": result})
 	elif drop.has("relic"):

@@ -69,7 +69,7 @@ func _draw() -> void:
 			var pad := size.x * 0.14
 			draw_texture_rect(tex, r.grow(-pad), false)
 		if item.get("set", "") != "":
-			draw_rect(Rect2(size.x - 9, 3, 6, 6), Color("#5fd35f"))
+			draw_rect(Rect2(size.x - 9, 3, 6, 6), Color(DataDB.sets()[item["set"]]["art"]["accent"]) if DataDB.sets().has(item["set"]) else Color("#5fd35f"))
 	elif slot_name != "":
 		# Faded silhouette of what goes here.
 		var ghost := PixelArt.frames("item_" + slot_name if slot_name != "weapon" else "item_sword", {}, true)

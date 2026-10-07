@@ -234,7 +234,7 @@
 			}
 		},
 		"relic_vault": {
-			"name": "Relic Vault",
+			"name": "Gem Vault",
 			"col": 1,
 			"row": 4,
 			"max": 2,
@@ -243,7 +243,7 @@
 			"stats": {
 				"relic_slots": 1
 			},
-			"text": "+1 Relic slot",
+			"text": "+1 Gem slot",
 			"requires": {
 				"head_start": 3,
 				"soul_harvest": 3

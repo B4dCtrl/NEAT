@@ -248,7 +248,7 @@ func _rebuild_relics() -> void:
 		c.queue_free()
 	var slots := StatCalc.relic_slots(Game.state)
 	var lbl := Label.new()
-	lbl.text = "Relics %d/%d equipped:" % [Game.state["relics_equipped"].size(), slots]
+	lbl.text = "Gems %d/%d equipped:" % [Game.state["relics_equipped"].size(), slots]
 	_relic_box.add_child(lbl)
 	var relics := DataDB.relics()
 	for relic_id in relics:
@@ -259,10 +259,12 @@ func _rebuild_relics() -> void:
 		if not owned:
 			b.text = "???"
 			b.disabled = true
-			b.tooltip_text = "Undiscovered relic"
+			b.tooltip_text = "Undiscovered gem"
 		else:
 			var equipped: bool = relic_id in Game.state["relics_equipped"]
 			b.text = ("● " if equipped else "○ ") + relics[relic_id]["name"]
+			b.icon = PixelArt.gem(relic_id)
+			b.add_theme_constant_override("icon_max_width", 22)
 			b.tooltip_text = relics[relic_id]["description"] + ("\n\n(click to unequip)" if equipped else "\n\n(click to equip)")
 			b.add_theme_color_override("font_color", UiUtil.rarity_color("relic"))
 			b.disabled = not equipped and Game.state["relics_equipped"].size() >= slots
@@ -300,7 +302,7 @@ static func item_tooltip(item: Dictionary) -> String:
 	if item.get("set", "") != "":
 		var set_def: Dictionary = DataDB.sets()[item["set"]]
 		lines.append("")
-		lines.append("Set: %s" % set_def["name"])
+		lines.append("Set: %s  (tier %d of %d)" % [set_def["name"], int(set_def.get("tier", 1)), DataDB.sets().size()])
 		for threshold in set_def["bonuses"]:
 			lines.append("  (%s pieces) %s" % [threshold, set_def["bonuses"][threshold]["text"]])
 	return "\n".join(lines)

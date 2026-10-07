@@ -187,7 +187,7 @@ func _rebuild_extra() -> void:
 	for c in _extra.get_children():
 		c.queue_free()
 	var slots := StatCalc.relic_slots(s)
-	_extra.add_child(Ornate.header_label("Relics %d/%d" % [s["relics_equipped"].size(), slots]))
+	_extra.add_child(Ornate.header_label("Gems %d/%d" % [s["relics_equipped"].size(), slots]))
 	var flow := HFlowContainer.new()
 	_extra.add_child(flow)
 	var relics := DataDB.relics()
@@ -198,6 +198,8 @@ func _rebuild_extra() -> void:
 		var b := Button.new()
 		b.focus_mode = Control.FOCUS_NONE
 		b.text = ("● " if equipped else "○ ") + relics[relic_id]["name"]
+		b.icon = PixelArt.gem(relic_id)
+		b.add_theme_constant_override("icon_max_width", 22)
 		b.add_theme_color_override("font_color", UiUtil.rarity_color("relic"))
 		b.tooltip_text = relics[relic_id]["description"]
 		b.disabled = not equipped and s["relics_equipped"].size() >= slots
@@ -208,7 +210,7 @@ func _rebuild_extra() -> void:
 				Game.equip_relic(relic_id))
 		flow.add_child(b)
 	if not any:
-		flow.add_child(Ornate.small_label("None found yet: bosses and vaults may drop them."))
+		flow.add_child(Ornate.small_label("No gems yet: bosses and vaults may drop them."))
 
 
 # ------------------------------------------------------------------ bonfire

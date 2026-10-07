@@ -45,11 +45,11 @@ func _run() -> void:
 		_save("classes", id, PixelArt.unit_frames(id, classes[id]["sprite"], {}, false)[0])
 	for id in DataDB.enemies():
 		var d: Dictionary = DataDB.enemies()[id]
-		var f := PixelArt.unit_frames(String(d.get("art", id)), d["sprite"], d.get("palette", {}), false, float(d.get("hue", -1.0)))
+		var f := PixelArt.unit_frames(String(d.get("art", id)), d["sprite"], d.get("palette", {}), false, float(d.get("hue", -1.0)), d.get("fx", []))
 		_save("enemies", id, f[0] if not f.is_empty() else null)
 	for id in DataDB.bosses():
 		var d: Dictionary = DataDB.bosses()[id]
-		var f := PixelArt.unit_frames(String(d.get("art", id)), d["sprite"], d.get("palette", {}), false, float(d.get("hue", -1.0)))
+		var f := PixelArt.unit_frames(String(d.get("art", id)), d["sprite"], d.get("palette", {}), false, float(d.get("hue", -1.0)), d.get("fx", []))
 		_save("bosses", id, f[0] if not f.is_empty() else null, 144.0)
 	for b in DataDB.items()["bases"]:
 		var f := PixelArt.frames(b.get("icon", "item_" + String(b["slot"])), {}, false)
@@ -76,7 +76,30 @@ func _run() -> void:
 		if not seen.has(g):
 			seen[g] = true
 			_save("glyphs", g, Glyphs.texture(g), 64.0)
+	_sheets()
 	var f4 := FileAccess.open(out_dir.path_join("index.json"), FileAccess.WRITE)
 	f4.store_string(JSON.stringify(index))
 	print("exported %d images to %s" % [index.size(), out_dir])
 	quit()
+
+
+## Contact sheets (one per group) so a whole group can be reviewed at a glance.
+func _sheets() -> void:
+	var by_group := {}
+	for e in index:
+		if not by_group.has(e["group"]):
+			by_group[e["group"]] = []
+		by_group[e["group"]].append(e)
+	for group in by_group:
+		var cell := 150 if group in ["bosses", "enemies"] else 120
+		var cols := 8
+		var rows := ceili(by_group[group].size() / float(cols))
+		var sheet := Image.create(cols * cell, rows * cell, false, Image.FORMAT_RGBA8)
+		sheet.fill(Color("#1a1824"))
+		for i in by_group[group].size():
+			var im := Image.load_from_file(out_dir.path_join(group).path_join(by_group[group][i]["id"] + ".png"))
+			if im == null:
+				continue
+			im.convert(Image.FORMAT_RGBA8)
+			sheet.blend_rect(im, Rect2i(0, 0, im.get_width(), im.get_height()), Vector2i((i % cols) * cell + (cell - im.get_width()) / 2, (i / cols) * cell + (cell - im.get_height()) / 2))
+		sheet.save_png(out_dir.path_join("_sheet_" + group + ".png"))

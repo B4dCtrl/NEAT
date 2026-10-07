@@ -97,7 +97,7 @@ static func starter_item(base_id: String, uid: int) -> Dictionary:
 		if base["id"] == base_id:
 			var stats: Dictionary = base["stats"].duplicate()
 			return {"uid": uid, "base": base_id, "name": "Worn " + base["name"], "slot": base["slot"],
-				"class": base["class"], "rarity": "common", "ilvl": 1, "stats": stats, "set": ""}
+				"class": base["class"], "rarity": "common", "ilvl": 1, "stats": stats, "set": base.get("set", "")}
 	return {}
 
 

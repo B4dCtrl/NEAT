@@ -267,13 +267,13 @@ func _drain_events() -> void:
 				loot_dropped.emit(item)
 				if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary"):
 					notified.emit("legendary", item["name"])
-				elif item.get("set", "") != "":
+				elif item.get("set", "") != "" and DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("epic"):
 					notified.emit("set", item["name"])
 			"relic":
 				inventory_changed.emit()
 				loot_dropped.emit({"relic": ev["id"]})
 				if ev["new"]:
-					notified.emit("relic", "+1 Relic: " + DataDB.relics()[ev["id"]]["name"])
+					notified.emit("relic", "+1 Gem: " + DataDB.relics()[ev["id"]]["name"])
 			"consumable":
 				loot_dropped.emit({"consumable": ev["id"]})
 				inventory_changed.emit()
@@ -344,6 +344,18 @@ func merge(rarity: String, key: String) -> Dictionary:
 		return {}
 	sfx_requested.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") else "loot")
 	notified.emit("legendary" if item["rarity"] in ["legendary", "mythic"] else "info", "Merged: %s" % item["name"])
+	inventory_changed.emit()
+	state_changed.emit()
+	return item
+
+
+## Evolves `count` items of one set into one of the next set (same rarity).
+func evolve(rarity: String, set_id: String, key: String) -> Dictionary:
+	var item := Forge.evolve(state, rarity, set_id, key)
+	if item.is_empty():
+		return {}
+	sfx_requested.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("epic") else "loot")
+	notified.emit("legendary" if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary") else "info", "Evolved: %s" % item["name"])
 	inventory_changed.emit()
 	state_changed.emit()
 	return item

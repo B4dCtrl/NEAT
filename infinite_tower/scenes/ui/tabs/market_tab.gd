@@ -111,7 +111,7 @@ func _process(_delta: float) -> void:
 func _rebuild() -> void:
 	var offers := Game.market_offers()
 	_rotation = int(Game.state["market"]["rotation"])
-	_steam_status.text = PlatformServices.status_text() + ". Relics and set pieces are Steam items: once the Steam app is live they can be traded there."
+	_steam_status.text = PlatformServices.status_text() + ". Gems and set pieces are Steam items: once the Steam app is live they can be traded there."
 	for c in _grid.get_children():
 		c.queue_free()
 	for i in offers.size():
@@ -154,9 +154,9 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 		panel.tooltip_text = "%s\n%s" % [cdef["role"], cdef["skill"]["description"]]
 	else:
 		var relic: Dictionary = DataDB.relics()[offer["relic"]]
-		h.add_child(_icon(PixelArt.icon("relic")))
+		h.add_child(_icon(PixelArt.gem(String(offer["relic"]))))
 		title = relic["name"]
-		sub = "RELIC · " + relic["description"]
+		sub = "GEM · " + relic["description"]
 		color = UiUtil.rarity_color("relic")
 	var text := VBoxContainer.new()
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL

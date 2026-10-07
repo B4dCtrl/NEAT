@@ -35,7 +35,37 @@ static func new_uid(state: Dictionary) -> int:
 	return uid
 
 
-## Builds an equipment item. rarity must not be "relic".
+## Which set a drop belongs to: any set unlocked by this floor, strongly
+## favouring the newest ones (so the tower keeps handing out fresh looks), or the
+## boss's own set about half the time.
+static func pick_set(rng: RandomNumberGenerator, floor_num: int, set_bias: String = "") -> String:
+	var sets := DataDB.sets()
+	var order: Array = DataDB.items()["set_order"]
+	var open := []
+	for id in order:
+		if floor_num >= int(sets[id]["min_floor"]):
+			open.append(id)
+	if open.is_empty():
+		open.append(order[0])
+	if set_bias != "" and set_bias in open and rng.randf() < 0.5:
+		return set_bias
+	var total := 0.0
+	var weights := []
+	for i in open.size():
+		var w := pow(1.7, i)
+		weights.append(w)
+		total += w
+	var roll := rng.randf() * total
+	for i in open.size():
+		roll -= weights[i]
+		if roll <= 0.0:
+			return open[i]
+	return open[open.size() - 1]
+
+
+## Builds an equipment item. rarity must not be "relic". Every piece belongs to a
+## set (20 tiers). Without a base_filter the set comes from pick_set(); with one
+## (merge) the filter decides, and the set it allows is used as is.
 static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, rarity: String, set_bias: String = "", base_filter: Callable = Callable()) -> Dictionary:
 	var data := DataDB.items()
 	var rdef: Dictionary = data["rarities"][rarity]
@@ -44,7 +74,17 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 		var picked: Array = bases.filter(base_filter)
 		if not picked.is_empty():
 			bases = picked
-	var base: Dictionary = bases[rng.randi() % bases.size()]
+	else:
+		var set_id := pick_set(rng, floor_num, set_bias)
+		bases = bases.filter(func(b): return b["set"] == set_id)
+	# One roll per slot (not per base), so weapons are not over-represented.
+	var slots := []
+	for b in bases:
+		if not b["slot"] in slots:
+			slots.append(b["slot"])
+	var slot: String = slots[rng.randi() % slots.size()]
+	var of_slot: Array = bases.filter(func(b): return b["slot"] == slot)
+	var base: Dictionary = of_slot[rng.randi() % of_slot.size()]
 	var ilvl := maxi(floor_num, 1)
 	var scale := float(rdef["mult"]) * pow(float(data["item_growth"]), ilvl - 1) * rng.randf_range(0.9, 1.1)
 	var stats := {}
@@ -66,7 +106,7 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 		if suffix == "":
 			suffix = a["suffix"]
 
-	var item := {
+	return {
 		"uid": new_uid(state),
 		"base": base["id"],
 		"name": base["name"] + ((" " + suffix) if suffix != "" else ""),
@@ -75,22 +115,8 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 		"rarity": rarity,
 		"ilvl": ilvl,
 		"stats": stats,
-		"set": "",
+		"set": base["set"],
 	}
-
-	# Epic+ items can roll as set pieces.
-	if DataDB.rarity_order(rarity) >= DataDB.rarity_order("epic"):
-		var sets := DataDB.sets()
-		var eligible := []
-		for set_id in sets:
-			if floor_num >= int(sets[set_id]["min_floor"]):
-				eligible.append(set_id)
-		var chance := float(data["set_chance"]) * (2.0 if set_bias != "" else 1.0)
-		if not eligible.is_empty() and rng.randf() < chance:
-			var set_id: String = set_bias if set_bias in eligible else eligible[rng.randi() % eligible.size()]
-			item["set"] = set_id
-			item["name"] = sets[set_id]["pieces"][item["slot"]]
-	return item
 
 
 ## Picks an unowned relic, or "" when every relic is already owned.

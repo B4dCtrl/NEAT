@@ -311,7 +311,7 @@ func _sync_enemies(exp) -> void:
 		var def := DataDB.unit_def(u.def_id)
 		var sp = EnemySprite.instantiate()
 		var scale: float = (BOSS_SCALE if u.is_boss else 1.0) * u.scale
-		sp.configure(def["sprite"], def.get("palette", {}), px * scale, true, is_mono(), def.get("art", u.def_id), float(def.get("hue", -1.0)))
+		sp.configure(def["sprite"], def.get("palette", {}), px * scale, true, is_mono(), def.get("art", u.def_id), float(def.get("hue", -1.0)), def.get("fx", []))
 		sp.unit_uid = u.uid
 		if u.affix_name != "":
 			sp.set_meta("elite", true)
@@ -600,7 +600,7 @@ func _on_loot(drop: Dictionary) -> void:
 	var color: Color
 	var rank := 0
 	if drop.has("relic"):
-		tex = PixelArt.icon("relic")
+		tex = PixelArt.gem(String(drop["relic"]))
 		color = UiNum.rarity_color("relic")
 		rank = 6
 	elif drop.has("consumable"):

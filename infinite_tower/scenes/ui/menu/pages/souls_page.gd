@@ -41,7 +41,7 @@ func _ready() -> void:
 	add_child(_ascend)
 	_confirm = ConfirmationDialog.new()
 	_confirm.title = "Ascend?"
-	_confirm.dialog_text = "The party goes back to the base of the tower.\nLevels, gear, gold and training are lost.\nSouls, Crystals, Relics, heroes and this tree are kept."
+	_confirm.dialog_text = "The party goes back to the base of the tower.\nLevels, gear, gold and training are lost.\nSouls, Crystals, Gems, heroes and this tree are kept."
 	_confirm.confirmed.connect(func(): Game.ascend())
 	add_child(_confirm)
 

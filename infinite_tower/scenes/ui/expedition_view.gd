@@ -108,6 +108,6 @@ func _show_offline_report(r: Dictionary) -> void:
 	if not r["best_item"].is_empty():
 		lines.append("Best find: %s [%s]" % [r["best_item"]["name"], DataDB.rarities()[r["best_item"]["rarity"]]["name"]])
 	for relic_id in r["relics"]:
-		lines.append("RELIC: %s!" % DataDB.relics()[relic_id]["name"])
+		lines.append("GEM: %s!" % DataDB.relics()[relic_id]["name"])
 	offline_dialog.dialog_text = "\n".join(lines)
 	offline_dialog.popup_centered()

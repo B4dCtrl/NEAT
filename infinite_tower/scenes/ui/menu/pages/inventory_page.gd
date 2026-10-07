@@ -261,44 +261,69 @@ func _refresh_actions() -> void:
 	_refresh_merge(sel)
 
 
-## MERGE: the dropdown lists every (rarity, kind) group in the bag with how
-## many items it has out of the recipe; selecting a bag item picks its group.
+## MERGE: the dropdown lists every group in the bag that can be merged, with how
+## many items it has out of the recipe. "Refine" raises the rarity (same kind);
+## "Evolve" turns one set into the next set of the 20-set chain (same rarity).
+## Selecting a bag item picks its group.
 func _refresh_merge(sel: Variant) -> void:
-	var groups: Array = Forge.groups(Game.state)
 	var want := ""
 	if _merge_opt.item_count > 0 and _merge_opt.selected >= 0:
 		want = String(_merge_opt.get_item_metadata(_merge_opt.selected))
 	if sel != null and not sel["equipped"]:
-		want = sel["item"]["rarity"] + "|" + Forge.kind_key(sel["item"])
+		var it: Dictionary = sel["item"]
+		want = ("E|%s|%s|%s" % [it.get("set", ""), it["rarity"], Forge.kind_key(it)]) if want.begins_with("E") else ("R|%s|%s" % [it["rarity"], Forge.kind_key(it)])
 	_merge_opt.clear()
 	var pick := 0
-	for g in groups:
-		_merge_opt.add_item("%s %s  %d/%d" % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), g["have"], g["need"]])
-		var id: String = g["rarity"] + "|" + g["key"]
+	var sets := DataDB.sets()
+	for g in Forge.groups(Game.state):
+		_merge_opt.add_item("Refine %s %s  %d/%d" % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), g["have"], g["need"]])
+		var id: String = "R|%s|%s" % [g["rarity"], g["key"]]
 		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id)
 		if id == want:
 			pick = _merge_opt.item_count - 1
-	if groups.is_empty():
+	for g in Forge.evolve_groups(Game.state):
+		_merge_opt.add_item("Evolve %s %s (%s→)  %d/%d" % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), sets[g["set"]]["name"], g["have"], g["need"]])
+		var id2: String = "E|%s|%s|%s" % [g["set"], g["rarity"], g["key"]]
+		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id2)
+		if id2 == want:
+			pick = _merge_opt.item_count - 1
+	if _merge_opt.item_count == 0:
 		_merge_opt.add_item("Nothing to merge")
 		_merge_opt.set_item_metadata(0, "")
 		_merge_opt.disabled = true
 		_merge_btn.disabled = true
 		_merge_btn.text = "Merge"
-		_merge_btn.tooltip_text = "Collect several items of the same kind and rarity to merge them."
+		_merge_btn.tooltip_text = "Refine: 4 items of one kind and rarity → 1 of the next rarity.\nEvolve: 3 items of one set, kind and rarity → 1 of the next set."
 		return
 	_merge_opt.disabled = false
 	_merge_opt.select(pick)
-	var id2 := String(_merge_opt.get_item_metadata(pick))
-	var r := id2.get_slice("|", 0)
-	var key := id2.get_slice("|", 1)
-	var q := Forge.quote(Game.state, r, key)
-	_merge_btn.text = "Merge %d→1" % q["count"]
-	_merge_btn.disabled = not q["ok"]
-	_merge_btn.tooltip_text = "MERGE: fuses the %d weakest %s %s items in the bag (you have %d)\ninto ONE random %s %s (item level %d).\nCost: %s gold%s. The merged items are destroyed for good." % [
-		q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), q["have"], DataDB.rarities()[q["to"]]["name"], Forge.kind_name(key), q["ilvl"],
-		UiUtil.num(q["gold"]), (" + %d crystals" % q["crystals"]) if int(q["crystals"]) > 0 else ""]
-	if sel == null:
-		_info.text = "Merge %d %s %s → 1 %s · %s gold" % [q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), DataDB.rarities()[q["to"]]["name"], UiUtil.num(q["gold"])]
+	var id3 := String(_merge_opt.get_item_metadata(pick))
+	var parts := id3.split("|")
+	if parts[0] == "R":
+		var r: String = parts[1]
+		var key: String = parts[2]
+		var q := Forge.quote(Game.state, r, key)
+		_merge_btn.text = "Refine %d→1" % q["count"]
+		_merge_btn.disabled = not q["ok"]
+		_merge_btn.tooltip_text = "REFINE: fuses the %d weakest %s %s items in the bag (you have %d)\ninto ONE random %s %s (item level %d), keeping the best set among them.\nCost: %s gold%s. The merged items are destroyed for good." % [
+			q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), q["have"], DataDB.rarities()[q["to"]]["name"], Forge.kind_name(key), q["ilvl"],
+			UiUtil.num(q["gold"]), (" + %d crystals" % q["crystals"]) if int(q["crystals"]) > 0 else ""]
+		if sel == null:
+			_info.text = "Refine %d %s %s → 1 %s · %s gold" % [q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), DataDB.rarities()[q["to"]]["name"], UiUtil.num(q["gold"])]
+	else:
+		var set_id: String = parts[1]
+		var rr: String = parts[2]
+		var kk: String = parts[3]
+		var qe := Forge.evolve_quote(Game.state, rr, set_id, kk)
+		var to_name: String = sets[qe["to_set"]]["name"] if qe["to_set"] != "" else "—"
+		_merge_btn.text = "Evolve %d→1" % qe["count"]
+		_merge_btn.disabled = not qe["ok"]
+		_merge_btn.tooltip_text = "EVOLVE: burns the %d weakest %s %s items of the %s set (you have %d)\ninto ONE %s item of the %s set (item level %d).%s\nCost: %s gold%s." % [
+			qe["count"], DataDB.rarities()[rr]["name"], Forge.kind_name(kk), sets[set_id]["name"], qe["have"], DataDB.rarities()[rr]["name"], to_name, qe["ilvl"],
+			"\nWeapons have a %d%% chance to come out as another class." % int(Forge.evolve_rules()["class_change"] * 100.0) if kk.begins_with("weapon") else "",
+			UiUtil.num(qe["gold"]), (" + %d crystals" % qe["crystals"]) if int(qe["crystals"]) > 0 else ""]
+		if sel == null:
+			_info.text = "Evolve %d %s %s: %s → %s · %s gold" % [qe["count"], DataDB.rarities()[rr]["name"], Forge.kind_name(kk), sets[set_id]["name"], to_name, UiUtil.num(qe["gold"])]
 
 
 func _equip_selected() -> void:
@@ -328,7 +353,12 @@ func _merge() -> void:
 	var id := String(_merge_opt.get_item_metadata(_merge_opt.selected))
 	if id == "":
 		return
-	var made: Dictionary = Game.merge(id.get_slice("|", 0), id.get_slice("|", 1))
+	var parts := id.split("|")
+	var made: Dictionary
+	if parts[0] == "R":
+		made = Game.merge(parts[1], parts[2])
+	else:
+		made = Game.evolve(parts[2], parts[1], parts[3])
 	if not made.is_empty():
 		_selected_uid = int(made["uid"])
 		_dirty = true

@@ -32,8 +32,8 @@ const EXTERNAL_MIN_HEIGHT := 17
 var _norm := 1.0
 
 
-func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false, unit_id: String = "", hue: float = -1.0) -> void:
-	textures = PixelArt.unit_frames(unit_id, sprite_id, palette, mono, hue)
+func configure(sprite_id: String, palette: Dictionary = {}, scale_px: float = 2.0, left: bool = false, mono: bool = false, unit_id: String = "", hue: float = -1.0, fx: Array = []) -> void:
+	textures = PixelArt.unit_frames(unit_id, sprite_id, palette, mono, hue, fx)
 	_norm = 0.5 if not textures.is_empty() and textures[0].get_height() >= EXTERNAL_MIN_HEIGHT else 1.0
 	px_scale = scale_px
 	face_left = left
