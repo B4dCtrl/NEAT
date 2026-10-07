@@ -97,10 +97,11 @@ func _hide(reset: bool = true) -> void:
 func _show(text: String, mouse: Vector2i) -> void:
 	if not _win.visible or _label.text != text:
 		_label.text = text
-		_label.custom_minimum_size = Vector2(0, 0)
+		var font := _label.get_theme_font("font")
+		var fs := _label.get_theme_font_size("font_size")
+		var natural := font.get_multiline_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs)
+		_label.custom_minimum_size = Vector2(minf(MAX_W, natural.x + 2.0), 0)
 		_win.size = Vector2i(10, 10)
-		var natural := _label.get_minimum_size()
-		_label.custom_minimum_size = Vector2(minf(MAX_W, maxf(natural.x, 40.0)), 0)
 		_win.visible = true
 		await get_tree().process_frame
 		_win.size = Vector2i(_win.get_contents_minimum_size()) + Vector2i(2, 2)
