@@ -63,10 +63,25 @@ func _ready() -> void:
 	party_changed.connect(func(): _danger_dirty = true)
 	inventory_changed.connect(func(): _danger_dirty = true)
 	PlatformServices.init()
-	# "Remember me": log straight in, like a saved Steam login.
+	# On Steam the Steam login IS the account; otherwise "remember me" logs in
+	# straight away, like a saved Steam login.
+	var steam := PlatformServices.steam_user()
+	if not steam.is_empty():
+		sign_in_steam()
+		return
 	var r := Accounts.remembered()
 	if not r.is_empty():
 		_open_account(r["user"], r["key"])
+
+
+## Logs in with the Steam account running the game (no password screen).
+func sign_in_steam() -> bool:
+	var steam := PlatformServices.steam_user()
+	if steam.is_empty():
+		return false
+	var key := Accounts.external_login("steam", steam["id"], steam["name"])
+	_open_account(key, Accounts.external_save_key("steam", steam["id"]))
+	return true
 
 
 # ------------------------------------------------------------------ accounts

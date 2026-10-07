@@ -134,6 +134,18 @@ simulação da próxima luta (`core/danger.gd`).
 O painel **HEROES** concentra a party (3 vagas), a reserva e o **mint** (com as chances
 de raridade à vista). O painel **SOULS** traz a Ascensão e a árvore permanente.
 
+### Caminho até a Steam
+Veja `docs/STEAM_LAUNCH.md`: regras da Steam (reembolso de 2 h, taxa, página "Coming Soon"),
+tamanhos das imagens da loja, o que já está pronto no código e o que depende de conta,
+Windows ou arte. Na Steam o login da Steam substitui a tela de login.
+
+### Ritmo: começo rápido, depois lento
+Cada andar leva 6 s no começo e vai subindo até 22 s no andar 60 (`travel_time_start`,
+`travel_ramp_floors`), para que as 2 primeiras horas (a janela de reembolso da Steam)
+mostrem o jogo inteiro: andar ~20 aos 20 min, ~45 em 1 h e a 1ª Ascensão por volta de
+1,5–2 h; depois a subida desacelera (andar 75 só por volta de 6 h). O relatório
+`--balance` simula um jogador que equipa o melhor item a cada 5 minutos.
+
 ### Ritmo lento, itens de velocidade e vício
 A subida base ficou mais lenta (22 s por andar). O que acelera é conquistado: **Pergaminho
 de Pressa** (+60% de velocidade por 10 andares), **Pedra de Teletransporte** (leva à maior

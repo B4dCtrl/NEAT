@@ -97,9 +97,20 @@ func _set_phase(p: String, duration: float) -> void:
 	phase_total = maxf(duration, 0.001)
 
 
+## Seconds to climb one floor. The first floors fly by (so the first hour is
+## rewarding) and ease into the full pace of `travel_time` by `travel_ramp_floors`.
+static func walk_time(floor_num: int) -> float:
+	var bal := DataDB.balance()
+	var full := float(bal["travel_time"])
+	var start := float(bal.get("travel_time_start", full))
+	var ramp := maxf(1.0, float(bal.get("travel_ramp_floors", 1)))
+	var k := clampf(float(floor_num) / ramp, 0.0, 1.0)
+	return lerpf(start, full, k * k * (3.0 - 2.0 * k))
+
+
 func _begin_walk() -> void:
 	var mods := StatCalc.party_mods(state)
-	var travel := float(DataDB.balance()["travel_time"]) / (1.0 + float(mods.get("move_speed_pct", 0.0)))
+	var travel := walk_time(int(state["floor"])) / (1.0 + float(mods.get("move_speed_pct", 0.0)))
 	combat = null
 	_set_phase("walk", travel)
 

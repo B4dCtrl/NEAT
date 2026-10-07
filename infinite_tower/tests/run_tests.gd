@@ -406,6 +406,25 @@ func test_accounts() -> void:
 	Accounts.delete_account(a)
 	Accounts.delete_account(b)
 	check(not Accounts.exists(a), "account deleted")
+	# Steam identity: no password, and a typed name can never impersonate it.
+	var Platform = load("res://core/platform_services.gd")
+	check(Platform.steam_user().is_empty(), "no Steam user outside Steam")
+	Platform._fake_user = {"id": "76561190000000001", "name": "SteamPlayer"}
+	var su: Dictionary = Platform.steam_user()
+	var skey: String = Accounts.external_login("steam", su["id"], su["name"])
+	check(skey.begins_with("@steam:") and Accounts.exists(skey), "steam account created on first launch")
+	check(Accounts.check_name(skey) != "", "a typed name cannot be a steam key")
+	check(not Accounts.verify(skey, ""), "steam accounts have no password login")
+	var k1: String = Accounts.external_save_key("steam", su["id"])
+	check(k1 == Accounts.external_save_key("steam", su["id"]) and k1 != Accounts.external_save_key("steam", "76561190000000002"), "same Steam id, same save key on every PC")
+	var steam_state := GameState.new_game(3)
+	steam_state["floor"] = 17
+	check(SaveSystem.save_game(steam_state, Accounts.save_path(skey), k1), "steam save written")
+	check(int(SaveSystem.load_game(Accounts.save_path(skey), k1)["floor"]) == 17, "steam save loads")
+	Accounts.delete_account(skey)
+	Platform._fake_user = {}
+	check(Expedition.walk_time(1) < Expedition.walk_time(30) and Expedition.walk_time(30) < Expedition.walk_time(60), "the first floors are quicker")
+	check(is_equal_approx(Expedition.walk_time(500), float(DataDB.balance()["travel_time"])), "late floors use the full pace")
 
 
 func test_quests_and_languages() -> void:
@@ -457,17 +476,28 @@ func balance_report() -> void:
 	var sim := Expedition.new(state)
 	sim.record_combat_events = false
 	var t0 := Time.get_ticks_msec()
-	for half_hour in 16:
-		for i in 1800:
+	# Checkpoints in minutes: dense at the start (the Steam refund window is 2 h).
+	var checkpoints := [5, 10, 20, 30, 45, 60, 90, 120, 180, 240, 300, 360, 420, 480]
+	var elapsed := 0
+	for minute in checkpoints:
+		var seconds: int = (minute - elapsed) * 60
+		elapsed = minute
+		for i in seconds:
 			sim.advance(1.0)
 			sim.events.clear()
 			# A light-touch player: recruits a hero whenever the gold allows.
 			if i % 30 == 0 and state["heroes"].size() < 3 and Heroes.can_mint(state):
 				Heroes.mint(state)
+			# ... and equips the best item for each hero every 5 minutes (gear is manual now).
+			if i % 300 == 299:
+				for item in state["inventory"].duplicate():
+					var idx := Inventory.best_hero_for(state, item)
+					if idx >= 0:
+						Inventory.equip(state, idx, item)
 		var h: Array = state["heroes"]
 		var mods := StatCalc.party_mods(state)
-		print("t=%4.1fh floor %4d max %4d | party %d lvl %d | gold %.0f | train %d | falls %d | power %.0f" % [
-			(half_hour + 1) * 0.5, state["floor"], state["max_floor"], h.size(), h[0]["level"],
+		print("t=%4dm floor %4d max %4d | party %d lvl %d | gold %.0f | train %d | falls %d | power %.0f" % [
+			minute, state["floor"], state["max_floor"], h.size(), h[0]["level"],
 			state["gold"], state["training"]["attack"], state["stats"]["fall_backs"],
 			StatCalc.power_rating(StatCalc.hero_stats(state, h[0], mods))])
 	print("souls available: %d  (%d ms)" % [Progression.souls_for_ascension(state), Time.get_ticks_msec() - t0])

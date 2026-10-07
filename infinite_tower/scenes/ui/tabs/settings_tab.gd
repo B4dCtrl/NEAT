@@ -4,6 +4,7 @@ extends MarginContainer
 const SaveSystem = preload("res://core/save_system.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
 const Accounts = preload("res://core/accounts.gd")
+const PlatformServices = preload("res://core/platform_services.gd")
 const Loc = preload("res://core/loc.gd")
 
 ## Single-column layout for the narrow menu panel.
@@ -92,6 +93,8 @@ func _ready() -> void:
 	logout.focus_mode = Control.FOCUS_NONE
 	logout.tooltip_text = "Saves and returns to the login screen (another player can sign in)"
 	logout.pressed.connect(func(): Game.logout())
+	# On Steam the Steam login is the account: there is nothing to log out of.
+	logout.visible = PlatformServices.steam_user().is_empty()
 	grid.add_child(logout)
 
 	_section(grid, "Save")

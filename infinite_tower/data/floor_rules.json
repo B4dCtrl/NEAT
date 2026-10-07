@@ -203,6 +203,8 @@
 	"balance": {
 		"tick": 0.1,
 		"travel_time": 22.0,
+		"travel_time_start": 6.0,
+		"travel_ramp_floors": 60,
 		"boss_intro_time": 1.6,
 		"event_pause": 1.2,
 		"chest_pause": 1.6,

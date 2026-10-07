@@ -123,6 +123,9 @@ func _ready() -> void:
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_note = note
 	col.add_child(note)
+	var ver := Ornate.small_label("v" + str(ProjectSettings.get_setting("application/config/version", "")), Ornate.TEXT_DIM, 11)
+	ver.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(ver)
 	_set_creating(Accounts.last_user() == "")
 
 

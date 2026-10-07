@@ -28,6 +28,23 @@ static func is_available() -> bool:
 	return _steam != null
 
 
+## Set by tests to pretend a Steam user is logged in.
+static var _fake_user := {}
+
+
+## The Steam account running the game: {id, name}, or {} outside Steam.
+## On Steam this replaces the local login screen: the Steam login is the identity.
+static func steam_user() -> Dictionary:
+	if not _fake_user.is_empty():
+		return _fake_user
+	if _steam == null:
+		return {}
+	var id := str(_steam.call("getSteamID"))
+	if id == "" or id == "0":
+		return {}
+	return {"id": id, "name": str(_steam.call("getPersonaName"))}
+
+
 # ------------------------------------------------------------------ Steam Inventory / Market
 # Items flagged as tradable (Legendary+ gear, relics) are mirrored as Steam
 # Inventory item definitions (see tools/export_steam_itemdefs.gd), which is what

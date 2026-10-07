@@ -107,7 +107,7 @@ static func register(user: String, password: String) -> String:
 ## True when the password matches.
 static func verify(user: String, password: String) -> bool:
 	var rec: Dictionary = _load()["users"].get(normalize(user), {})
-	if rec.is_empty():
+	if rec.is_empty() or rec.has("external"):
 		return false
 	return _derive(password, rec["salt"]) == rec["hash"]
 
@@ -158,6 +158,38 @@ static func remembered() -> Dictionary:
 	if r.has("user") and r.has("key") and exists(r["user"]):
 		return r
 	return {}
+
+
+# ------------------------------------------------------------------ external (Steam)
+
+## Identity handed over by a store (Steam). No password: the store already
+## logged the player in. The registry key starts with "@", which a typed
+## account name can never contain, so a local account cannot impersonate it.
+static func external_key(provider: String, ext_id: String) -> String:
+	return "@%s:%s" % [provider, ext_id]
+
+
+## Creates the external account on first use. Returns its registry key.
+static func external_login(provider: String, ext_id: String, display: String) -> String:
+	var reg := _load()
+	var key := external_key(provider, ext_id)
+	if not reg["users"].has(key):
+		DirAccess.make_dir_recursive_absolute(SAVE_DIR)
+		reg["users"][key] = {
+			"display": display, "external": provider,
+			"file": "%s/%s_%s.dat" % [SAVE_DIR, provider, ext_id],
+			"created": int(Time.get_unix_time_from_system()),
+		}
+	else:
+		reg["users"][key]["display"] = display
+	_store(reg)
+	return key
+
+
+## The same Steam account gets the same save key on every PC (Steam Cloud
+## carries the save file), so the key derives from the id alone.
+static func external_save_key(provider: String, ext_id: String) -> String:
+	return _derive("%s:%s" % [provider, ext_id], "stairborn-external-v1", 64)
 
 
 ## Deletes an account and its save (used by tests and "delete account").
