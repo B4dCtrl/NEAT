@@ -52,11 +52,13 @@ func _ready() -> void:
 	_money = Label.new()
 	_money.add_theme_color_override("font_color", Ornate.ACCENT)
 	_money.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_money.clip_text = true
+	_money.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_money.custom_minimum_size = Vector2(120, 0)
 	money_row.add_child(_money)
 	var share := Button.new()
 	share.text = Loc.t("Share")
 	share.focus_mode = Control.FOCUS_NONE
+	share.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	share.tooltip_text = Loc.t("Save a picture of your party and records (Pictures/Stairborn) to show off.")
 	share.pressed.connect(func(): Game.share_climb())
 	money_row.add_child(share)
@@ -229,7 +231,11 @@ func _rebuild_extra() -> void:
 				Game.equip_relic(relic_id))
 		flow.add_child(b)
 	if not any:
-		flow.add_child(Ornate.small_label(Loc.t("No gems yet: bosses and vaults may drop them.")))
+		var none := Ornate.small_label(Loc.t("No gems yet: bosses and vaults may drop them."))
+		none.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		none.custom_minimum_size = Vector2(200, 0)
+		none.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		flow.add_child(none)
 
 
 # ------------------------------------------------------------------ bonfire

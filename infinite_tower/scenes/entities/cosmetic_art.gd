@@ -78,12 +78,16 @@ static func _aura_icon(style: String, col: Color) -> Texture2D:
 ## Draws an aura at a hero's feet. `t` is the stage time, `px` the art pixel size.
 static func draw_aura(ci: CanvasItem, feet: Vector2, px: float, style: String, col: Color, t: float, seed_i: int) -> void:
 	var glow := col
-	glow.a = 0.22 + 0.08 * sin(t * 3.0 + seed_i)
-	var w := 9.0 * px
+	glow.a = 0.32 + 0.1 * sin(t * 3.0 + seed_i)
+	var w := 11.0 * px
 	ci.draw_set_transform(feet, 0.0, Vector2(1.0, 0.35))
 	ci.draw_circle(Vector2.ZERO, w, glow)
+	var rim := col
+	rim.a = 0.7
+	ci.draw_arc(Vector2.ZERO, w, 0, TAU, 24, rim, maxf(1.0, px))
 	ci.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	var s := px
+	# Particles are a bit bigger than one art pixel so they read on the taskbar.
+	var s := maxf(2.0, px * 1.5)
 	match style:
 		"halo":
 			var top := feet + Vector2(0, -26.0 * px)
@@ -107,10 +111,16 @@ static func draw_aura(ci: CanvasItem, feet: Vector2, px: float, style: String, c
 					x = nx
 					y += 4.0 * px
 		"rainbow":
-			for i in 6:
-				var c := Color.from_hsv(fposmod(t * 0.3 + i / 6.0, 1.0), 0.75, 1.0)
-				var ph := fmod(t * 0.8 + i / 6.0, 1.0)
-				ci.draw_rect(Rect2(feet + Vector2((i - 2.5) * 2.5 * px, -ph * 16.0 * px), Vector2(s, s)), c)
+			ci.draw_set_transform(feet, 0.0, Vector2(1.0, 0.35))
+			for k in 12:
+				var a0 := k * TAU / 12.0 + t * 1.5
+				ci.draw_arc(Vector2.ZERO, w, a0, a0 + TAU / 12.0, 4, Color.from_hsv(fposmod(k / 12.0 + t * 0.2, 1.0), 0.8, 1.0), maxf(2.0, px * 1.5))
+			ci.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			for i in 8:
+				var c := Color.from_hsv(fposmod(t * 0.3 + i / 8.0, 1.0), 0.75, 1.0)
+				var ph := fmod(t * 0.8 + i / 8.0, 1.0)
+				c.a = 1.0 - ph * 0.6
+				ci.draw_rect(Rect2(feet + Vector2((i - 3.5) * 3.2 * px, -ph * 22.0 * px), Vector2(s, s)), c)
 		"embers":
 			_particles(ci, feet, px, col, t, seed_i, 6, -1.0)
 		"snow", "leaves", "dust":
@@ -138,4 +148,4 @@ static func _particles(ci: CanvasItem, feet: Vector2, px: float, col: Color, t: 
 		y *= absf(dir) if absf(dir) < 1.0 else 1.0
 		var c := col
 		c.a = 1.0 - ph * 0.8
-		ci.draw_rect(Rect2(feet + Vector2(x, y), Vector2(px, px)), c)
+		ci.draw_rect(Rect2(feet + Vector2(x, y), Vector2.ONE * maxf(2.0, px * 1.5)), c)

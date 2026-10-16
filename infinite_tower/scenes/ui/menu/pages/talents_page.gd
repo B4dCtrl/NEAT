@@ -76,7 +76,10 @@ func _ready() -> void:
 	_tree.draw.connect(_draw_links)
 	_tree.resized.connect(_place)
 	frame.add_child(_tree)
-	add_child(Ornate.small_label(Loc.t("★ = active skill, cast automatically (uses mana)"), Ornate.TEXT_DIM, 11))
+	var legend := Ornate.small_label(Loc.t("★ = active skill, cast automatically (uses mana)"), Ornate.TEXT_DIM, 11)
+	legend.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	legend.custom_minimum_size = Vector2(200, 0)
+	add_child(legend)
 	Game.state_changed.connect(func(): _dirty = true)
 	Game.party_changed.connect(func(): _picker.rebuild(); _dirty = true)
 
