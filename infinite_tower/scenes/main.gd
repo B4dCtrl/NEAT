@@ -6,7 +6,7 @@ extends Control
 const ThemeBuilder = preload("res://scenes/ui/theme_builder.gd")
 const NameView = preload("res://scenes/ui/name_view.gd")
 const TooltipLayer = preload("res://scenes/ui/tooltip_layer.gd")
-const ComicIntro = preload("res://scenes/ui/comic_intro.gd")
+const MangaReader = preload("res://scenes/ui/manga_reader.gd")
 const TutorialView = preload("res://scenes/ui/tutorial_view.gd")
 const StoryText = preload("res://scenes/ui/story_text.gd")
 const LoginView = preload("res://scenes/ui/login_view.gd")
@@ -24,7 +24,7 @@ var _debug_speed_idx := 0
 var _comic: Control
 var _tutorial: Control
 var _name_view: Control
-var _story_stage := ""           # "login" | "intro" | "tutorial" while the story window is up
+var _story_stage := ""           # "login" | "intro" | "name" | "tutorial" | "manga" | "manga:<id>" while the story window is up
 var _login: Control
 var _tray: Node = null
 var _tray_menu: PopupMenu
@@ -34,7 +34,7 @@ func _ready() -> void:
 	theme = ThemeBuilder.build()
 	get_tree().auto_accept_quit = false
 	add_child(TooltipLayer.new())
-	_comic = ComicIntro.new()
+	_comic = MangaReader.new()
 	_comic.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_comic.visible = false
 	_comic.finished.connect(_on_intro_done)
@@ -108,7 +108,15 @@ func _on_story_requested(what: String) -> void:
 		WindowManager.set_mode("story")
 
 
-func _on_intro_done() -> void:
+func _on_intro_done(chapter_id: String = "") -> void:
+	if _story_stage != "intro":
+		# Reading from the manga list: back to the list after a chapter, or out.
+		if chapter_id != "":
+			_story_stage = "manga"
+			_comic.start("")
+		else:
+			_end_story()
+		return
 	Game.state["intro_seen"] = true
 	_story_stage = _next_story_stage()
 	if _story_stage == "":
@@ -140,7 +148,7 @@ func _on_mode_changed(mode: String) -> void:
 	var story := mode == "story"
 	taskbar_view.visible = mode == "taskbar"
 	expedition_view.visible = mode == "expedition"
-	_comic.visible = story and _story_stage == "intro"
+	_comic.visible = story and (_story_stage == "intro" or _story_stage.begins_with("manga"))
 	_name_view.visible = story and _story_stage == "name"
 	if _name_view.visible:
 		_name_view.start()
@@ -149,7 +157,7 @@ func _on_mode_changed(mode: String) -> void:
 	if _login.visible:
 		_login.start()
 	if _comic.visible:
-		_comic.start()
+		_comic.start("c1" if _story_stage == "intro" else _story_stage.get_slice(":", 1))
 	if _tutorial.visible:
 		_tutorial.start()
 	if story and _story_stage == "":

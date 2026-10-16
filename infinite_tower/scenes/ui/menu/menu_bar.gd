@@ -21,6 +21,7 @@ const BUTTONS := [
 	["inventory", "bag", "menu.inventory"],
 	["quests", "star", "menu.quests"],
 	["collection", "gift", "menu.collection"],
+	["manga", "manga", "menu.manga"],
 	["souls", "skull", "menu.souls"],
 	["settings", "gear", "menu.settings"],
 	["expedition", "expand", "menu.expedition"],
@@ -72,6 +73,8 @@ func _gui_input(event: InputEvent) -> void:
 				expand_requested.emit()
 			elif id == "close":
 				close_requested.emit()
+			elif id == "manga":
+				Game.story_requested.emit("manga")
 			elif id == "quit":
 				Game.save()
 				get_tree().quit()

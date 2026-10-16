@@ -18,6 +18,7 @@ const FILES := {
 	"platform": "res://data/platform.json",
 	"quests": "res://data/quests.json",
 	"cosmetics": "res://data/cosmetics.json",
+	"story": "res://data/story.json",
 }
 
 static var _cache: Dictionary = {}

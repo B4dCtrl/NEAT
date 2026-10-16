@@ -35,7 +35,7 @@ def walk(node, where):
         for v in node:
             walk(v, where)
 
-for f in ["classes", "enemies", "items", "floor_rules", "ascension_tree", "skill_tree", "quests"]:
+for f in ["classes", "enemies", "items", "floor_rules", "ascension_tree", "skill_tree", "quests", "cosmetics"]:
     d = json.load(open(ROOT / "data" / f"{f}.json"))
     if f == "items":
         for s in d["sets"].values():          # bonus texts are composed at runtime

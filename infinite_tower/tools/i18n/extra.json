@@ -126,5 +126,357 @@
  "Keep climbing": [
   "Continuar subindo",
   "Seguir subiendo"
+ ],
+ "CAUGHT!": [
+  "PEGOU!",
+  "¡ATRAPADO!"
+ ],
+ "%s's climb": [
+  "A subida de %s",
+  "La subida de %s"
+ ],
+ "Best floor: %d": [
+  "Melhor andar: %d",
+  "Mejor piso: %d"
+ ],
+ "Difficulty: %s": [
+  "Dificuldade: %s",
+  "Dificultad: %s"
+ ],
+ "Looks collected: %d/%d": [
+  "Visuais coletados: %d/%d",
+  "Aspectos reunidos: %d/%d"
+ ],
+ "Lv %d · Power %s": [
+  "Nv %d · Poder %s",
+  "Nv %d · Poder %s"
+ ],
+ "Rarest look: %s": [
+  "Visual mais raro: %s",
+  "Aspecto más raro: %s"
+ ],
+ "Climb with me: Stairborn on Steam": [
+  "Suba comigo: Stairborn na Steam",
+  "Sube conmigo: Stairborn en Steam"
+ ],
+ "Tradeable on Steam: every look (tower skins, pets, auras), Lord's Sigils and never-equipped Legendary gear. Mythic gear and gems stay bound to you.": [
+  "Negociável na Steam: todos os visuais (skins de torre, pets, auras), Selos do Senhor e itens Lendários nunca equipados. Itens Míticos e gemas ficam presos à sua conta.",
+  "Comerciable en Steam: todos los aspectos (torres, mascotas, auras), Sellos del Señor y equipo Legendario nunca equipado. El equipo Mítico y las gemas quedan ligados a tu cuenta."
+ ],
+ "Open": [
+  "Abrir",
+  "Abrir"
+ ],
+ "Select a look to equip it, break a duplicate or craft it.": [
+  "Selecione um visual para equipar, quebrar uma duplicata ou fabricar.",
+  "Selecciona un aspecto para equiparlo, romper un duplicado o fabricarlo."
+ ],
+ "Break duplicate": [
+  "Quebrar duplicata",
+  "Romper duplicado"
+ ],
+ "Craft": [
+  "Fabricar",
+  "Fabricar"
+ ],
+ "Looks never change stats. Every look is a Steam item: once Stairborn is on Steam they can be traded on the Community Market.": [
+  "Visuais nunca mudam atributos. Todo visual é um item da Steam: quando o Stairborn estiver na Steam, poderão ser negociados no Mercado da Comunidade.",
+  "Los aspectos nunca cambian atributos. Cada aspecto es un objeto de Steam: cuando Stairborn esté en Steam, podrán comerciarse en el Mercado de la Comunidad."
+ ],
+ "Weekly limit reached (%d/%d). New caches next week.": [
+  "Limite semanal atingido (%d/%d). Novos baús na próxima semana.",
+  "Límite semanal alcanzado (%d/%d). Nuevos cofres la próxima semana."
+ ],
+ "Next cache in %s of play (%d/%d this week).": [
+  "Próximo baú em %s de jogo (%d/%d nesta semana).",
+  "Próximo cofre en %s de juego (%d/%d esta semana)."
+ ],
+ "Climber's Caches: %d": [
+  "Baús do Escalador: %d",
+  "Cofres del Escalador: %d"
+ ],
+ "Stardust %d   ·   Collection %d/%d": [
+  "Poeira Estelar %d   ·   Coleção %d/%d",
+  "Polvo Estelar %d   ·   Colección %d/%d"
+ ],
+ "Owned: %d": [
+  "Você tem: %d",
+  "Tienes: %d"
+ ],
+ "Not found yet": [
+  "Ainda não encontrado",
+  "Aún no encontrado"
+ ],
+ "Break a duplicate: +%d Stardust": [
+  "Quebrar uma duplicata: +%d de Poeira Estelar",
+  "Romper un duplicado: +%d de Polvo Estelar"
+ ],
+ "Craft: %d Stardust": [
+  "Fabricar: %d de Poeira Estelar",
+  "Fabricar: %d de Polvo Estelar"
+ ],
+ "Legendary looks cannot be crafted: only caches drop them.": [
+  "Visuais lendários não podem ser fabricados: só caem dos baús.",
+  "Los aspectos legendarios no se pueden fabricar: solo salen de los cofres."
+ ],
+ "Share": [
+  "Compartilhar",
+  "Compartir"
+ ],
+ "Save a picture of your party and records (Pictures/Stairborn) to show off.": [
+  "Salva uma imagem do seu grupo e recordes (Imagens/Stairborn) para mostrar por aí.",
+  "Guarda una imagen de tu grupo y récords (Imágenes/Stairborn) para presumir."
+ ],
+ "Difficulty": [
+  "Dificuldade",
+  "Dificultad"
+ ],
+ "Next: %s — reach floor %d on %s.": [
+  "Próximo: %s — chegue ao andar %d no %s.",
+  "Siguiente: %s — llega al piso %d en %s."
+ ],
+ "Lord's Sigils: %d%s": [
+  "Selos do Senhor: %d%s",
+  "Sellos del Señor: %d%s"
+ ],
+ " (armed)": [
+  " (armado)",
+  " (armado)"
+ ],
+ "A Climber's Cache arrived! Open it in the Collection.": [
+  "Chegou um Baú do Escalador! Abra na Coleção.",
+  "¡Llegó un Cofre del Escalador! Ábrelo en la Colección."
+ ],
+ "%s unlocked!": [
+  "%s desbloqueado!",
+  "¡%s desbloqueado!"
+ ],
+ "Lord's Sigil broken: sealed chest!": [
+  "Selo do Senhor quebrado: baú selado!",
+  "Sello del Señor roto: ¡cofre sellado!"
+ ],
+ "Could not save the picture": [
+  "Não foi possível salvar a imagem",
+  "No se pudo guardar la imagen"
+ ],
+ "Picture saved in Pictures/Stairborn": [
+  "Imagem salva em Imagens/Stairborn",
+  "Imagen guardada en Imágenes/Stairborn"
+ ],
+ "The Treasure Imp escaped...": [
+  "O Diabrete do Tesouro fugiu...",
+  "El Diablillo del Tesoro escapó..."
+ ],
+ "A Treasure Imp appeared! Click it before it runs!": [
+  "Apareceu um Diabrete do Tesouro! Clique nele antes que fuja!",
+  "¡Apareció un Diablillo del Tesoro! ¡Haz clic antes de que huya!"
+ ],
+ "Caught the Treasure Imp: a Climber's Cache!": [
+  "Pegou o Diabrete do Tesouro: um Baú do Escalador!",
+  "Atrapaste al Diablillo del Tesoro: ¡un Cofre del Escalador!"
+ ],
+ "Caught the Treasure Imp: +%d crystals!": [
+  "Pegou o Diabrete do Tesouro: +%d cristais!",
+  "Atrapaste al Diablillo del Tesoro: ¡+%d cristales!"
+ ],
+ "Caught the Treasure Imp: +%s gold!": [
+  "Pegou o Diabrete do Tesouro: +%s de ouro!",
+  "Atrapaste al Diablillo del Tesoro: ¡+%s de oro!"
+ ],
+ "New look: %s [%s]": [
+  "Novo visual: %s [%s]",
+  "Nuevo aspecto: %s [%s]"
+ ],
+ "Cache: %s [%s]": [
+  "Baú: %s [%s]",
+  "Cofre: %s [%s]"
+ ],
+ "Crafted: %s": [
+  "Fabricado: %s",
+  "Fabricado: %s"
+ ],
+ "Sigil armed: the next guardian you defeat opens a sealed chest.": [
+  "Selo armado: o próximo guardião que você derrotar abre um baú selado.",
+  "Sello armado: el próximo guardián que derrotes abre un cofre sellado."
+ ],
+ "Sigil put away.": [
+  "Selo guardado.",
+  "Sello guardado."
+ ],
+ "Normal": [
+  "Normal",
+  "Normal"
+ ],
+ "Torment %s": [
+  "Tormento %s",
+  "Tormento %s"
+ ],
+ "The tower as it is.": [
+  "A torre como ela é.",
+  "La torre tal como es."
+ ],
+ "Monsters: x%.1f HP, x%.1f damage. Rewards: +%d%% gold, +%d%% XP, +%d%% drops, Lord's Sigils.": [
+  "Monstros: x%.1f de HP, x%.1f de dano. Recompensas: +%d%% de ouro, +%d%% de XP, +%d%% de drops, Selos do Senhor.",
+  "Monstruos: x%.1f de PV, x%.1f de daño. Recompensas: +%d%% de oro, +%d%% de XP, +%d%% de botín, Sellos del Señor."
+ ],
+ "reach floor %d": [
+  "chegar ao andar %d",
+  "llegues al piso %d"
+ ],
+ "play %d hours (%.1f so far)": [
+  "jogar %d horas (%.1f até agora)",
+  "juegues %d horas (%.1f hasta ahora)"
+ ],
+ "Trading opens when you %s.": [
+  "As trocas abrem quando você %s.",
+  "El comercio se abre cuando %s."
+ ],
+ " and ": [
+  " e ",
+  " y "
+ ],
+ "Tradeable on Steam (while never equipped)": [
+  "Negociável na Steam (enquanto nunca for equipado)",
+  "Comerciable en Steam (mientras nunca se equipe)"
+ ],
+ "Not tradeable (only Legendary gear trades)": [
+  "Não negociável (só itens Lendários são negociáveis)",
+  "No comerciable (solo se comercia equipo Legendario)"
+ ],
+ "Lord's Sigil": [
+  "Selo do Senhor",
+  "Sello del Señor"
+ ],
+ "Use to arm it: the next guardian you DEFEAT opens a sealed chest (+2 items, one rarity higher, more gems and crystals). Losing the fight keeps the sigil. Drops from guardians on Torment.": [
+  "Use para armá-lo: o próximo guardião que você DERROTAR abre um baú selado (+2 itens, uma raridade acima, mais gemas e cristais). Perder a luta mantém o selo. Cai de guardiões no Tormento.",
+  "Úsalo para armarlo: el próximo guardián que DERROTES abre un cofre sellado (+2 objetos, una rareza más, más gemas y cristales). Perder la pelea conserva el sello. Lo sueltan los guardianes en Tormento."
+ ],
+ "Tower skins": [
+  "Skins de torre",
+  "Aspectos de torre"
+ ],
+ "Pets": [
+  "Pets",
+  "Mascotas"
+ ],
+ "Auras": [
+  "Auras",
+  "Auras"
+ ],
+ "Founders of the Climb": [
+  "Fundadores da Subida",
+  "Fundadores de la Subida"
+ ],
+ "Sandstone Spire": [
+  "Torre de Arenito",
+  "Torre de Arenisca"
+ ],
+ "Overgrown Spire": [
+  "Torre Coberta de Mato",
+  "Torre Cubierta de Maleza"
+ ],
+ "Obsidian Spire": [
+  "Torre de Obsidiana",
+  "Torre de Obsidiana"
+ ],
+ "Frostbitten Spire": [
+  "Torre Congelada",
+  "Torre Congelada"
+ ],
+ "Coral Spire": [
+  "Torre de Coral",
+  "Torre de Coral"
+ ],
+ "Ember Spire": [
+  "Torre de Brasas",
+  "Torre de Brasas"
+ ],
+ "Celestial Spire": [
+  "Torre Celestial",
+  "Torre Celestial"
+ ],
+ "Gilded Spire": [
+  "Torre Dourada",
+  "Torre Dorada"
+ ],
+ "Slimelet": [
+  "Gosminha",
+  "Limito"
+ ],
+ "Batling": [
+  "Morceguinho",
+  "Murcieguito"
+ ],
+ "Sporelet": [
+  "Esporinho",
+  "Esporita"
+ ],
+ "Pocket Wisp": [
+  "Fogo-Fátuo de Bolso",
+  "Fuego Fatuo de Bolsillo"
+ ],
+ "Emberkit": [
+  "Brasinha",
+  "Brasita"
+ ],
+ "Rockpup": [
+  "Pedrinho",
+  "Piedrito"
+ ],
+ "Little Gazer": [
+  "Olhadorzinho",
+  "Contemplador Pequeño"
+ ],
+ "Voidling": [
+  "Vaziozinho",
+  "Vaciito"
+ ],
+ "Prismlet": [
+  "Prisminha",
+  "Prismito"
+ ],
+ "Golden Imp": [
+  "Diabrete Dourado",
+  "Diablillo Dorado"
+ ],
+ "Trail of Dust": [
+  "Rastro de Poeira",
+  "Estela de Polvo"
+ ],
+ "Falling Leaves": [
+  "Folhas ao Vento",
+  "Hojas al Viento"
+ ],
+ "Sparkstep": [
+  "Passo Faiscante",
+  "Paso Chispeante"
+ ],
+ "Frostfall": [
+  "Queda de Neve",
+  "Nevada"
+ ],
+ "Emberwake": [
+  "Rastro de Brasas",
+  "Estela de Brasas"
+ ],
+ "Heartbeat": [
+  "Batida do Coração",
+  "Latido"
+ ],
+ "Void Orbit": [
+  "Órbita do Vazio",
+  "Órbita del Vacío"
+ ],
+ "Stormcrown": [
+  "Coroa da Tempestade",
+  "Corona de Tormenta"
+ ],
+ "Prismatic Wake": [
+  "Rastro Prismático",
+  "Estela Prismática"
+ ],
+ "Saint's Halo": [
+  "Auréola do Santo",
+  "Aureola del Santo"
  ]
 }

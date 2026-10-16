@@ -61,7 +61,7 @@ func _ready() -> void:
 	var intro := Button.new()
 	intro.text = StoryText.ui("replay_intro")
 	intro.focus_mode = Control.FOCUS_NONE
-	intro.pressed.connect(func(): Game.story_requested.emit("intro"))
+	intro.pressed.connect(func(): Game.story_requested.emit("manga"))
 	grid.add_child(intro)
 	var guide := Button.new()
 	guide.text = StoryText.ui("how_to_play")

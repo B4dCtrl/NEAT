@@ -1,0 +1,873 @@
+{
+	"_comment": "Manga chapters. unlock: start | floor N (first time reached) | torment N. Each page is a list of panels: scene (drawn in scenes/ui/manga_panel.gd), rect in page fractions, caption/bubbles/sfx (text = language key under manga.*; {hero} = your Stairborn's name). Bubble at/tail are fractions of the panel; style: talk | shout | whisper.",
+	"chapters": [
+		{
+			"id": "c1",
+			"unlock": {
+				"type": "start"
+			},
+			"title": "manga.c1.title",
+			"pages": [
+				[
+					{
+						"scene": "tower_withered",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.54
+						],
+						"caption": "manga.c1.p1"
+					},
+					{
+						"scene": "elder_kids",
+						"rect": [
+							0.0,
+							0.56,
+							0.56,
+							0.44
+						],
+						"bubbles": [
+							{
+								"text": "manga.c1.p2a",
+								"at": [
+									0.36,
+									0.2
+								],
+								"tail": [
+									0.22,
+									0.55
+								],
+								"w": 0.66
+							},
+							{
+								"text": "manga.c1.p2b",
+								"at": [
+									0.72,
+									0.5
+								],
+								"tail": [
+									0.72,
+									0.78
+								],
+								"w": 0.5
+							}
+						]
+					},
+					{
+						"scene": "helmet_falls",
+						"rect": [
+							0.58,
+							0.56,
+							0.42,
+							0.44
+						],
+						"lines": "speed",
+						"caption": "manga.c1.p3",
+						"caption_bottom": true,
+						"sfx": [
+							{
+								"text": "manga.sfx.klang",
+								"at": [
+									0.62,
+									0.32
+								],
+								"size": 0.2,
+								"rot": -0.25
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "storm_return",
+						"rect": [
+							0.0,
+							0.0,
+							0.48,
+							1.0
+						],
+						"lines": "rain",
+						"caption": "manga.c1.p4",
+						"bubbles": [
+							{
+								"text": "manga.c1.p4a",
+								"at": [
+									0.5,
+									0.55
+								],
+								"tail": [
+									0.42,
+									0.72
+								],
+								"w": 0.8,
+								"style": "whisper"
+							}
+						]
+					},
+					{
+						"scene": "eyes_mother",
+						"rect": [
+							0.5,
+							0.0,
+							0.5,
+							0.42
+						],
+						"bubbles": [
+							{
+								"text": "manga.c1.p5a",
+								"at": [
+									0.5,
+									0.78
+								],
+								"tail": [
+									0.5,
+									0.5
+								],
+								"w": 0.9,
+								"style": "whisper"
+							}
+						]
+					},
+					{
+						"scene": "birth_bonfire",
+						"rect": [
+							0.5,
+							0.44,
+							0.5,
+							0.56
+						],
+						"caption": "manga.c1.p6",
+						"bubbles": [
+							{
+								"text": "manga.c1.p6a",
+								"at": [
+									0.6,
+									0.62
+								],
+								"tail": [
+									0.3,
+									0.82
+								],
+								"w": 0.74,
+								"style": "whisper"
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "elder_baby",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.48
+						],
+						"bubbles": [
+							{
+								"text": "manga.c1.p7a",
+								"at": [
+									0.3,
+									0.3
+								],
+								"tail": [
+									0.5,
+									0.6
+								],
+								"w": 0.4
+							}
+						]
+					},
+					{
+						"scene": "grown_hero",
+						"rect": [
+							0.0,
+							0.5,
+							0.58,
+							0.5
+						],
+						"lines": "focus",
+						"caption": "manga.c1.p8",
+						"bubbles": [
+							{
+								"text": "manga.c1.p8a",
+								"at": [
+									0.75,
+									0.28
+								],
+								"tail": [
+									1.05,
+									0.2
+								],
+								"w": 0.45
+							},
+							{
+								"text": "manga.c1.p8b",
+								"at": [
+									0.33,
+									0.78
+								],
+								"tail": [
+									0.5,
+									0.6
+								],
+								"w": 0.6,
+								"style": "shout"
+							}
+						]
+					},
+					{
+						"scene": "gilt_peek",
+						"rect": [
+							0.6,
+							0.5,
+							0.4,
+							0.5
+						],
+						"caption": "manga.c1.p9",
+						"caption_bottom": true,
+						"bubbles": [
+							{
+								"text": "manga.c1.p9a",
+								"at": [
+									0.5,
+									0.22
+								],
+								"tail": [
+									0.62,
+									0.5
+								],
+								"w": 0.9
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "title_splash",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							1.0
+						],
+						"title": "manga.c1.title",
+						"caption": "manga.c1.p10",
+						"caption_bottom": true
+					}
+				]
+			]
+		},
+		{
+			"id": "c2",
+			"unlock": {
+				"type": "floor",
+				"value": 11
+			},
+			"title": "manga.c2.title",
+			"pages": [
+				[
+					{
+						"scene": "guardian_hit",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.5
+						],
+						"lines": "speed",
+						"sfx": [
+							{
+								"text": "manga.sfx.graah",
+								"at": [
+									0.7,
+									0.3
+								],
+								"size": 0.22,
+								"rot": 0.12
+							}
+						]
+					},
+					{
+						"scene": "fall_tumble",
+						"rect": [
+							0.0,
+							0.52,
+							0.5,
+							0.48
+						],
+						"caption": "manga.c2.p2",
+						"sfx": [
+							{
+								"text": "manga.sfx.thud",
+								"at": [
+									0.6,
+									0.75
+								],
+								"size": 0.2,
+								"rot": -0.1
+							}
+						]
+					},
+					{
+						"scene": "bonfire_eyes",
+						"rect": [
+							0.52,
+							0.52,
+							0.48,
+							0.48
+						],
+						"bubbles": [
+							{
+								"text": "manga.c2.p3a",
+								"at": [
+									0.5,
+									0.2
+								],
+								"tail": [
+									0.5,
+									0.55
+								],
+								"w": 0.85
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "hero_at_fire",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.4
+						],
+						"bubbles": [
+							{
+								"text": "manga.c2.p4a",
+								"at": [
+									0.2,
+									0.25
+								],
+								"tail": [
+									0.3,
+									0.6
+								],
+								"w": 0.3
+							},
+							{
+								"text": "manga.c2.p4b",
+								"at": [
+									0.7,
+									0.28
+								],
+								"tail": [
+									0.62,
+									0.62
+								],
+								"w": 0.5
+							}
+						]
+					},
+					{
+						"scene": "ash_echo",
+						"rect": [
+							0.0,
+							0.42,
+							0.5,
+							0.58
+						],
+						"caption": "manga.c2.p5",
+						"caption_bottom": true,
+						"bubbles": [
+							{
+								"text": "manga.c2.p5a",
+								"at": [
+									0.5,
+									0.2
+								],
+								"tail": [
+									0.5,
+									0.45
+								],
+								"w": 0.9
+							}
+						]
+					},
+					{
+						"scene": "armor_rain",
+						"rect": [
+							0.52,
+							0.42,
+							0.48,
+							0.58
+						],
+						"lines": "speed",
+						"caption": "manga.c2.p6",
+						"caption_bottom": true,
+						"bubbles": [
+							{
+								"text": "manga.c2.p6a",
+								"at": [
+									0.5,
+									0.2
+								],
+								"tail": [
+									0.3,
+									0.45
+								],
+								"w": 0.9
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "party_climbs",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							1.0
+						],
+						"title": "manga.c2.title",
+						"caption": "manga.c2.p7",
+						"caption_bottom": true
+					}
+				]
+			]
+		},
+		{
+			"id": "c3",
+			"unlock": {
+				"type": "floor",
+				"value": 50
+			},
+			"title": "manga.c3.title",
+			"pages": [
+				[
+					{
+						"scene": "guardian_falls",
+						"rect": [
+							0.0,
+							0.0,
+							0.55,
+							0.55
+						],
+						"lines": "speed",
+						"sfx": [
+							{
+								"text": "manga.sfx.krak",
+								"at": [
+									0.65,
+									0.25
+								],
+								"size": 0.22,
+								"rot": -0.2
+							}
+						]
+					},
+					{
+						"scene": "guardian_eyes",
+						"rect": [
+							0.57,
+							0.0,
+							0.43,
+							0.55
+						],
+						"bubbles": [
+							{
+								"text": "manga.c3.p2a",
+								"at": [
+									0.5,
+									0.8
+								],
+								"tail": [
+									0.5,
+									0.5
+								],
+								"w": 0.9,
+								"style": "whisper"
+							}
+						]
+					},
+					{
+						"scene": "hero_shock",
+						"rect": [
+							0.0,
+							0.57,
+							1.0,
+							0.43
+						],
+						"lines": "focus",
+						"caption": "manga.c3.p3",
+						"bubbles": [
+							{
+								"text": "manga.c3.p3a",
+								"at": [
+									0.75,
+									0.45
+								],
+								"tail": [
+									0.55,
+									0.6
+								],
+								"w": 0.12,
+								"style": "shout"
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "guardian_armor",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.46
+						],
+						"caption": "manga.c3.p6"
+					},
+					{
+						"scene": "pendant_close",
+						"rect": [
+							0.0,
+							0.48,
+							0.5,
+							0.52
+						],
+						"bubbles": [
+							{
+								"text": "manga.c3.p6a",
+								"at": [
+									0.5,
+									0.2
+								],
+								"tail": [
+									0.5,
+									0.45
+								],
+								"w": 0.9,
+								"style": "whisper"
+							}
+						]
+					},
+					{
+						"scene": "hero_tears",
+						"rect": [
+							0.52,
+							0.48,
+							0.48,
+							0.52
+						],
+						"lines": "focus",
+						"bubbles": [
+							{
+								"text": "manga.c3.p7a",
+								"at": [
+									0.5,
+									0.18
+								],
+								"tail": [
+									0.55,
+									0.4
+								],
+								"w": 0.8
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "souls_rise",
+						"rect": [
+							0.0,
+							0.0,
+							0.5,
+							1.0
+						],
+						"bubbles": [
+							{
+								"text": "manga.c3.p4a",
+								"at": [
+									0.5,
+									0.18
+								],
+								"tail": [
+									0.5,
+									0.4
+								],
+								"w": 0.9
+							}
+						]
+					},
+					{
+						"scene": "first_step_souls",
+						"rect": [
+							0.52,
+							0.0,
+							0.48,
+							1.0
+						],
+						"title": "manga.c3.title",
+						"caption": "manga.c3.p5",
+						"caption_bottom": true
+					}
+				]
+			]
+		},
+		{
+			"id": "c4",
+			"unlock": {
+				"type": "torment",
+				"value": 1
+			},
+			"title": "manga.c4.title",
+			"pages": [
+				[
+					{
+						"scene": "nightmare_tower",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.5
+						],
+						"caption": "manga.c4.p1",
+						"sfx": [
+							{
+								"text": "manga.sfx.doom",
+								"at": [
+									0.72,
+									0.62
+								],
+								"size": 0.2,
+								"rot": 0.1
+							}
+						]
+					},
+					{
+						"scene": "lord_sigil",
+						"rect": [
+							0.0,
+							0.52,
+							0.5,
+							0.48
+						],
+						"lines": "focus",
+						"caption": "manga.c4.p2",
+						"caption_bottom": true,
+						"sfx": [
+							{
+								"text": "manga.sfx.crack",
+								"at": [
+									0.7,
+									0.25
+								],
+								"size": 0.18,
+								"rot": 0.25
+							}
+						]
+					},
+					{
+						"scene": "gilt_laughs",
+						"rect": [
+							0.52,
+							0.52,
+							0.48,
+							0.48
+						],
+						"bubbles": [
+							{
+								"text": "manga.c4.p3a",
+								"at": [
+									0.5,
+									0.22
+								],
+								"tail": [
+									0.5,
+									0.5
+								],
+								"w": 0.9,
+								"style": "shout"
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "hero_vs_nightmare",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							1.0
+						],
+						"lines": "focus",
+						"title": "manga.c4.title",
+						"caption": "manga.c4.p4",
+						"caption_bottom": true,
+						"bubbles": [
+							{
+								"text": "manga.c4.p4a",
+								"at": [
+									0.3,
+									0.3
+								],
+								"tail": [
+									0.42,
+									0.55
+								],
+								"w": 0.45
+							}
+						]
+					}
+				]
+			]
+		},
+		{
+			"id": "c5",
+			"title": "manga.c5.title",
+			"unlock": {
+				"type": "floor",
+				"value": 100
+			},
+			"pages": [
+				[
+					{
+						"scene": "wall_names",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.5
+						],
+						"caption": "manga.c5.p1"
+					},
+					{
+						"scene": "finger_name",
+						"rect": [
+							0.0,
+							0.52,
+							0.5,
+							0.48
+						],
+						"bubbles": [
+							{
+								"text": "manga.c5.p2a",
+								"at": [
+									0.5,
+									0.2
+								],
+								"tail": [
+									0.5,
+									0.45
+								],
+								"w": 0.9,
+								"style": "whisper"
+							}
+						]
+					},
+					{
+						"scene": "own_name",
+						"rect": [
+							0.52,
+							0.52,
+							0.48,
+							0.48
+						],
+						"caption": "manga.c5.p3",
+						"sfx": [
+							{
+								"text": "manga.sfx.skrrk",
+								"at": [
+									0.72,
+									0.82
+								],
+								"size": 0.14,
+								"rot": -0.15
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "tower_voice",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							0.54
+						],
+						"bubbles": [
+							{
+								"text": "manga.c5.p4a",
+								"at": [
+									0.5,
+									0.2
+								],
+								"tail": [
+									0.5,
+									0.45
+								],
+								"w": 0.7,
+								"style": "shout"
+							}
+						]
+					},
+					{
+						"scene": "first_climber",
+						"rect": [
+							0.0,
+							0.56,
+							0.55,
+							0.44
+						],
+						"caption": "manga.c5.p5"
+					},
+					{
+						"scene": "hero_grip",
+						"rect": [
+							0.57,
+							0.56,
+							0.43,
+							0.44
+						],
+						"lines": "focus",
+						"bubbles": [
+							{
+								"text": "manga.c5.p6a",
+								"at": [
+									0.5,
+									0.8
+								],
+								"tail": [
+									0.5,
+									0.5
+								],
+								"w": 0.85,
+								"style": "shout"
+							}
+						]
+					}
+				],
+				[
+					{
+						"scene": "summit_call",
+						"rect": [
+							0.0,
+							0.0,
+							1.0,
+							1.0
+						],
+						"title": "manga.c5.title",
+						"caption": "manga.c4.p4",
+						"caption_bottom": true
+					}
+				]
+			]
+		}
+	]
+}

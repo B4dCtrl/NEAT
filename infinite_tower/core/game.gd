@@ -22,6 +22,7 @@ const Loc = preload("res://core/loc.gd")
 const Torment = preload("res://core/torment.gd")
 const Cosmetics = preload("res://core/cosmetics.gd")
 const ShareCard = preload("res://scenes/ui/share_card.gd")
+const Story = preload("res://core/story.gd")
 
 ## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
 signal notified(kind: String, text: String)
@@ -64,6 +65,7 @@ var combat_events: Array = []
 ## Treasure Imp: seconds it stays clickable (0 = none) and until the next one.
 var imp_left := 0.0
 var _imp_next := -1.0
+var _story_wait := 1.0
 
 
 func _ready() -> void:
@@ -247,6 +249,12 @@ func _process(delta: float) -> void:
 		notified.emit("legendary", Loc.t("A Climber's Cache arrived! Open it in the Collection."))
 		cosmetics_changed.emit()
 	_tick_imp(delta)
+	_story_wait -= delta
+	if _story_wait <= 0.0:
+		_story_wait = 1.0
+		for cid in Story.check_unlocks(state):
+			sfx_requested.emit("fanfare")
+			notified.emit("milestone", Loc.t("manga.unlocked") % Loc.t(Story.chapter(cid)["title"]))
 	expedition.advance(dt)
 	if expedition.combat != null and not expedition.combat.events.is_empty():
 		combat_events = expedition.combat.events.duplicate()

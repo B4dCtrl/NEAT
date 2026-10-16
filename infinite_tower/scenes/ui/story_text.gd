@@ -66,9 +66,9 @@ const TUTORIAL := {
 }
 
 const UI := {
-	"en": {"back": "Back", "next": "Next", "done": "Start climbing!", "how_to_play": "How to play", "tray_show": "Show tower", "tray_expedition": "Open Expedition", "tray_quit": "Quit", "replay_intro": "Replay intro"},
-	"es": {"back": "Atrás", "next": "Siguiente", "done": "¡A subir!", "how_to_play": "Cómo jugar", "tray_show": "Mostrar torre", "tray_expedition": "Abrir Expedición", "tray_quit": "Salir", "replay_intro": "Ver la introducción"},
-	"pt": {"back": "Voltar", "next": "Próximo", "done": "Começar a subir!", "how_to_play": "Como jogar", "tray_show": "Mostrar torre", "tray_expedition": "Abrir Expedição", "tray_quit": "Sair", "replay_intro": "Rever a introdução"},
+	"en": {"back": "Back", "next": "Next", "done": "Start climbing!", "how_to_play": "How to play", "tray_show": "Show tower", "tray_expedition": "Open Expedition", "tray_quit": "Quit", "replay_intro": "Read the manga"},
+	"es": {"back": "Atrás", "next": "Siguiente", "done": "¡A subir!", "how_to_play": "Cómo jugar", "tray_show": "Mostrar torre", "tray_expedition": "Abrir Expedición", "tray_quit": "Salir", "replay_intro": "Leer el manga"},
+	"pt": {"back": "Voltar", "next": "Próximo", "done": "Começar a subir!", "how_to_play": "Como jogar", "tray_show": "Mostrar torre", "tray_expedition": "Abrir Expedição", "tray_quit": "Sair", "replay_intro": "Ler o mangá"},
 }
 
 

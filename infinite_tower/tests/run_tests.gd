@@ -20,6 +20,8 @@ const Danger = preload("res://core/danger.gd")
 const Torment = preload("res://core/torment.gd")
 const Cosmetics = preload("res://core/cosmetics.gd")
 const Trade = preload("res://core/trade.gd")
+const Story = preload("res://core/story.gd")
+const Loc = preload("res://core/loc.gd")
 
 var failures := 0
 var passes := 0
@@ -44,6 +46,7 @@ func _init() -> void:
 	test_accounts()
 	test_quests_and_languages()
 	test_torment_cosmetics_trade()
+	test_story()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -442,7 +445,6 @@ func test_accounts() -> void:
 
 func test_quests_and_languages() -> void:
 	var Quests = load("res://core/quests.gd")
-	var Loc = load("res://core/loc.gd")
 	var state := GameState.new_game(9)
 	Quests.ensure(state)
 	check(state["contracts"].size() == 3, "three contracts at a time")
@@ -576,3 +578,38 @@ func test_torment_cosmetics_trade() -> void:
 	state["best_floor_ever"] = 60
 	state["stats"]["play_time"] = 11.0 * 3600.0
 	check(Trade.unlocked(state), "trading opens at floor 50 + 10 hours")
+
+
+func test_story() -> void:
+	var state := GameState.new_game(3)
+	check(Story.is_unlocked(state, "c1") and not Story.is_unlocked(state, "c2"), "chapter 1 is there from the start")
+	check(Story.check_unlocks(state).is_empty(), "nothing new on floor 1")
+	state["best_floor_ever"] = 11
+	check(Story.check_unlocks(state) == ["c2"], "floor 11 unlocks chapter 2")
+	state["best_floor_ever"] = 50
+	state["torment_unlocked"] = 1
+	check(Story.check_unlocks(state).size() == 2, "floor 50 and Torment I unlock chapters 3 and 4")
+	check(Story.is_new(state, "c3"), "an unread chapter is new")
+	Story.mark_read(state, "c3")
+	check(not Story.is_new(state, "c3"), "reading marks it read")
+	# Every text key of the manga exists in every language pack.
+	var missing := 0
+	for c in Story.chapters():
+		var keys := [c["title"]]
+		for page in c["pages"]:
+			for p in page:
+				for k in ["caption", "title"]:
+					if p.has(k):
+						keys.append(p[k])
+				for b in p.get("bubbles", []):
+					keys.append(b["text"])
+				for s in p.get("sfx", []):
+					keys.append(s["text"])
+		for code in Loc.LANGUAGES:
+			Loc.lang = code
+			for k in keys:
+				if Loc.t(k) == k:
+					missing += 1
+					print("  missing ", code, " ", k)
+	Loc.lang = "en"
+	check(missing == 0, "every manga line is translated (%d missing)" % missing)
