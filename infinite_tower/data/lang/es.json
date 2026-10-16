@@ -877,5 +877,7 @@
 	"History": "Historial",
 	"Stats": "Estadísticas",
 	"Settings": "Ajustes",
-	"menu.quit": "Salir del juego (guarda y cierra por completo)"
+	"menu.quit": "Salir del juego (guarda y cierra por completo)",
+	"panel.collection": "COLECCIÓN",
+	"menu.collection": "Colección: Cofres del Escalador, aspectos de torre, mascotas y auras"
 }

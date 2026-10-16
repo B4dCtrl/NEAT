@@ -877,5 +877,7 @@
 	"History": "Histórico",
 	"Stats": "Estatísticas",
 	"Settings": "Configurações",
-	"menu.quit": "Sair do jogo (salva e fecha por completo)"
+	"menu.quit": "Sair do jogo (salva e fecha por completo)",
+	"panel.collection": "COLEÇÃO",
+	"menu.collection": "Coleção: Baús do Escalador, skins de torre, pets e auras"
 }

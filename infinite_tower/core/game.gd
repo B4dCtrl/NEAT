@@ -19,6 +19,9 @@ const Danger = preload("res://core/danger.gd")
 const Accounts = preload("res://core/accounts.gd")
 const Quests = preload("res://core/quests.gd")
 const Loc = preload("res://core/loc.gd")
+const Torment = preload("res://core/torment.gd")
+const Cosmetics = preload("res://core/cosmetics.gd")
+const ShareCard = preload("res://scenes/ui/share_card.gd")
 
 ## kind: "legendary" | "relic" | "boss" | "fall" | "level" | "milestone" | "info"
 signal notified(kind: String, text: String)
@@ -43,6 +46,10 @@ signal sfx_requested(cue: String)
 signal account_changed()
 ## The interface language changed (see core/loc.gd).
 signal language_changed()
+## Cosmetics owned / equipped changed (caches opened, crafted, equipped...).
+signal cosmetics_changed()
+## A cosmetic was just obtained (cache, imp, craft): id.
+signal cosmetic_obtained(id: String)
 
 const AUTOSAVE_INTERVAL := 30.0
 
@@ -54,6 +61,9 @@ var _autosave_left := AUTOSAVE_INTERVAL
 var _state_changed_left := 0.25
 ## Combat events of the current frame, consumed by the stages for animation.
 var combat_events: Array = []
+## Treasure Imp: seconds it stays clickable (0 = none) and until the next one.
+var imp_left := 0.0
+var _imp_next := -1.0
 
 
 func _ready() -> void:
@@ -231,6 +241,12 @@ func _process(delta: float) -> void:
 	if not state.get("intro_seen", false):
 		return
 	state["stats"]["play_time"] = float(state["stats"]["play_time"]) + dt
+	# Climber's Caches come from REAL time with the game open (not the hourglass).
+	if Cosmetics.tick(state, delta, int(Time.get_unix_time_from_system())) > 0:
+		sfx_requested.emit("fanfare")
+		notified.emit("legendary", Loc.t("A Climber's Cache arrived! Open it in the Collection."))
+		cosmetics_changed.emit()
+	_tick_imp(delta)
 	expedition.advance(dt)
 	if expedition.combat != null and not expedition.combat.events.is_empty():
 		combat_events = expedition.combat.events.duplicate()
@@ -311,6 +327,12 @@ func _drain_events() -> void:
 				notified.emit("info", Loc.t("Resting at the bonfire"))
 			"wall_broken":
 				notified.emit("info", Loc.t("Broke through floor %d!") % ev["floor"])
+			"torment_unlocked":
+				sfx_requested.emit("fanfare")
+				notified.emit("milestone", Loc.t("%s unlocked!") % Torment.name(int(ev["level"])))
+			"sigil_broken":
+				sfx_requested.emit("legendary")
+				notified.emit("legendary", Loc.t("Lord's Sigil broken: sealed chest!"))
 			"level_up":
 				sfx_requested.emit("level")
 				notified.emit("info", Loc.t("%s reached a new level!") % ev["name"])
@@ -427,6 +449,119 @@ func ascend() -> void:
 
 ## Uses a consumable now. Potions/bombs act on the current fight (potions heal
 ## the whole party outside combat); elixirs and scrolls become floor buffs.
+## "Share my climb": saves a card PNG and shows it in the file manager.
+func share_climb() -> void:
+	var path: String = await ShareCard.make(get_tree(), state)
+	if path == "":
+		notified.emit("info", Loc.t("Could not save the picture"))
+		return
+	sfx_requested.emit("fanfare")
+	notified.emit("milestone", Loc.t("Picture saved in Pictures/Stairborn"))
+	OS.shell_show_in_file_manager(path)
+
+
+# ------------------------------------------------------------------ treasure imp
+
+func _tick_imp(delta: float) -> void:
+	var r: Dictionary = DataDB.balance()["treasure_imp"]
+	if imp_left > 0.0:
+		imp_left -= delta
+		if imp_left <= 0.0:
+			imp_left = 0.0
+			notified.emit("info", Loc.t("The Treasure Imp escaped..."))
+		return
+	if _imp_next < 0.0:
+		# The first one comes early in a session, so new players meet it.
+		_imp_next = randf_range(float(r["first_min_minutes"]), float(r["first_max_minutes"])) * 60.0
+	_imp_next -= delta
+	if _imp_next <= 0.0 and expedition.phase in ["walk", "pause", "camp"]:
+		imp_left = float(r["stay_seconds"])
+		_imp_next = randf_range(float(r["min_minutes"]), float(r["max_minutes"])) * 60.0
+		sfx_requested.emit("summon")
+		notified.emit("legendary", Loc.t("A Treasure Imp appeared! Click it before it runs!"))
+
+
+## Caught! Returns the reward {gold | crystals | cache}.
+func catch_imp() -> Dictionary:
+	if imp_left <= 0.0:
+		return {}
+	imp_left = 0.0
+	var r: Dictionary = DataDB.balance()["treasure_imp"]
+	var out := {}
+	var roll := randf()
+	if roll < float(r["cache_chance"]) and Cosmetics.grant_imp_cache(state, int(Time.get_unix_time_from_system())):
+		out["cache"] = 1
+		notified.emit("legendary", Loc.t("Caught the Treasure Imp: a Climber's Cache!"))
+		cosmetics_changed.emit()
+	elif roll < float(r["cache_chance"]) + float(r["crystal_chance"]):
+		var n := randi_range(int(r["crystals"][0]), int(r["crystals"][1]))
+		state["crystals"] = int(state["crystals"]) + n
+		out["crystals"] = n
+		notified.emit("milestone", Loc.t("Caught the Treasure Imp: +%d crystals!") % n)
+	else:
+		var g := floorf(Quests.floor_gold(state) * float(r["gold_floors"]))
+		state["gold"] = float(state["gold"]) + g
+		state["stats"]["total_gold"] = float(state["stats"]["total_gold"]) + g
+		out["gold"] = g
+		notified.emit("milestone", Loc.t("Caught the Treasure Imp: +%s gold!") % UiNum.num(g))
+	state["stats"]["imps_caught"] = int(state["stats"].get("imps_caught", 0)) + 1
+	sfx_requested.emit("fanfare")
+	state_changed.emit()
+	return out
+
+
+# ------------------------------------------------------------------ cosmetics
+
+func open_cache() -> String:
+	var id := Cosmetics.open_cache(state)
+	if id == "":
+		return ""
+	var d := Cosmetics.def(id)
+	var rare := DataDB.rarity_order(d["rarity"]) >= DataDB.rarity_order("epic")
+	sfx_requested.emit("legendary" if rare else "loot")
+	notified.emit("legendary" if rare else "info", Loc.t("New look: %s [%s]") % [d["name"], DataDB.rarities()[d["rarity"]]["name"]])
+	GameState.add_history(state, "loot", Loc.t("Cache: %s [%s]") % [d["name"], DataDB.rarities()[d["rarity"]]["name"]])
+	cosmetic_obtained.emit(id)
+	cosmetics_changed.emit()
+	save()
+	return id
+
+
+func equip_cosmetic(id: String) -> void:
+	if Cosmetics.equipped(state, Cosmetics.def(id).get("kind", "")) == id:
+		Cosmetics.unequip(state, Cosmetics.def(id)["kind"])
+	else:
+		Cosmetics.equip(state, id)
+	cosmetics_changed.emit()
+
+
+func salvage_cosmetic(id: String) -> void:
+	if Cosmetics.salvage(state, id) > 0:
+		sfx_requested.emit("use")
+		cosmetics_changed.emit()
+
+
+func craft_cosmetic(id: String) -> void:
+	if Cosmetics.craft(state, id):
+		sfx_requested.emit("fanfare")
+		notified.emit("info", Loc.t("Crafted: %s") % Cosmetics.def(id)["name"])
+		cosmetic_obtained.emit(id)
+		cosmetics_changed.emit()
+
+
+## Difficulty tier (0 = Normal). Not while fighting: the fight keeps its tier.
+func set_torment(level: int) -> bool:
+	if expedition.phase == "combat":
+		notified.emit("info", Loc.t("Wait until the fight is over"))
+		return false
+	if not Torment.set_level(state, level):
+		return false
+	_danger_dirty = true
+	notified.emit("info", Torment.name(level))
+	state_changed.emit()
+	return true
+
+
 func use_consumable(id: String) -> bool:
 	var bag: Dictionary = state["consumables"]
 	var def: Dictionary = DataDB.items()["consumables"].get(id, {})
@@ -478,6 +613,12 @@ func use_consumable(id: String) -> bool:
 				return false
 			expedition.warp_to(target)
 			notified.emit("milestone", Loc.t("toast.warp") % target)
+		"sigil":
+			# Arming a sigil does not spend it: it breaks only when the next guardian falls.
+			state["sigil_armed"] = not state.get("sigil_armed", false)
+			notified.emit("milestone", Loc.t("Sigil armed: the next guardian you defeat opens a sealed chest.") if state["sigil_armed"] else Loc.t("Sigil put away."))
+			state_changed.emit()
+			return true
 		"time":
 			var boost: Dictionary = state.get("time_boost", {})
 			# Stacking an hourglass adds time, the speed stays the same.

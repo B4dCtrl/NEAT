@@ -1,0 +1,332 @@
+{
+	"_comment": "Cosmetics: no stats, pure looks. Earned from Climber's Caches (playtime drops, weekly cap) and the Treasure Imp. Duplicates break into Stardust; Stardust crafts any non-legendary cosmetic. All are Steam-tradeable (see tools/export_steam_itemdefs.gd).",
+	"series": {
+		"Founders": "Founders of the Climb"
+	},
+	"cache": {
+		"every_minutes": 30,
+		"weekly_cap": 10,
+		"imp_weekly_cap": 3,
+		"odds": {
+			"common": 62,
+			"uncommon": 26,
+			"rare": 9,
+			"epic": 2.8,
+			"legendary": 0.2
+		}
+	},
+	"dust": {
+		"common": 5,
+		"uncommon": 15,
+		"rare": 60,
+		"epic": 250,
+		"legendary": 1500
+	},
+	"craft": {
+		"common": 40,
+		"uncommon": 120,
+		"rare": 480,
+		"epic": 2000
+	},
+	"items": {
+		"tower_sandstone": {
+			"kind": "tower",
+			"name": "Sandstone Spire",
+			"rarity": "common",
+			"colors": {
+				"sky": "#2a1e14",
+				"wall": "#b88f58",
+				"wall_dark": "#7a5a30",
+				"step": "#c9a66b",
+				"step_edge": "#f2dcae"
+			},
+			"series": "Founders"
+		},
+		"tower_mossy": {
+			"kind": "tower",
+			"name": "Overgrown Spire",
+			"rarity": "common",
+			"colors": {
+				"sky": "#142019",
+				"wall": "#4f7a44",
+				"wall_dark": "#2f4a28",
+				"step": "#6b9a58",
+				"step_edge": "#b8e08a"
+			},
+			"series": "Founders"
+		},
+		"tower_obsidian": {
+			"kind": "tower",
+			"name": "Obsidian Spire",
+			"rarity": "uncommon",
+			"colors": {
+				"sky": "#0c0a12",
+				"wall": "#2a2238",
+				"wall_dark": "#16121f",
+				"step": "#3e3354",
+				"step_edge": "#9a7fd0"
+			},
+			"series": "Founders"
+		},
+		"tower_frost": {
+			"kind": "tower",
+			"name": "Frostbitten Spire",
+			"rarity": "uncommon",
+			"colors": {
+				"sky": "#0f1a26",
+				"wall": "#7fb0cc",
+				"wall_dark": "#4a7590",
+				"step": "#a8d4ec",
+				"step_edge": "#f0fbff"
+			},
+			"series": "Founders"
+		},
+		"tower_coral": {
+			"kind": "tower",
+			"name": "Coral Spire",
+			"rarity": "rare",
+			"colors": {
+				"sky": "#0c2228",
+				"wall": "#d8707a",
+				"wall_dark": "#8a3a48",
+				"step": "#3fb0a8",
+				"step_edge": "#ffd8c8"
+			},
+			"series": "Founders"
+		},
+		"tower_ember": {
+			"kind": "tower",
+			"name": "Ember Spire",
+			"rarity": "rare",
+			"colors": {
+				"sky": "#1a0c08",
+				"wall": "#3a2420",
+				"wall_dark": "#1c100c",
+				"step": "#5a2a1a",
+				"step_edge": "#ff8a2a"
+			},
+			"series": "Founders"
+		},
+		"tower_celestial": {
+			"kind": "tower",
+			"name": "Celestial Spire",
+			"rarity": "epic",
+			"colors": {
+				"sky": "#070b24",
+				"wall": "#1e2c6a",
+				"wall_dark": "#10183e",
+				"step": "#2e4294",
+				"step_edge": "#ffe680"
+			},
+			"series": "Founders"
+		},
+		"tower_gilded": {
+			"kind": "tower",
+			"name": "Gilded Spire",
+			"rarity": "legendary",
+			"colors": {
+				"sky": "#1c1408",
+				"wall": "#e8c060",
+				"wall_dark": "#a0782a",
+				"step": "#f2d27a",
+				"step_edge": "#fffbe8"
+			},
+			"series": "Founders"
+		},
+		"pet_slimelet": {
+			"kind": "pet",
+			"name": "Slimelet",
+			"rarity": "common",
+			"art": "slime",
+			"sprite": "slime",
+			"hue": -1,
+			"fx": [],
+			"series": "Founders"
+		},
+		"pet_batling": {
+			"kind": "pet",
+			"name": "Batling",
+			"rarity": "common",
+			"art": "bat",
+			"sprite": "bat",
+			"hue": -1,
+			"fx": [],
+			"series": "Founders"
+		},
+		"pet_sporeling": {
+			"kind": "pet",
+			"name": "Sporelet",
+			"rarity": "common",
+			"art": "mushroom",
+			"sprite": "mushroom",
+			"hue": -1,
+			"fx": [],
+			"series": "Founders"
+		},
+		"pet_wisp": {
+			"kind": "pet",
+			"name": "Pocket Wisp",
+			"rarity": "uncommon",
+			"art": "frost_wisp",
+			"sprite": "wisp",
+			"hue": -1,
+			"fx": [
+				"frost"
+			],
+			"series": "Founders"
+		},
+		"pet_emberkit": {
+			"kind": "pet",
+			"name": "Emberkit",
+			"rarity": "uncommon",
+			"art": "ember_imp",
+			"sprite": "imp",
+			"hue": -1,
+			"fx": [
+				"ember"
+			],
+			"series": "Founders"
+		},
+		"pet_rockpup": {
+			"kind": "pet",
+			"name": "Rockpup",
+			"rarity": "rare",
+			"art": "crystal_golem",
+			"sprite": "golem",
+			"hue": 0.1,
+			"fx": [
+				"moss"
+			],
+			"series": "Founders"
+		},
+		"pet_gazer": {
+			"kind": "pet",
+			"name": "Little Gazer",
+			"rarity": "rare",
+			"art": "gem_eye",
+			"sprite": "eye",
+			"hue": 0.55,
+			"fx": [
+				"shard"
+			],
+			"series": "Founders"
+		},
+		"pet_voidling": {
+			"kind": "pet",
+			"name": "Voidling",
+			"rarity": "epic",
+			"art": "void_eye",
+			"sprite": "eye",
+			"hue": -1,
+			"fx": [
+				"void"
+			],
+			"series": "Founders"
+		},
+		"pet_prismlet": {
+			"kind": "pet",
+			"name": "Prismlet",
+			"rarity": "epic",
+			"art": "slime",
+			"sprite": "slime",
+			"hue": -1,
+			"fx": [
+				"prism"
+			],
+			"series": "Founders"
+		},
+		"pet_golden_imp": {
+			"kind": "pet",
+			"name": "Golden Imp",
+			"rarity": "legendary",
+			"art": "ember_imp",
+			"sprite": "imp",
+			"hue": 0.13,
+			"fx": [
+				"halo",
+				"crown"
+			],
+			"series": "Founders"
+		},
+		"aura_dust": {
+			"kind": "aura",
+			"name": "Trail of Dust",
+			"rarity": "common",
+			"style": "dust",
+			"color": "#b89a6a",
+			"series": "Founders"
+		},
+		"aura_leaves": {
+			"kind": "aura",
+			"name": "Falling Leaves",
+			"rarity": "common",
+			"style": "leaves",
+			"color": "#6bd45a",
+			"series": "Founders"
+		},
+		"aura_sparks": {
+			"kind": "aura",
+			"name": "Sparkstep",
+			"rarity": "uncommon",
+			"style": "sparkle",
+			"color": "#ffe14a",
+			"series": "Founders"
+		},
+		"aura_frost": {
+			"kind": "aura",
+			"name": "Frostfall",
+			"rarity": "uncommon",
+			"style": "snow",
+			"color": "#bfefff",
+			"series": "Founders"
+		},
+		"aura_embers": {
+			"kind": "aura",
+			"name": "Emberwake",
+			"rarity": "rare",
+			"style": "embers",
+			"color": "#ff7a2a",
+			"series": "Founders"
+		},
+		"aura_hearts": {
+			"kind": "aura",
+			"name": "Heartbeat",
+			"rarity": "rare",
+			"style": "hearts",
+			"color": "#ff6a9a",
+			"series": "Founders"
+		},
+		"aura_void": {
+			"kind": "aura",
+			"name": "Void Orbit",
+			"rarity": "epic",
+			"style": "orbit",
+			"color": "#b04dff",
+			"series": "Founders"
+		},
+		"aura_storm": {
+			"kind": "aura",
+			"name": "Stormcrown",
+			"rarity": "epic",
+			"style": "storm",
+			"color": "#9fd8ff",
+			"series": "Founders"
+		},
+		"aura_rainbow": {
+			"kind": "aura",
+			"name": "Prismatic Wake",
+			"rarity": "epic",
+			"style": "rainbow",
+			"color": "#ffffff",
+			"series": "Founders"
+		},
+		"aura_halo": {
+			"kind": "aura",
+			"name": "Saint's Halo",
+			"rarity": "legendary",
+			"style": "halo",
+			"color": "#ffe680",
+			"series": "Founders"
+		}
+	}
+}

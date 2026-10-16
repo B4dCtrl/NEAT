@@ -10,6 +10,7 @@ const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const PartyTab = preload("res://scenes/ui/tabs/party_tab.gd")
 const ItemSlot = preload("res://scenes/ui/item_slot.gd")
 const Loc = preload("res://core/loc.gd")
+const Trade = preload("res://core/trade.gd")
 
 var _grid: GridContainer
 var _timer: Label
@@ -112,7 +113,8 @@ func _process(_delta: float) -> void:
 func _rebuild() -> void:
 	var offers := Game.market_offers()
 	_rotation = int(Game.state["market"]["rotation"])
-	_steam_status.text = PlatformServices.status_text() + Loc.t(". Gems and set pieces are Steam items: once the Steam app is live they can be traded there.")
+	var lock := Trade.lock_reason(Game.state)
+	_steam_status.text = PlatformServices.status_text() + ".\n" + Loc.t("Tradeable on Steam: every look (tower skins, pets, auras), Lord's Sigils and never-equipped Legendary gear. Mythic gear and gems stay bound to you.") + ("\n" + lock if lock != "" else "")
 	for c in _grid.get_children():
 		c.queue_free()
 	for i in offers.size():

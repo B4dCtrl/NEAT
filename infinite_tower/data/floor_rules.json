@@ -362,7 +362,40 @@
 			"hero_offers": 2
 		},
 		"offline_max_hours": 12.0,
-		"offline_sim_cap_seconds": 7200.0
+		"offline_sim_cap_seconds": 7200.0,
+		"torment": {
+			"_comment": "Difficulty tiers. Torment N unlocks by reaching floor unlock_floor + unlock_step*(N-1) while playing on Torment N-1. Monster multipliers compound per level; rewards add per level.",
+			"levels": 10,
+			"unlock_floor": 50,
+			"unlock_step": 10,
+			"hp_mult": 1.7,
+			"attack_mult": 1.4,
+			"defense_mult": 1.25,
+			"gold_bonus": 0.5,
+			"xp_bonus": 0.35,
+			"drop_bonus": 0.25,
+			"sigil_chance": 0.04
+		},
+		"sigil": {
+			"extra_items": 2,
+			"extra_gem_chance": 0.1,
+			"extra_crystals": 3
+		},
+		"treasure_imp": {
+			"_comment": "A clickable golden imp that appears while the game is open. Rewards: a Climber's Cache (own weekly cap), crystals or a pile of gold.",
+			"first_min_minutes": 2,
+			"first_max_minutes": 5,
+			"min_minutes": 8,
+			"max_minutes": 15,
+			"stay_seconds": 12,
+			"cache_chance": 0.15,
+			"crystal_chance": 0.4,
+			"crystals": [
+				2,
+				5
+			],
+			"gold_floors": 12
+		}
 	},
 	"milestones": [
 		{

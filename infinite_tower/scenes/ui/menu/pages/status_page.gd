@@ -11,6 +11,7 @@ const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const HeroPicker = preload("res://scenes/ui/menu/hero_picker.gd")
 const Loc = preload("res://core/loc.gd")
+const Torment = preload("res://core/torment.gd")
 
 var host
 var hero_idx := 0
@@ -24,6 +25,9 @@ var _stats: GridContainer
 var _train_box: VBoxContainer
 var _extra: VBoxContainer
 var _danger: RichTextLabel
+var _torment_opt: OptionButton
+var _torment_info: Label
+var _torment_sig := ""
 var _rest_btn: Button
 var _auto_bonfire: CheckBox
 var _retreat_label: Label
@@ -43,9 +47,19 @@ func _ready() -> void:
 	var v := VBoxContainer.new()
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	add_child(v)
+	var money_row := HBoxContainer.new()
+	v.add_child(money_row)
 	_money = Label.new()
 	_money.add_theme_color_override("font_color", Ornate.ACCENT)
-	v.add_child(_money)
+	_money.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_money.clip_text = true
+	money_row.add_child(_money)
+	var share := Button.new()
+	share.text = Loc.t("Share")
+	share.focus_mode = Control.FOCUS_NONE
+	share.tooltip_text = Loc.t("Save a picture of your party and records (Pictures/Stairborn) to show off.")
+	share.pressed.connect(func(): Game.share_climb())
+	money_row.add_child(share)
 	_danger = RichTextLabel.new()
 	_danger.bbcode_enabled = true
 	_danger.fit_content = true
@@ -54,6 +68,7 @@ func _ready() -> void:
 	_danger.tooltip_text = Loc.t("How the party (as it is now) would fare. Easy / Fair / Hard / Deadly.")
 	v.add_child(_danger)
 	_build_bonfire(v)
+	_build_torment(v)
 	_picker = HeroPicker.new()
 	_picker.picked.connect(func(i):
 		hero_idx = i
@@ -177,6 +192,7 @@ func _refresh() -> void:
 		b.text = Loc.t("%s  Lv %d   (%s gold)") % [t["name"], s["training"][key], UiUtil.num(cost)]
 		b.disabled = float(s["gold"]) < cost
 	_refresh_bonfire()
+	_refresh_torment()
 	_rebuild_extra()
 
 
@@ -259,6 +275,50 @@ func _build_bonfire(v: VBoxContainer) -> void:
 	var note := Ornate.small_label(Loc.t("If the party falls, it drops %d%% of its gold. Resting in time keeps it.") % loss, Ornate.TEXT_DIM, 11)
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	bv.add_child(note)
+
+
+## DIFFICULTY: Normal or an unlocked Torment (harder monsters, better rewards).
+func _build_torment(v: VBoxContainer) -> void:
+	var box := PanelContainer.new()
+	v.add_child(box)
+	var bv := VBoxContainer.new()
+	box.add_child(bv)
+	var top := HBoxContainer.new()
+	bv.add_child(top)
+	var t := Ornate.header_label(Loc.t("Difficulty"))
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_child(t)
+	_torment_opt = OptionButton.new()
+	_torment_opt.focus_mode = Control.FOCUS_NONE
+	_torment_opt.item_selected.connect(func(i): Game.set_torment(int(_torment_opt.get_item_metadata(i))); _torment_sig = "")
+	top.add_child(_torment_opt)
+	_torment_info = Ornate.small_label("", Ornate.TEXT_DIM, 11)
+	_torment_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_torment_info.custom_minimum_size = Vector2(230, 0)
+	bv.add_child(_torment_info)
+
+
+func _refresh_torment() -> void:
+	var s: Dictionary = Game.state
+	var cur := Torment.current(s)
+	var top := Torment.unlocked(s)
+	var sig := str([cur, top, s.get("sigil_armed", false), int(s["consumables"].get("lords_sigil", 0)), Loc.current()])
+	if sig == _torment_sig:
+		return
+	_torment_sig = sig
+	_torment_opt.clear()
+	for i in top + 1:
+		_torment_opt.add_item(Torment.name(i))
+		_torment_opt.set_item_metadata(i, i)
+	_torment_opt.select(cur)
+	_torment_opt.disabled = top == 0
+	var lines := [Torment.describe(cur)]
+	if top < Torment.max_level():
+		lines.append(Loc.t("Next: %s — reach floor %d on %s.") % [Torment.name(top + 1), Torment.unlock_floor(top + 1), Torment.name(top)])
+	var sig_n := int(s["consumables"].get("lords_sigil", 0))
+	if sig_n > 0:
+		lines.append(Loc.t("Lord's Sigils: %d%s") % [sig_n, Loc.t(" (armed)") if s.get("sigil_armed", false) else ""])
+	_torment_info.text = "\n".join(lines)
 
 
 func _refresh_bonfire() -> void:

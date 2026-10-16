@@ -1074,33 +1074,33 @@
 		}
 	},
 	"scaling": {
-		"hp_growth": 1.062,
-		"attack_growth": 1.053,
-		"defense_growth": 1.055,
+		"hp_growth": 1.075,
+		"attack_growth": 1.062,
+		"defense_growth": 1.06,
 		"gold_growth": 1.05,
 		"xp_growth": 1.04,
-		"xp_scale": 6.0,
+		"xp_scale": 4.0,
 		"xp_linear": 0.15,
 		"xp_power": 2.0,
 		"boss_tiers": {
 			"guardian": {
 				"name": "Guardian",
-				"hp_mult": 1.0,
-				"attack_mult": 1.0,
+				"hp_mult": 1.4,
+				"attack_mult": 1.1,
 				"gold_mult": 1.0,
 				"minions": 0
 			},
 			"elite": {
 				"name": "Elite Guardian",
-				"hp_mult": 1.5,
-				"attack_mult": 1.15,
+				"hp_mult": 2.0,
+				"attack_mult": 1.25,
 				"gold_mult": 2.0,
 				"minions": 1
 			},
 			"lord": {
 				"name": "Tower Lord",
-				"hp_mult": 2.2,
-				"attack_mult": 1.3,
+				"hp_mult": 3.0,
+				"attack_mult": 1.45,
 				"gold_mult": 4.0,
 				"minions": 2
 			}
@@ -1109,7 +1109,7 @@
 	"affixes": {
 		"armored": {
 			"name": "Armored",
-			"min_floor": 5,
+			"min_floor": 3,
 			"weight": 3,
 			"mult": {
 				"defense": 2.0
@@ -1117,7 +1117,7 @@
 		},
 		"swift": {
 			"name": "Swift",
-			"min_floor": 5,
+			"min_floor": 3,
 			"weight": 3,
 			"mult": {
 				"attack_speed": 1.5
@@ -1128,7 +1128,7 @@
 		},
 		"giant": {
 			"name": "Giant",
-			"min_floor": 10,
+			"min_floor": 6,
 			"weight": 2,
 			"mult": {
 				"hp": 2.2,
@@ -1138,7 +1138,7 @@
 		},
 		"vampiric": {
 			"name": "Vampiric",
-			"min_floor": 10,
+			"min_floor": 6,
 			"weight": 2,
 			"traits": {
 				"lifesteal": 0.25
@@ -1146,7 +1146,7 @@
 		},
 		"thorny": {
 			"name": "Thorny",
-			"min_floor": 15,
+			"min_floor": 9,
 			"weight": 2,
 			"traits": {
 				"thorns": 0.2
@@ -1154,7 +1154,7 @@
 		},
 		"regenerating": {
 			"name": "Regenerating",
-			"min_floor": 15,
+			"min_floor": 9,
 			"weight": 2,
 			"traits": {
 				"regen": 0.03
@@ -1162,7 +1162,7 @@
 		},
 		"shielded": {
 			"name": "Shielded",
-			"min_floor": 20,
+			"min_floor": 12,
 			"weight": 2,
 			"traits": {
 				"opening_shield": 0.6
@@ -1170,7 +1170,7 @@
 		},
 		"berserk": {
 			"name": "Berserk",
-			"min_floor": 25,
+			"min_floor": 15,
 			"weight": 2,
 			"traits": {
 				"berserk": 1.6
@@ -1178,9 +1178,9 @@
 		}
 	},
 	"affix_chance": {
-		"base": 0.05,
-		"per_floor": 0.004,
-		"max": 0.55,
-		"boss_min_floor": 30
+		"base": 0.08,
+		"per_floor": 0.006,
+		"max": 0.6,
+		"boss_min_floor": 20
 	}
 }

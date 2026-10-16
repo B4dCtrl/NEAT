@@ -20,6 +20,7 @@ const BUTTONS := [
 	["skills", "book", "menu.skills"],
 	["inventory", "bag", "menu.inventory"],
 	["quests", "star", "menu.quests"],
+	["collection", "gift", "menu.collection"],
 	["souls", "skull", "menu.souls"],
 	["settings", "gear", "menu.settings"],
 	["expedition", "expand", "menu.expedition"],

@@ -58,5 +58,7 @@
 	"name.ok": "Begin the climb",
 	"name.placeholder": "Your hero's name",
 	"name.default": "The Stairborn",
-	"menu.quit": "Quit the game (saves and closes completely)"
+	"menu.quit": "Quit the game (saves and closes completely)",
+	"panel.collection": "COLLECTION",
+	"menu.collection": "Collection: Climber's Caches, tower skins, pets and auras"
 }

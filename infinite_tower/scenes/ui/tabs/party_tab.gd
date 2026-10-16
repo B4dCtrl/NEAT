@@ -9,6 +9,7 @@ const Heroes = preload("res://core/heroes.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Loc = preload("res://core/loc.gd")
+const Trade = preload("res://core/trade.gd")
 
 var _cards_row: HBoxContainer
 var _cards: Array = []
@@ -284,8 +285,7 @@ static func item_tooltip(item: Dictionary) -> String:
 	lines.append(item["name"])
 	lines.append(Loc.t("%s %s  ·  Item Level %d") % [rarity_name, Loc.t(item["slot"].capitalize()), item["ilvl"]])
 	lines.append(Loc.t("Usable by: ") + users_text(item))
-	if item.get("bound", false):
-		lines.append(Loc.t("Bound: it was equipped, so it can no longer be traded"))
+	lines.append(Trade.item_note(item))
 	var base_keys := []
 	for b in DataDB.items()["bases"]:
 		if b["id"] == item.get("base", ""):

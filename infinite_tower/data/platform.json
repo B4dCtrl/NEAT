@@ -5,7 +5,19 @@
 		"enabled": true,
 		"itemdef_base": 1000,
 		"playtime_drop_itemdef": 900,
-		"tradable_rarities": ["legendary", "mythic"],
 		"note": "Set steam_app_id once the Steamworks app exists; generate itemdefs with tools/export_steam_itemdefs.gd"
+	},
+	"trade": {
+		"_comment": "What can leave the game (Steam Inventory -> Community Market). Looks never change stats, so they trade freely; power stays mostly bound so money cannot buy the climb. Trading opens only after real progress (anti-bot), like TBH's Cube level 10.",
+		"unlock_best_floor": 50,
+		"unlock_play_hours": 10,
+		"cosmetics": true,
+		"consumables": [
+			"lords_sigil"
+		],
+		"gear_rarities": [
+			"legendary"
+		],
+		"gems": false
 	}
 }

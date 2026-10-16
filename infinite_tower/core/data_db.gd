@@ -5,7 +5,7 @@ extends RefCounted
 const Loc = preload("res://core/loc.gd")
 
 ## Tables whose texts are translated when loaded.
-const LOCALIZED := ["classes", "enemies", "items", "floor_rules", "ascension", "skills", "quests"]
+const LOCALIZED := ["classes", "enemies", "items", "floor_rules", "ascension", "skills", "quests", "cosmetics"]
 
 const FILES := {
 	"classes": "res://data/classes.json",
@@ -17,6 +17,7 @@ const FILES := {
 	"skills": "res://data/skill_tree.json",
 	"platform": "res://data/platform.json",
 	"quests": "res://data/quests.json",
+	"cosmetics": "res://data/cosmetics.json",
 }
 
 static var _cache: Dictionary = {}

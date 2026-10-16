@@ -52,6 +52,12 @@ static func new_game(run_seed: int = 0) -> Dictionary:
 		"heroes": [],
 		"bench": [],
 		"mints": 0,
+		"torment": 0,
+		"torment_unlocked": 0,
+		"torment_best": {},
+		"sigil_armed": false,
+		# Welcome gift: the first Climber's Cache is waiting from the start.
+		"cosmetics": {"caches": 1},
 		"inventory": [],
 		"next_uid": 1,
 		"relics_owned": [],

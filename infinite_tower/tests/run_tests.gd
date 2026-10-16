@@ -17,6 +17,9 @@ const Heroes = preload("res://core/heroes.gd")
 const Market = preload("res://core/market.gd")
 const Forge = preload("res://core/forge.gd")
 const Danger = preload("res://core/danger.gd")
+const Torment = preload("res://core/torment.gd")
+const Cosmetics = preload("res://core/cosmetics.gd")
+const Trade = preload("res://core/trade.gd")
 
 var failures := 0
 var passes := 0
@@ -40,6 +43,7 @@ func _init() -> void:
 	test_mana_bonfire_danger()
 	test_accounts()
 	test_quests_and_languages()
+	test_torment_cosmetics_trade()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -525,3 +529,50 @@ func balance_report() -> void:
 			state["gold"], state["training"]["attack"], state["stats"]["fall_backs"],
 			StatCalc.power_rating(StatCalc.hero_stats(state, h[0], mods))])
 	print("souls available: %d  (%d ms)" % [Progression.souls_for_ascension(state), Time.get_ticks_msec() - t0])
+
+
+func test_torment_cosmetics_trade() -> void:
+	var state := GameState.new_game(77)
+	# --- Torment: locked until floor 50 on Normal, then harder monsters, better loot.
+	check(Torment.unlocked(state) == 0 and not Torment.set_level(state, 1), "Torment starts locked")
+	state["floor"] = 49
+	check(Torment.check_unlock(state) == 0, "floor 49 does not unlock Torment I")
+	state["floor"] = 50
+	check(Torment.check_unlock(state) == 1 and Torment.set_level(state, 1), "floor 50 unlocks Torment I")
+	state["floor"] = 55
+	check(Torment.check_unlock(state) == 0, "Torment II needs floor %d" % Torment.unlock_floor(2))
+	var base := TowerGen.enemy_stats("slime", 30)
+	var hard := Torment.apply_enemy(TowerGen.enemy_stats("slime", 30), 1)
+	check(float(hard["hp"]) > float(base["hp"]) * 1.5, "Torment raises monster HP")
+	check(float(StatCalc.party_mods(state).get("drop_pct", 0.0)) >= 0.25, "Torment raises drop chance")
+	# --- Lord's Sigil: a sealed chest has more and better items.
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	var plain := Loot.boss_chest(rng, state, 60, "guardian", 0.0, "", false)
+	rng.seed = 5
+	var sealed := Loot.boss_chest(rng, state, 60, "guardian", 0.0, "", true)
+	check(sealed.size() > plain.size(), "a sealed chest holds more (%d vs %d)" % [sealed.size(), plain.size()])
+	# --- Cosmetics: welcome cache, playtime caches with a weekly cap, stardust.
+	var c := Cosmetics.box(state)
+	check(int(c["caches"]) == 1, "a new climber starts with one cache")
+	var id := Cosmetics.open_cache(state)
+	check(id != "" and Cosmetics.owned(state, id) == 1 and int(c["caches"]) == 0, "opening a cache gives a look")
+	var unix := 1_800_000_000
+	var got := Cosmetics.tick(state, 3600.0 * 100.0, unix)
+	check(got == int(Cosmetics.rules()["cache"]["weekly_cap"]), "playtime caches stop at the weekly cap (%d)" % got)
+	check(Cosmetics.tick(state, 3600.0, unix) == 0, "no more caches this week")
+	check(Cosmetics.tick(state, 1800.0, unix + Cosmetics.WEEK) == 1, "a new week gives caches again")
+	check(Cosmetics.equip(state, id) and Cosmetics.equipped(state, Cosmetics.def(id)["kind"]) == id, "equip a look")
+	check(Cosmetics.salvage(state, id) == 0, "the last copy cannot be broken")
+	c["owned"][id] = 3
+	check(Cosmetics.salvage(state, id) > 0 and Cosmetics.owned(state, id) == 2, "duplicates break into stardust")
+	check(Cosmetics.craft_cost("aura_halo") < 0, "legendary looks cannot be crafted")
+	c["dust"] = 10000
+	check(Cosmetics.craft(state, "pet_batling") and Cosmetics.owned(state, "pet_batling") >= 1, "craft a look with stardust")
+	# --- Trade rules: bound/mythic stay, legendary unbound trades; market opens late.
+	check(not Trade.unlocked(state), "trading is locked for a new account")
+	check(Trade.item_tradable({"rarity": "legendary"}) and not Trade.item_tradable({"rarity": "legendary", "bound": true}), "only unbound legendaries trade")
+	check(not Trade.item_tradable({"rarity": "mythic"}), "mythic gear stays bound")
+	state["best_floor_ever"] = 60
+	state["stats"]["play_time"] = 11.0 * 3600.0
+	check(Trade.unlocked(state), "trading opens at floor 50 + 10 hours")

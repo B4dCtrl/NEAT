@@ -187,8 +187,16 @@ static func roll_consumable(rng: RandomNumberGenerator) -> String:
 	return "health_potion"
 
 
-static func boss_chest(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, tier: String, drop_bonus: float, set_bias: String) -> Array:
-	var chest: Dictionary = DataDB.balance()["chest"][tier]
+## sealed = the party broke a Lord's Sigil on this guardian: +2 items, one
+## rarity higher at least, and a better gem chance.
+static func boss_chest(rng: RandomNumberGenerator, state: Dictionary, floor_num: int, tier: String, drop_bonus: float, set_bias: String, sealed: bool = false) -> Array:
+	var chest: Dictionary = DataDB.balance()["chest"][tier].duplicate()
+	if sealed:
+		var sb: Dictionary = DataDB.balance()["sigil"]
+		chest["items"] = int(chest["items"]) + int(sb["extra_items"])
+		chest["min_rarity"] = DataDB.rarity_by_order(mini(DataDB.rarity_order(chest["min_rarity"]) + 1, DataDB.rarity_order("legendary")))
+		chest["relic_chance"] = float(chest["relic_chance"]) + float(sb["extra_gem_chance"])
+		chest["crystals"] = int(chest["crystals"]) + int(sb["extra_crystals"])
 	var out := []
 	for i in int(chest["items"]):
 		var rarity := roll_rarity(rng, floor_num, chest["min_rarity"], drop_bonus, false)

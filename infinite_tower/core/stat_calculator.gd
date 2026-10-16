@@ -4,6 +4,7 @@ extends RefCounted
 ## Flat stats add up; every "<stat>_pct" key multiplies the matching flat stat.
 
 const DataDB = preload("res://core/data_db.gd")
+const Torment = preload("res://core/torment.gd")
 
 const CORE_STATS := ["hp", "attack", "defense", "magic_power", "attack_speed", "crit_chance", "crit_damage", "dodge"]
 ## Party-wide keys: summed over the whole party instead of per hero.
@@ -49,6 +50,9 @@ static func party_mods(state: Dictionary) -> Dictionary:
 		for key in skill_stats(hero):
 			if key in PARTY_KEYS and key != "cdr":
 				mods[key] = mods.get(key, 0.0) + float(skill_stats(hero)[key])
+	var tm := Torment.mods(Torment.current(state))
+	for key in tm:
+		mods[key] = mods.get(key, 0.0) + float(tm[key])
 	return mods
 
 

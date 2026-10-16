@@ -755,6 +755,12 @@ func _consumable(spec: Dictionary) -> Image:
 			c.poly([Vector2(16, 3), Vector2(16, 27), Vector2(10, 27), Vector2(7, 11)], 3)
 			c.rect(14, 12, 4, 10, 4)         # glowing rune
 			c.rect(12, 15, 8, 3, 4)
+		"sigil":
+			c.disc(15.5, 16, 12, 2)          # gold rim
+			c.disc(15.5, 16, 9.5, 1)         # wax seal
+			c.poly([Vector2(16, 8), Vector2(21, 14), Vector2(19, 23), Vector2(13, 23), Vector2(11, 14)], 4)
+			c.rect(14, 12, 4, 8, 3)
+			c.rect(11, 15, 10, 2, 3)
 		"hourglass":
 			c.rect(7, 3, 18, 3, 2)
 			c.rect(7, 26, 18, 3, 2)
@@ -768,6 +774,8 @@ func _consumable(spec: Dictionary) -> Image:
 		pal = {"main": "#efe3c0", "accent": spec["accent"], "dark": "#6b5030", "glow": spec["color"]}
 	elif spec["shape"] == "stone":
 		pal = {"main": "#6a5a8a", "accent": spec["accent"], "dark": "#2a2040", "glow": spec["color"]}
+	elif spec["shape"] == "sigil":
+		pal = {"main": "#a01c24", "accent": "#f2c14e", "dark": "#3a0a10", "glow": "#ffcf6a"}
 	elif spec["shape"] == "hourglass":
 		pal = {"main": "#d8b060", "accent": "#8a5a1c", "dark": "#3a2a10", "glow": spec["color"]}
 	var rng := RandomNumberGenerator.new()

@@ -14,6 +14,7 @@ const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const TowerStage = preload("res://scenes/ui/tower_stage.gd")
 const Loc = preload("res://core/loc.gd")
+const Torment = preload("res://core/torment.gd")
 const MenuBarScript = preload("res://scenes/ui/menu/menu_bar.gd")
 const PanelHost = preload("res://scenes/ui/menu/panel_host.gd")
 
@@ -184,7 +185,8 @@ func _process(delta: float) -> void:
 
 
 func _refresh() -> void:
-	floor_label.text = Loc.t("hud.floor") % Game.state["floor"]
+	var tl := Torment.current(Game.state)
+	floor_label.text = Loc.t("hud.floor") % Game.state["floor"] + (("  ·  T" + Torment.ROMAN[tl]) if tl > 0 else "")
 	# The floor number takes the colour of the danger ahead (green -> red).
 	var d: Dictionary = Game.danger_next
 	floor_label.label_settings.font_color = Color(d.get("color", "#fff8e0"))
@@ -230,6 +232,10 @@ func _draw() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed and not _tower_rect().has_point(event.position):
+			return
+		# The Treasure Imp is caught by clicking it (before menu / drag).
+		if event.pressed and stage.try_click_imp(event.position - stage.position):
+			accept_event()
 			return
 		if event.pressed:
 			_pressing = true

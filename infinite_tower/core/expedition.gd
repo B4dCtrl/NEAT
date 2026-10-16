@@ -15,7 +15,10 @@ const Progression = preload("res://core/progression.gd")
 const GameState = preload("res://core/game_state.gd")
 const Heroes = preload("res://core/heroes.gd")
 const Loc = preload("res://core/loc.gd")
+const Torment = preload("res://core/torment.gd")
 
+## Torment level the current fight was created at (rewards use it).
+var fight_torment := 0
 var state: Dictionary
 var rng := RandomNumberGenerator.new()
 var phase := "walk"          # walk | intro | combat | pause | camp
@@ -158,6 +161,8 @@ func _start_combat() -> void:
 			"skills": Heroes.active_skills(hero),
 		})
 	var enemy_entries := []
+	var torment_level := Torment.current(state)
+	fight_torment = torment_level
 	var affixes: Array = floor_info.get("affixes", [])
 	for i in floor_info["enemies"].size():
 		var enemy_id: String = floor_info["enemies"][i]
@@ -166,7 +171,7 @@ func _start_combat() -> void:
 		enemy_entries.append({
 			"id": enemy_id,
 			"def": DataDB.unit_def(enemy_id),
-			"stats": TowerGen.enemy_stats(enemy_id, int(state["floor"]), floor_info["tier"] if is_boss else "", affix),
+			"stats": Torment.apply_enemy(TowerGen.enemy_stats(enemy_id, int(state["floor"]), floor_info["tier"] if is_boss else "", affix), torment_level),
 			"is_boss": is_boss,
 		})
 	combat = CombatEngine.new()
@@ -178,7 +183,7 @@ func _start_combat() -> void:
 		"record_events": record_combat_events,
 		"party_specials": mods.get("specials", []),
 		"summon_factory": func(unit_id: String) -> Dictionary:
-			return {"id": unit_id, "def": DataDB.unit_def(unit_id), "stats": TowerGen.enemy_stats(unit_id, floor_num), "is_boss": false},
+			return {"id": unit_id, "def": DataDB.unit_def(unit_id), "stats": Torment.apply_enemy(TowerGen.enemy_stats(unit_id, floor_num), torment_level), "is_boss": false},
 		"supplies": {"potion": int(supplies.get("health_potion", 0)), "bomb": int(supplies.get("fire_bomb", 0)), "mana": int(supplies.get("mana_potion", 0))},
 		"auto_supplies": state["settings"].get("auto_supplies", true),
 	})
@@ -246,8 +251,18 @@ func _end_combat() -> void:
 		stats["bosses"] += 1
 		var boss_name: String = DataDB.unit_def(floor_info["enemies"][0])["name"]
 		GameState.add_history(state, "boss", Loc.t("Defeated %s on floor %d") % [boss_name, state["floor"]])
-		drops = Loot.boss_chest(rng, state, int(state["floor"]), floor_info["tier"], drop_bonus, set_bias)
-		events.append({"type": "chest", "floor": state["floor"], "tier": floor_info["tier"]})
+		# A Lord's Sigil is only spent on a WIN (losing keeps it, like a soulstone).
+		var sealed: bool = state.get("sigil_armed", false) and int(state["consumables"].get("lords_sigil", 0)) > 0
+		if sealed:
+			state["consumables"]["lords_sigil"] = int(state["consumables"]["lords_sigil"]) - 1
+			state["sigil_armed"] = false
+			stats["sigils_used"] = int(stats.get("sigils_used", 0)) + 1
+			events.append({"type": "sigil_broken", "floor": state["floor"]})
+		drops = Loot.boss_chest(rng, state, int(state["floor"]), floor_info["tier"], drop_bonus, set_bias, sealed)
+		# Torment guardians sometimes carry a Lord's Sigil (the tradeable boss key).
+		if fight_torment > 0 and rng.randf() < Torment.sigil_chance(fight_torment):
+			drops.append({"consumable": "lords_sigil"})
+		events.append({"type": "chest", "floor": state["floor"], "tier": floor_info["tier"], "sealed": sealed})
 		after_pause = "next_floor"
 		_set_phase("pause", float(bal["chest_pause"]))
 	else:
@@ -393,6 +408,11 @@ func _next_floor() -> void:
 	if int(state["floor"]) > int(state["best_floor_ever"]):
 		state["best_floor_ever"] = state["floor"]
 		_check_milestones()
+	Torment.record_best(state)
+	var unlocked := Torment.check_unlock(state)
+	if unlocked > 0:
+		GameState.add_history(state, "milestone", Loc.t("%s unlocked!") % Torment.name(unlocked))
+		events.append({"type": "torment_unlocked", "level": unlocked})
 	if int(state["floor"]) > int(state["wall_floor"]) and int(state["wall_floor"]) > 0:
 		events.append({"type": "wall_broken", "floor": state["wall_floor"]})
 		state["wall_floor"] = 0

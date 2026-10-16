@@ -18,6 +18,8 @@ const UiNum = preload("res://scenes/ui/ui_util.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const CombatFx = preload("res://scenes/ui/combat_fx.gd")
 const Loc = preload("res://core/loc.gd")
+const Cosmetics = preload("res://core/cosmetics.gd")
+const CosmeticArt = preload("res://scenes/entities/cosmetic_art.gd")
 
 ## Size of one art pixel on screen.
 @export var px := 2.0
@@ -64,6 +66,10 @@ var _pal_key := ""
 var _time := 0.0
 var _tower_tex: ImageTexture
 var _tower_tex_key := ""
+var _pet_sprite: Node2D
+var _pet_id := ""
+var _imp_sprite: Node2D
+var _imp_t := 0.0
 
 
 func _ready() -> void:
@@ -194,6 +200,8 @@ func _process(delta: float) -> void:
 
 	_sync_enemies(exp)
 	_place_heroes(exp)
+	_place_pet(exp)
+	_place_imp(delta)
 	_place_enemies(exp)
 	_consume_combat_events()
 	for d in _drops:
@@ -209,14 +217,16 @@ func _process(delta: float) -> void:
 
 func _update_palette() -> void:
 	var biome := TowerGen.biome_for(int(Game.state["floor"]))
-	var key: String = ("mono" if is_mono() else biome["id"]) + str(size.x) + str(px)
+	# An equipped tower skin (cosmetic) wins over the biome and the 1-bit style.
+	var skin := Cosmetics.equipped(Game.state, "tower")
+	var key: String = skin + ("mono" if is_mono() else biome["id"]) + str(size.x) + str(px)
 	if key == _pal_key:
 		return
 	_pal_key = key
-	if is_mono():
+	if is_mono() and skin == "":
 		_pal = MONO.duplicate()
 	else:
-		var c: Dictionary = biome["colors"]
+		var c: Dictionary = Cosmetics.def(skin)["colors"] if skin != "" else biome["colors"]
 		_pal = {
 			"ink": Color("#121117"), "paper": Color.html(c["step_edge"]), "mid": Color.html(c["step"]),
 			"back": Color.html(c["wall"]), "back_riser": Color.html(c["wall_dark"]), "sky": Color.html(c["sky"]),
@@ -295,6 +305,80 @@ func _place_heroes(exp) -> void:
 			sp.hp_ratio = float(Game.state["heroes"][i]["hp_ratio"])
 			sp.mp_ratio = float(Game.state["heroes"][i].get("mp_ratio", 1.0))
 			sp.set_dead(false)
+
+
+## The equipped pet trots behind the party.
+func _place_pet(exp) -> void:
+	var id := Cosmetics.equipped(Game.state, "pet")
+	if id != _pet_id:
+		_pet_id = id
+		if _pet_sprite != null:
+			_pet_sprite.queue_free()
+			_pet_sprite = null
+		if id != "":
+			var d := Cosmetics.def(id)
+			_pet_sprite = HeroSprite.instantiate()
+			_pet_sprite.show_hp_bar = false
+			add_child(_pet_sprite)
+			_pet_sprite.configure(String(d["sprite"]), {}, px * 0.6, false, false, String(d["art"]), float(d.get("hue", -1.0)), d.get("fx", []))
+	if _pet_sprite == null:
+		return
+	var n := mini(Game.state["heroes"].size(), hero_sprites.size())
+	var t := party_t() - ((n - 1) * 0.5 + 0.9) * HERO_SLOT
+	var p := project(t, R_WALK, ground_h(t))
+	var pos := Vector2(p.x, p.y)
+	if exp.phase == "walk":
+		pos.y -= absf(sin(_time * 11.0)) * 2.0 * px
+	_pet_sprite.position = pos.round()
+	_pet_sprite.visible = p.z > 0.05
+	_pet_sprite.walking = exp.phase == "walk"
+
+
+## The Treasure Imp: a golden imp scurrying around the party for a few seconds.
+## Click it to catch it (Game.catch_imp()).
+func _place_imp(delta: float) -> void:
+	if Game.imp_left <= 0.0:
+		if _imp_sprite != null:
+			_imp_sprite.visible = false
+		return
+	if _imp_sprite == null:
+		var d := DataDB.unit_def("ember_imp")
+		_imp_sprite = EnemySprite.instantiate()
+		_imp_sprite.show_hp_bar = false
+		add_child(_imp_sprite)
+		_imp_sprite.configure(d["sprite"], d.get("palette", {}), px * 0.9, false, false, "ember_imp", 0.13, ["halo", "crown"])
+	_imp_t += delta
+	var t := party_t() + 0.12 + sin(_imp_t * 1.7) * 0.09
+	var p := project(t, R_WALK, ground_h(t))
+	_imp_sprite.position = (Vector2(p.x, p.y) - Vector2(0, absf(sin(_imp_t * 9.0)) * 3.0 * px)).round()
+	_imp_sprite.face_left = cos(_imp_t * 1.7) < 0.0
+	_imp_sprite.walking = true
+	_imp_sprite.visible = p.z > 0.0
+	if randf() < delta * 6.0:
+		_fx.burst_particles(_center(_imp_sprite), Color("#ffd23f"), 1, 10.0 * px, 0.8, -20.0 * px, 0.6)
+
+
+## Click on the Treasure Imp (stage-local position). True if it was caught.
+func try_click_imp(pos: Vector2) -> bool:
+	if _imp_sprite == null or not _imp_sprite.visible or Game.imp_left <= 0.0:
+		return false
+	var sz: Vector2 = _imp_sprite.size_px()
+	var r := Rect2(_imp_sprite.position - Vector2(sz.x * 0.5 + 6.0 * px, sz.y + 6.0 * px), sz + Vector2(12.0, 12.0) * px)
+	if not r.has_point(pos):
+		return false
+	var at := _center(_imp_sprite)
+	if Game.catch_imp().is_empty():
+		return false
+	_fx.spawn("burst", at, at, Color("#ffd23f"), 2.2, 0.6)
+	_fx.burst_particles(at, Color("#ffe08a"), 24, 60.0 * px, 1.2, 40.0 * px, 0.9)
+	_float_text(_imp_sprite, Loc.t("CAUGHT!"), Color("#ffd23f"), true, true)
+	return true
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if try_click_imp(event.position):
+			accept_event()
 
 
 func _sync_enemies(exp) -> void:
@@ -748,8 +832,21 @@ func _draw() -> void:
 	_draw_tower()
 	for s in front:
 		_draw_segment(s, true)
+	_draw_auras()
 	_draw_bonfires()
 	_draw_drops()
+
+
+## Equipped aura (cosmetic) under every visible hero.
+func _draw_auras() -> void:
+	var id := Cosmetics.equipped(Game.state, "aura")
+	if id == "":
+		return
+	var d := Cosmetics.def(id)
+	for i in hero_sprites.size():
+		var sp = hero_sprites[i]
+		if sp.visible and not sp.dead:
+			CosmeticArt.draw_aura(self, sp.position, px, String(d["style"]), Color(d["color"]), _time, i)
 
 
 func _draw_stars() -> void:

@@ -3532,6 +3532,20 @@
 				"color": "#f2c14e",
 				"accent": "#8a5a1c"
 			}
+		},
+		"lords_sigil": {
+			"name": "Lord's Sigil",
+			"icon": "cons_lords_sigil",
+			"kind": "sigil",
+			"price": 400,
+			"weight": 0,
+			"text": "Use to arm it: the next guardian you DEFEAT opens a sealed chest (+2 items, one rarity higher, more gems and crystals). Losing the fight keeps the sigil. Drops from guardians on Torment.",
+			"icon_art": {
+				"shape": "sigil",
+				"color": "#ff5a3a",
+				"accent": "#f2c14e"
+			},
+			"tradable": true
 		}
 	},
 	"consumable_drop_chance": 0.05,
