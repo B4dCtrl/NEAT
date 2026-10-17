@@ -8,6 +8,11 @@
      (gera `Stairborn.exe` + `Stairborn.pck`; o ícone do .exe precisa do
      rcedit + wine configurados nas Editor Settings, em Export > Windows)
   3. `makensis -DVERSION=<versão> tools/installer/stairborn.nsi`
+  4. Se houver certificado de assinatura real: `tools/installer/sign.sh game`
+     antes do passo 3 e `tools/installer/sign.sh installer` depois
+     (`SIGN_PFX`/`SIGN_PASS`). Sem assinatura, o Smart App Control do
+     Windows 11 bloqueia o instalador e não há botão para liberar: certificado
+     autoassinado NÃO resolve. Avisar o usuário disso ao entregar.
   Ícone e imagens do instalador: `tools/make_icon.gd` + `tools/installer/make_ico.py`.
   Avisos de licença: `tools/make_notices.gd`.
 - Antes de entregar: testar o instalador e o jogo no Wine (instalar, abrir,
