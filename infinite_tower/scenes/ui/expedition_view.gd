@@ -7,6 +7,7 @@ const DataDB = preload("res://core/data_db.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Loc = preload("res://core/loc.gd")
+const Admin = preload("res://core/admin.gd")
 
 @onready var stage: Control = %Stage
 @onready var status_label: Label = %StatusLabel
@@ -22,7 +23,7 @@ var _currency_boxes := {}
 
 ## Texts that live in the scene file or are named after nodes.
 func _apply_texts() -> void:
-	%Subtitle.text = Loc.t("The Infinite Tower")
+	%Subtitle.text = Loc.t("The Infinite Tower") + (("  ·  " + Loc.t("TEST MODE")) if Admin.enabled() else "")
 	%CollapseButton.text = "  " + Loc.t("Taskbar Mode") + "  "
 	%CollapseButton.tooltip_text = Loc.t("Back to the taskbar (Esc / Tab)")
 	if _help_btn != null:

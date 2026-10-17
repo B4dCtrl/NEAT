@@ -55,6 +55,9 @@ VIAddVersionKey "LegalCopyright" "${APP}"
 LangString DESKTOP_LINK ${LANG_PORTUGUESEBR} "Stairborn"
 LangString DESKTOP_LINK ${LANG_SPANISH} "Stairborn"
 LangString DESKTOP_LINK ${LANG_ENGLISH} "Stairborn"
+LangString TEST_LINK ${LANG_PORTUGUESEBR} "Stairborn (modo teste)"
+LangString TEST_LINK ${LANG_SPANISH} "Stairborn (modo de prueba)"
+LangString TEST_LINK ${LANG_ENGLISH} "Stairborn (test mode)"
 LangString UNINSTALL_LINK ${LANG_PORTUGUESEBR} "Desinstalar Stairborn"
 LangString UNINSTALL_LINK ${LANG_SPANISH} "Desinstalar Stairborn"
 LangString UNINSTALL_LINK ${LANG_ENGLISH} "Uninstall Stairborn"
@@ -76,6 +79,9 @@ Section "Stairborn" SecMain
   CreateShortcut "$SMPROGRAMS\${APP}\$(DESKTOP_LINK).lnk" "$INSTDIR\${EXE}" "" "$INSTDIR\icon.ico" 0
   CreateShortcut "$SMPROGRAMS\${APP}\$(UNINSTALL_LINK).lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\icon.ico" 0
   CreateShortcut "$DESKTOP\$(DESKTOP_LINK).lnk" "$INSTDIR\${EXE}" "" "$INSTDIR\icon.ico" 0
+  ; Test mode: its own accounts and saves, and an ADMIN panel (see core/admin.gd).
+  CreateShortcut "$SMPROGRAMS\${APP}\$(TEST_LINK).lnk" "$INSTDIR\${EXE}" "-- --admin" "$INSTDIR\icon.ico" 0
+  CreateShortcut "$DESKTOP\$(TEST_LINK).lnk" "$INSTDIR\${EXE}" "-- --admin" "$INSTDIR\icon.ico" 0
 
   WriteRegStr HKCU "Software\${APP}" "InstallDir" "$INSTDIR"
   WriteRegStr HKCU "${UNINST_KEY}" "DisplayName" "${APP}"
@@ -100,6 +106,8 @@ Section "Uninstall"
   Delete "$INSTDIR\Uninstall.exe"
   RMDir "$INSTDIR"
   Delete "$DESKTOP\$(DESKTOP_LINK).lnk"
+  Delete "$DESKTOP\$(TEST_LINK).lnk"
+  Delete "$SMPROGRAMS\${APP}\$(TEST_LINK).lnk"
   Delete "$SMPROGRAMS\${APP}\$(DESKTOP_LINK).lnk"
   Delete "$SMPROGRAMS\${APP}\$(UNINSTALL_LINK).lnk"
   RMDir "$SMPROGRAMS\${APP}"

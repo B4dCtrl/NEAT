@@ -9,6 +9,7 @@ signal close_requested()
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const Glyphs = preload("res://scenes/ui/menu/glyphs.gd")
 const Loc = preload("res://core/loc.gd")
+const Admin = preload("res://core/admin.gd")
 
 const BUTTON := 20.0
 const GAP := 2.0
@@ -29,6 +30,18 @@ const BUTTONS := [
 	["quit", "power", "menu.quit"],
 ]
 
+## The buttons: test mode adds the ADMIN one before "expedition".
+static var _list: Array = []
+
+
+static func buttons() -> Array:
+	if _list.is_empty():
+		_list = BUTTONS.duplicate()
+		if Admin.enabled():
+			_list.insert(_list.size() - 3, ["admin", "wrench", "menu.admin"])
+	return _list
+
+
 var open_ids: Array = []
 var _hover := -1
 var _t := 0.0
@@ -47,7 +60,7 @@ func _init() -> void:
 
 
 static func width() -> float:
-	return BUTTONS.size() * BUTTON + (BUTTONS.size() - 1) * GAP
+	return buttons().size() * BUTTON + (buttons().size() - 1) * GAP
 
 
 func _button_rect(i: int) -> Rect2:
@@ -55,7 +68,7 @@ func _button_rect(i: int) -> Rect2:
 
 
 func _index_at(p: Vector2) -> int:
-	for i in BUTTONS.size():
+	for i in buttons().size():
 		if _button_rect(i).has_point(p):
 			return i
 	return -1
@@ -63,7 +76,7 @@ func _index_at(p: Vector2) -> int:
 
 func _get_tooltip(at: Vector2) -> String:
 	var i := _index_at(at)
-	return Loc.t(BUTTONS[i][2]) if i >= 0 else ""
+	return Loc.t(buttons()[i][2]) if i >= 0 else ""
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -71,12 +84,12 @@ func _gui_input(event: InputEvent) -> void:
 		var i := _index_at(event.position)
 		if i != _hover:
 			_hover = i
-			tooltip_text = Loc.t(BUTTONS[i][2]) if i >= 0 else ""
+			tooltip_text = Loc.t(buttons()[i][2]) if i >= 0 else ""
 			queue_redraw()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var i := _index_at(event.position)
 		if i >= 0:
-			var id: String = BUTTONS[i][0]
+			var id: String = buttons()[i][0]
 			if id == "expedition":
 				expand_requested.emit()
 			elif id == "close":
@@ -99,19 +112,19 @@ func _notification(what: int) -> void:
 
 
 func _draw() -> void:
-	for i in BUTTONS.size():
+	for i in buttons().size():
 		var r := _button_rect(i)
 		var c := r.get_center()
 		var rad := BUTTON * 0.5
-		var on: bool = BUTTONS[i][0] in open_ids
+		var on: bool = buttons()[i][0] in open_ids
 		draw_circle(c + Vector2(1, 2), rad, Color(0, 0, 0, 0.35))
 		draw_circle(c, rad, Ornate.OUT)
 		draw_circle(c, rad - 2.0, Ornate.GOLD if on or i == _hover else Ornate.GOLD_LO)
 		draw_circle(c, rad - 4.0, Color("#8e3328") if on else (Color("#74302a") if i == _hover else Ornate.FRAME))
 		draw_circle(c + Vector2(-2, -3), rad - 8.0, Color(1, 1, 1, 0.08))
 		var s := BUTTON - 10.0
-		draw_texture_rect(Glyphs.texture(BUTTONS[i][1]), Rect2(c - Vector2(s, s) * 0.5, Vector2(s, s)), false)
-		if BUTTONS[i][0] == "inventory" and not on and Game.logged_in() and int(Game.upgrades()["total"]) > 0:
+		draw_texture_rect(Glyphs.texture(buttons()[i][1]), Rect2(c - Vector2(s, s) * 0.5, Vector2(s, s)), false)
+		if buttons()[i][0] == "inventory" and not on and Game.logged_in() and int(Game.upgrades()["total"]) > 0:
 			var pulse := 0.5 + 0.5 * sin(_t * 5.0)
 			draw_arc(c, rad + 1.0, 0, TAU, 28, Color(0.49, 1.0, 0.54, 0.45 + 0.5 * pulse), 2.0)
 			# Little green arrow on the corner.

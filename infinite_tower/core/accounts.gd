@@ -7,18 +7,27 @@ extends RefCounted
 ## These accounts live on this computer only. Online accounts need a server;
 ## when the game ships on Steam, the Steam login can take this role.
 
-const REGISTRY := "user://accounts.json"
-const SAVE_DIR := "user://accounts"
+## Where accounts and saves live. The test mode (core/admin.gd) switches both
+## to a separate folder so test saves can never touch a real one.
+static var registry_path := "user://accounts.json"
+static var save_dir := "user://accounts"
 const ITERATIONS := 4000
 const NAME_MIN := 3
 const NAME_MAX := 16
 const PASSWORD_MIN := 6
 
 
+## Test mode: accounts and saves in user://test/, apart from the real ones.
+static func use_test_dir() -> void:
+	registry_path = "user://test/accounts.json"
+	save_dir = "user://test/accounts"
+	DirAccess.make_dir_recursive_absolute("user://test")
+
+
 static func _load() -> Dictionary:
-	if not FileAccess.file_exists(REGISTRY):
+	if not FileAccess.file_exists(registry_path):
 		return {"users": {}, "remember": {}}
-	var f := FileAccess.open(REGISTRY, FileAccess.READ)
+	var f := FileAccess.open(registry_path, FileAccess.READ)
 	var parsed = JSON.parse_string(f.get_as_text()) if f != null else null
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return {"users": {}, "remember": {}}
@@ -30,7 +39,7 @@ static func _load() -> Dictionary:
 
 
 static func _store(reg: Dictionary) -> void:
-	var f := FileAccess.open(REGISTRY, FileAccess.WRITE)
+	var f := FileAccess.open(registry_path, FileAccess.WRITE)
 	if f != null:
 		f.store_string(JSON.stringify(reg, "\t"))
 
@@ -96,11 +105,11 @@ static func register(user: String, password: String) -> String:
 		"salt": salt,
 		"hash": _derive(password, salt),
 		"key_salt": key_salt,
-		"file": "%s/%s.dat" % [SAVE_DIR, _random_hex(8)],
+		"file": "%s/%s.dat" % [save_dir, _random_hex(8)],
 		"created": int(Time.get_unix_time_from_system()),
 	}
 	_store(reg)
-	DirAccess.make_dir_recursive_absolute(SAVE_DIR)
+	DirAccess.make_dir_recursive_absolute(save_dir)
 	return ""
 
 
@@ -174,10 +183,10 @@ static func external_login(provider: String, ext_id: String, display: String) ->
 	var reg := _load()
 	var key := external_key(provider, ext_id)
 	if not reg["users"].has(key):
-		DirAccess.make_dir_recursive_absolute(SAVE_DIR)
+		DirAccess.make_dir_recursive_absolute(save_dir)
 		reg["users"][key] = {
 			"display": display, "external": provider,
-			"file": "%s/%s_%s.dat" % [SAVE_DIR, provider, ext_id],
+			"file": "%s/%s_%s.dat" % [save_dir, provider, ext_id],
 			"created": int(Time.get_unix_time_from_system()),
 		}
 	else:

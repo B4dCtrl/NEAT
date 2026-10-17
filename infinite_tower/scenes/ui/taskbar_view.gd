@@ -15,6 +15,7 @@ const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const TowerStage = preload("res://scenes/ui/tower_stage.gd")
 const Loc = preload("res://core/loc.gd")
 const Torment = preload("res://core/torment.gd")
+const Admin = preload("res://core/admin.gd")
 const MenuBarScript = preload("res://scenes/ui/menu/menu_bar.gd")
 const PanelHost = preload("res://scenes/ui/menu/panel_host.gd")
 
@@ -186,7 +187,7 @@ func _process(delta: float) -> void:
 
 func _refresh() -> void:
 	var tl := Torment.current(Game.state)
-	floor_label.text = Loc.t("hud.floor") % Game.state["floor"] + (("  ·  T" + Torment.ROMAN[tl]) if tl > 0 else "")
+	floor_label.text = Loc.t("hud.floor") % Game.state["floor"] + (("  ·  T" + Torment.ROMAN[tl]) if tl > 0 else "") + (("  ·  " + Loc.t("TEST")) if Admin.enabled() else "")
 	# The floor number takes the colour of the danger ahead (green -> red).
 	var d: Dictionary = Game.danger_next
 	floor_label.label_settings.font_color = Color(d.get("color", "#fff8e0"))

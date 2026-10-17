@@ -15,6 +15,7 @@ const HeroesPage = preload("res://scenes/ui/menu/pages/heroes_page.gd")
 const SoulsPage = preload("res://scenes/ui/menu/pages/souls_page.gd")
 const QuestsPage = preload("res://scenes/ui/menu/pages/quests_page.gd")
 const CollectionPage = preload("res://scenes/ui/menu/pages/collection_page.gd")
+const AdminPage = preload("res://scenes/ui/menu/pages/admin_page.gd")
 const Loc = preload("res://core/loc.gd")
 const SettingsTab = preload("res://scenes/ui/tabs/settings_tab.gd")
 
@@ -22,7 +23,7 @@ const MAX_OPEN := 3
 const GAP := 6.0
 const PANEL_H := 420.0
 const ORDER := ["status", "heroes", "talents", "skills", "inventory", "quests", "collection", "souls", "settings"]
-const WIDTHS := {"status": 300.0, "heroes": 320.0, "talents": 300.0, "skills": 300.0, "inventory": 360.0, "quests": 300.0, "collection": 330.0, "souls": 320.0, "settings": 320.0}
+const WIDTHS := {"status": 300.0, "heroes": 320.0, "talents": 300.0, "skills": 300.0, "inventory": 360.0, "quests": 300.0, "collection": 330.0, "souls": 320.0, "settings": 320.0, "admin": 340.0}
 
 ## Hero shown by the hero-centric pages; shared so switching tabs keeps it.
 var hero_idx := 0
@@ -143,6 +144,8 @@ func _make_page(id: String) -> Control:
 			page = QuestsPage.new()
 		"collection":
 			page = CollectionPage.new()
+		"admin":
+			page = AdminPage.new()
 		_:
 			page = SettingsTab.new()
 			page.compact = true

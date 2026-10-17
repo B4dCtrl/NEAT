@@ -21,6 +21,8 @@ static func unlocked(state: Dictionary) -> bool:
 
 ## "" when trading is open, else what is still missing.
 static func lock_reason(state: Dictionary) -> String:
+	if state.get("test_save", false):
+		return Loc.t("Test saves cannot trade.")
 	var r := rules()
 	var need_floor := int(r.get("unlock_best_floor", 0))
 	var need_hours := float(r.get("unlock_play_hours", 0.0))

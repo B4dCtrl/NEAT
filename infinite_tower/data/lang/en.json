@@ -129,5 +129,7 @@
 	"manga.c5.p6a": "Then I'll reach you... and say NO!",
 	"manga.sfx.skrrk": "SKRRK",
 	"manga.hint": "TIP",
-	"manga.c4.p1a": "...{hero}..."
+	"manga.c4.p1a": "...{hero}...",
+	"panel.admin": "TEST MODE",
+	"menu.admin": "Test mode: shortcuts to reach any part of the game"
 }

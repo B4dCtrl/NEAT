@@ -265,6 +265,11 @@ static func _paint(img: Image, glyph: String) -> void:
 		"minimize":
 			_rect(img, 3, 10, 10, 3, CREAM)
 			_poly(img, [Vector2(4, 4), Vector2(12, 4), Vector2(8, 9)], CREAM)
+		"wrench":
+			_line(img, Vector2i(4, 12), Vector2i(10, 6), STEEL_LO, 3)
+			_ring(img, 11, 5, 3, 2, CREAM)
+			_rect(img, 11, 2, 3, 3, Color(0, 0, 0, 0))
+			_px(img, 3, 13, GOLD)
 		"power":
 			_ring(img, 8, 9, 5, 2, RED_HI)
 			_rect(img, 5, 2, 6, 5, Color(0, 0, 0, 0))

@@ -594,5 +594,169 @@
 	"▲ Upgrade for %s: %s (+%s%%)": [
 		"▲ Melhoria para %s: %s (+%s%%)",
 		"▲ Mejora para %s: %s (+%s%%)"
+	],
+	"TEST": [
+		"TESTE",
+		"PRUEBA"
+	],
+	"TEST MODE": [
+		"MODO TESTE",
+		"MODO PRUEBA"
+	],
+	"Test saves cannot trade.": [
+		"Saves de teste não podem negociar.",
+		"Las partidas de prueba no pueden comerciar."
+	],
+	"Test mode: this save is separate from your real one and cannot trade items.": [
+		"Modo teste: este save é separado do seu save de verdade e não pode negociar itens.",
+		"Modo de prueba: esta partida es independiente de tu partida real y no puede comerciar objetos."
+	],
+	"Time": [
+		"Tempo",
+		"Tiempo"
+	],
+	"Floor": [
+		"Andar",
+		"Piso"
+	],
+	"Resources": [
+		"Recursos",
+		"Recursos"
+	],
+	"Heroes": [
+		"Heróis",
+		"Héroes"
+	],
+	"Items": [
+		"Itens",
+		"Objetos"
+	],
+	"Collection and story": [
+		"Coleção e história",
+		"Colección e historia"
+	],
+	"Go to floor": [
+		"Ir ao andar",
+		"Ir al piso"
+	],
+	"Next guardian": [
+		"Próximo guardião",
+		"Próximo guardián"
+	],
+	"Heal party": [
+		"Curar o grupo",
+		"Curar al grupo"
+	],
+	"+%s gold": [
+		"+%s de ouro",
+		"+%s de oro"
+	],
+	"+%d souls": [
+		"+%d almas",
+		"+%d almas"
+	],
+	"+%d crystals": [
+		"+%d cristais",
+		"+%d cristales"
+	],
+	"All +10 levels": [
+		"Todos +10 níveis",
+		"Todos +10 niveles"
+	],
+	"All level 50": [
+		"Todos nível 50",
+		"Todos nivel 50"
+	],
+	"Free hero (mint)": [
+		"Herói grátis (mint)",
+		"Héroe gratis (mint)"
+	],
+	"Fill the bag": [
+		"Encher a bolsa",
+		"Llenar la mochila"
+	],
+	"Supplies +5": [
+		"Suprimentos +5",
+		"Suministros +5"
+	],
+	"+%d caches": [
+		"+%d baús",
+		"+%d cofres"
+	],
+	"+%d stardust": [
+		"+%d poeira estelar",
+		"+%d polvo estelar"
+	],
+	"Call the Treasure Imp": [
+		"Chamar o Diabrete",
+		"Llamar al Diablillo"
+	],
+	"All manga chapters": [
+		"Todos os capítulos",
+		"Todos los capítulos"
+	],
+	"Unlock Torment": [
+		"Liberar Tormento",
+		"Desbloquear Tormento"
+	],
+	"Skip intro": [
+		"Pular a intro",
+		"Saltar la intro"
+	],
+	"Start over": [
+		"Recomeçar do zero",
+		"Empezar de cero"
+	],
+	"Click again to confirm": [
+		"Clique de novo p/ confirmar",
+		"Pulsa otra vez para confirmar"
+	],
+	"Speed x%d": [
+		"Velocidade x%d",
+		"Velocidad x%d"
+	],
+	"Going to floor %d": [
+		"Indo ao andar %d",
+		"Yendo al piso %d"
+	],
+	"Party healed": [
+		"Grupo curado",
+		"Grupo curado"
+	],
+	"Heroes leveled up": [
+		"Heróis subiram de nível",
+		"Los héroes subieron de nivel"
+	],
+	"%d items added to the bag": [
+		"%d itens na bolsa",
+		"%d objetos en la mochila"
+	],
+	"Bag filled": [
+		"Bolsa cheia",
+		"Mochila llena"
+	],
+	"Supplies added": [
+		"Suprimentos adicionados",
+		"Suministros añadidos"
+	],
+	"All manga chapters unlocked": [
+		"Todos os capítulos liberados",
+		"Todos los capítulos desbloqueados"
+	],
+	"Torment unlocked up to %d": [
+		"Tormento liberado até %d",
+		"Tormento desbloqueado hasta %d"
+	],
+	"Intro and tutorial skipped": [
+		"Intro e tutorial pulados",
+		"Intro y tutorial saltados"
+	],
+	"Floor %d": [
+		"Andar %d",
+		"Piso %d"
+	],
+	"Save file": [
+		"Arquivo de save",
+		"Archivo de guardado"
 	]
 }

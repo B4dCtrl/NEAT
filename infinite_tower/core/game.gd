@@ -22,6 +22,7 @@ const Loc = preload("res://core/loc.gd")
 const Torment = preload("res://core/torment.gd")
 const Cosmetics = preload("res://core/cosmetics.gd")
 const Upgrades = preload("res://core/upgrades.gd")
+const Admin = preload("res://core/admin.gd")
 const ShareCard = preload("res://scenes/ui/share_card.gd")
 const Story = preload("res://core/story.gd")
 
@@ -74,6 +75,7 @@ var _story_wait := 1.0
 
 func _ready() -> void:
 	process_priority = -10
+	Admin.prepare()      # test mode: accounts and saves in their own folder
 	_add_symbol_font()
 	# Nothing is loaded until a player logs in: a blank placeholder state keeps
 	# the views happy behind the login screen.
@@ -91,6 +93,8 @@ func _ready() -> void:
 	var r := Accounts.remembered()
 	if not r.is_empty():
 		_open_account(r["user"], r["key"])
+	elif Admin.enabled():
+		Admin.auto_login(self)
 
 
 ## Logs in with the Steam account running the game (no password screen).
@@ -166,6 +170,8 @@ func _open_account(user: String, key: String) -> void:
 		if away >= 60.0:
 			offline_report = SaveSystem.simulate_offline(state, away)
 			GameState.add_history(state, "offline", Loc.t("Climbed while away: floor %d -> %d") % [offline_report["floor_start"], offline_report["floor_end"]])
+	if Admin.enabled():
+		state["test_save"] = true     # never tradable (core/trade.gd)
 	relocalize()
 	expedition = Expedition.new(state)
 	_danger_dirty = true
@@ -832,6 +838,8 @@ func reset_save() -> void:
 		return
 	SaveSystem.delete_save(_save_path)
 	state = GameState.new_game()
+	if Admin.enabled():
+		state["test_save"] = true
 	GameState.add_history(state, "info", Loc.t("A new expedition begins."))
 	expedition = Expedition.new(state)
 	inventory_changed.emit()
