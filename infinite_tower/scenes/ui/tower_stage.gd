@@ -1063,8 +1063,8 @@ func _draw_tower() -> void:
 
 func _draw_fx_layer() -> void:
 	_fx.draw(_fx_layer, px)
-	_draw_floaters(_fx_layer)
 	_draw_boss_bar(_fx_layer)
+	_draw_floaters(_fx_layer)
 
 
 ## The living boss of the fight, if any.
