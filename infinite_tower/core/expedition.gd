@@ -24,14 +24,17 @@ var rng := RandomNumberGenerator.new()
 var phase := "walk"          # walk | intro | combat | pause | camp
 var phase_left := 0.0
 var phase_total := 1.0
-var after_pause := ""        # next_floor | walk
+var after_pause := ""        # next_floor | walk | arrive
 var floor_info := {}
 var combat = null            # CombatEngine while fighting
 var tick_acc := 0.0
 var record_combat_events := true
 var events: Array = []
-## The last Fall Back, for the tumble-down animation: {from, to}.
+## The last Fall Back, for the spirits-roll-down animation: {from, to}.
 var last_fall := {}
+## "fall" (defeat: the heroes turn into spirits and roll down) or "retreat"
+## (they run back) while that pause plays, else "".
+var falling := ""
 ## Damage per hero over the last finished fight, for the DPS panel.
 var last_fight := {"time": 0.0, "damage": {}}
 ## The player pressed "Rest at bonfire": retreat after the current fight.
@@ -91,11 +94,15 @@ func _phase_done() -> void:
 		"pause":
 			if after_pause == "next_floor":
 				_next_floor()
+			elif after_pause == "arrive":
+				combat = null
+				_arrive_floor()
 			else:
 				_begin_walk()
 
 
 func _set_phase(p: String, duration: float) -> void:
+	falling = ""
 	phase = p
 	phase_left = duration
 	phase_total = maxf(duration, 0.001)
@@ -299,8 +306,10 @@ func _fall_back() -> void:
 	last_fall = {"from": from, "to": to, "gold_lost": lost}
 	GameState.add_history(state, "fall", Loc.t("Fell from floor %d back to the bonfire on %d (lost %d gold)") % [from, to, int(lost)])
 	events.append({"type": "fall_back", "from": from, "to": to, "gold_lost": lost})
-	after_pause = "walk"
-	_set_phase("pause", float(bal["fallback_pause"]))
+	# The spirits roll all the way to the bonfire, so the climb resumes there.
+	after_pause = "arrive"
+	_set_phase("pause", float(bal.get("fall_pause", bal["fallback_pause"])))
+	falling = "fall"
 
 
 ## Bonfire: rest (full HP and mana), spend skill points, set the checkpoint.
@@ -356,6 +365,7 @@ func retreat_to_bonfire() -> void:
 	combat = null
 	after_pause = "next_floor"
 	_set_phase("pause", float(DataDB.balance()["fallback_pause"]))
+	falling = "retreat"
 
 
 ## Warp Stone target: the highest bonfire at or below the best floor reached.

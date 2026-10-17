@@ -17,6 +17,7 @@ const Upgrades = preload("res://core/upgrades.gd")
 
 const GLOW_ME := Color("#7dff8a")      # best choice for the hero being viewed
 const GLOW_OTHER := Color("#7fc4ff")   # best choice for another hero of the party
+const CLASS_COLOR := {"knight": Color("#8fb4e8"), "ranger": Color("#9be36b"), "arcanist": Color("#c29aff")}
 
 var item = null              # Dictionary or null
 var hero_idx := -1
@@ -25,6 +26,8 @@ var is_selected := false
 ## 0 = nothing to say, 1 = an upgrade for another hero, 2 = an upgrade for the
 ## hero being viewed (or for anyone, in the market).
 var upgrade := 0
+## The hero on screen cannot wear this piece (it belongs to another class).
+var unusable := false
 var _hover := false
 var _t := 0.0
 
@@ -39,6 +42,9 @@ func setup(item_: Variant, hero_idx_: int, slot_name_: String, cell: float = 48.
 	custom_minimum_size = Vector2(cell, cell)
 	var hints := []
 	upgrade = 0
+	unusable = false
+	if item != null and viewing_hero >= 0 and viewing_hero < Game.state["heroes"].size() and hero_idx_ < 0 and slot_name_ == "":
+		unusable = not Loot.can_equip(item, Game.state["heroes"][viewing_hero]["class"])
 	if item != null and viewing_hero > -2 and hero_idx_ < 0 and slot_name_ == "":
 		hints = _upgrade_hints(viewing_hero)
 	tooltip_text = PartyTab.item_tooltip(item, hints) if item != null else (Loc.t("%s (empty)") % Loc.t(slot_name.capitalize()) if slot_name != "" else "")
@@ -113,6 +119,9 @@ func _draw() -> void:
 			draw_texture_rect(tex, r.grow(-pad), false)
 		if item.get("set", "") != "":
 			draw_rect(Rect2(size.x - 9, 3, 6, 6), Color(DataDB.sets()[item["set"]]["art"]["accent"]) if DataDB.sets().has(item["set"]) else Color("#5fd35f"))
+		if unusable:
+			draw_rect(r.grow(-1.5), Color(0.04, 0.03, 0.07, 0.58))
+		_draw_class_badge(r)
 	elif slot_name != "":
 		# Faded silhouette of what goes here.
 		var ghost := PixelArt.frames({"weapon": "iron_sword"}.get(slot_name, "wayfarer_" + slot_name), {}, true)
@@ -121,6 +130,38 @@ func _draw() -> void:
 	draw_rect(r, border, false, 3.0 if is_selected else 1.5)
 	if upgrade > 0 and item != null:
 		_draw_upgrade(r)
+
+
+## The class a piece belongs to, as a small coloured emblem in the bottom-right
+## corner (same in every language): a shield for the Knight, a bow for the
+## Ranger, a four-point star for the Arcanist.
+func _draw_class_badge(r: Rect2) -> void:
+	var cls := String(item.get("class", ""))
+	if not CLASS_COLOR.has(cls) or size.x < 30.0:
+		return
+	var s := clampf(size.x * 0.26, 9.0, 15.0)
+	var c := Vector2(r.end.x - s * 0.62 - 2.0, r.end.y - s * 0.62 - 2.0)
+	var col: Color = CLASS_COLOR[cls]
+	var ink := Color(0.05, 0.04, 0.08, 0.95)
+	draw_circle(c, s * 0.62, Color(0.05, 0.04, 0.08, 0.6))
+	match cls:
+		"knight":
+			var shield := PackedVector2Array([c + Vector2(-0.4, -0.45) * s, c + Vector2(0.4, -0.45) * s, c + Vector2(0.4, 0.08) * s, c + Vector2(0, 0.5) * s, c + Vector2(-0.4, 0.08) * s])
+			draw_colored_polygon(shield, col)
+			draw_polyline(shield + PackedVector2Array([shield[0]]), ink, 1.2)
+			draw_line(c + Vector2(0, -0.35) * s, c + Vector2(0, 0.3) * s, ink, 1.0)
+		"ranger":
+			draw_arc(c + Vector2(0.18, 0) * s, s * 0.5, PI * 0.55, PI * 1.45, 10, col, maxf(1.6, s * 0.16))
+			draw_line(c + Vector2(0.18, -0.38) * s + Vector2(-0.05, 0) * s, c + Vector2(0.18, 0.38) * s, col.lightened(0.3), 1.0)
+			draw_line(c + Vector2(-0.45, 0) * s, c + Vector2(0.45, 0) * s, col.lightened(0.5), 1.0)
+		"arcanist":
+			var star := PackedVector2Array()
+			for i in 8:
+				var rad := s * (0.5 if i % 2 == 0 else 0.18)
+				var ang := -PI * 0.5 + i * PI / 4.0
+				star.append(c + Vector2(cos(ang), sin(ang)) * rad)
+			draw_colored_polygon(star, col)
+			draw_polyline(star + PackedVector2Array([star[0]]), ink, 1.0)
 
 
 ## A pulsing green frame, a light sweep and an arrow: "this beats what you wear".

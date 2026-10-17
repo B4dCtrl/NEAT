@@ -209,6 +209,7 @@
 		"event_pause": 1.2,
 		"chest_pause": 1.6,
 		"fallback_pause": 3.2,
+		"fall_pause": 5.6,
 		"fall_gold_loss": 0.25,
 		"bonfire_rest": 4.0,
 		"combat_time_limit": 45.0,
@@ -277,6 +278,11 @@
 		"soul_divisor": 10.0,
 		"soul_exponent": 1.6,
 		"party_slots": 3,
+		"fusion": {
+			"_comment": "Fusion: `count` heroes of the same rarity (not the Stairborn) become ONE hero of the next rarity. The one you keep carries its level, gear and skills over to the new rarity; the others are consumed (their gear goes back to the bag). The fee is paid in gold.",
+			"count": 3,
+			"fee": {"uncommon": 150, "rare": 450, "epic": 1500, "legendary": 5000}
+		},
 		"hire": {
 			"gold_base": 150,
 			"gold_growth": 3.0,

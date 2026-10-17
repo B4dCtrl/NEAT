@@ -1,9 +1,10 @@
 extends SceneTree
-## Draws the pixel-art icon of every equipment piece (20 sets x 8 pieces) and every
-## gem, from the set definitions in data/items.json (`art`: palette + motif).
-## Each piece gets its own silhouette family (cycled by tier, then varied by the
-## set's seed), the set palette, an emblem of the set's motif and a few motif
-## particles. Rarity is applied at runtime by PixelArt.item_icon.
+## Draws the pixel-art icon of every equipment piece (20 sets x 3 classes x 6
+## pieces) and every gem, from the set definitions in data/items.json (`art`:
+## palette + motif). Every class has its own silhouettes (knight: plate and
+## heavy helms; ranger: hoods, leather and bracers; arcanist: hats, robes and
+## sandals), cycled by tier, painted in the set palette with an emblem of the
+## set's motif and a few motif particles. Rarity is applied at runtime by PixelArt.item_icon.
 ##   godot --headless --path . -s res://tools/gen_item_art.gd            # writes assets/sprites/<base>.png
 ##   godot --headless --path . -s res://tools/gen_item_art.gd -- sheet <dir>   # also writes contact sheets
 
@@ -129,6 +130,26 @@ class Canvas extends RefCounted:
 					g[y * 32 + 31 - x] = g[y * 32 + x]
 
 
+## Which silhouette designs (see the _helm/_chest/... families) each class's
+## piece cycles through, by tier.
+const VARIANTS := {
+	"helm_knight": [1, 5, 2, 7, 4, 6, 0],
+	"helm_ranger": [3, 8, 9, 0],
+	"helm_arcanist": [10, 11, 12],
+	"chest_knight": [0, 4, 3, 5, 7],
+	"chest_ranger": [2, 6, 8],
+	"chest_arcanist": [1, 9, 10],
+	"gloves_knight": [0, 4, 7, 1],
+	"gloves_ranger": [3, 6, 2],
+	"gloves_arcanist": [5, 8, 1],
+	"boots_knight": [1, 7, 2, 0],
+	"boots_ranger": [5, 4, 6],
+	"boots_arcanist": [3, 8, 6],
+	"ring_knight": [1, 5, 7, 4],
+	"ring_ranger": [2, 3, 0],
+	"ring_arcanist": [0, 6, 4],
+}
+
 var out_dir := "res://assets/sprites/"
 var sheet_dir := ""
 var _pending := []
@@ -153,6 +174,9 @@ func _run() -> void:
 		var rng := RandomNumberGenerator.new()
 		rng.seed = hash(b["id"])
 		var v: int = (tier + _salt(key)) % 8
+		if VARIANTS.has(key):
+			var list: Array = VARIANTS[key]
+			v = list[(tier + _salt(key)) % list.size()]
 		_draw_piece(c, key, v, rng)
 		_emblem(c, key, String(s["art"]["motif"]))
 		var img := _render(c, s["art"], rng, b["id"])
@@ -199,13 +223,13 @@ func _run() -> void:
 
 
 func _kind(b: Dictionary) -> String:
-	if b["slot"] == "weapon":
-		return "weapon_" + String(b["class"])
-	return String(b["slot"])
+	return "%s_%s" % [b["slot"], b["class"]]
 
 
 func _salt(key: String) -> int:
-	return {"weapon_knight": 0, "weapon_ranger": 3, "weapon_arcanist": 5, "helm": 1, "chest": 2, "gloves": 4, "boots": 6, "ring": 7}.get(key, 0)
+	var cls := key.get_slice("_", 1)
+	var slot := key.get_slice("_", 0)
+	return ({"knight": 0, "ranger": 3, "arcanist": 5}.get(cls, 0) + {"weapon": 0, "helm": 1, "chest": 2, "gloves": 4, "boots": 6, "ring": 7}.get(slot, 0)) % 8
 
 
 # ------------------------------------------------------------------ rendering
@@ -226,14 +250,21 @@ func _render(c: Canvas, art: Dictionary, rng: RandomNumberGenerator, id: String)
 				var dn: int = c.at(x, y + 1)
 				var lf: int = c.at(x - 1, y)
 				var rt: int = c.at(x + 1, y)
+				# Light comes from the upper left: a soft diagonal ramp across the
+				# piece, bright rims on the lit edges, dark ones on the far edges.
+				var ramp := float(x + y) / float(N * 2 - 2)
+				col = col.lightened(0.12 * (1.0 - ramp * 2.0)) if ramp < 0.5 else col.darkened(0.14 * (ramp * 2.0 - 1.0))
 				if up != k:
-					col = col.lerp(Color.WHITE, 0.32)
+					col = col.lerp(Color.WHITE, 0.34)
 				elif lf != k:
-					col = col.lerp(Color.WHITE, 0.16)
+					col = col.lerp(Color.WHITE, 0.18)
 				if dn != k:
-					col = col.lerp(Color.BLACK, 0.30)
+					col = col.lerp(Color.BLACK, 0.32)
 				elif rt != k:
-					col = col.lerp(Color.BLACK, 0.16)
+					col = col.lerp(Color.BLACK, 0.18)
+				# A glint where the lit edges meet.
+				if up != k and lf != k and (k == 1 or k == 2):
+					col = col.lerp(Color.WHITE, 0.45)
 			else:
 				if c.at(x, y - 1) != 4 or c.at(x - 1, y) != 4:
 					col = col.lerp(Color.WHITE, 0.55)
@@ -287,10 +318,12 @@ func _emblem(c: Canvas, key: String, motif: String) -> void:
 
 
 func _anchor(key: String) -> Vector2i:
-	match key:
-		"weapon_knight": return Vector2i(16, 21)
-		"weapon_ranger": return Vector2i(16, 13)
-		"weapon_arcanist": return Vector2i(16, 4)
+	match key.get_slice("_", 0):
+		"weapon":
+			match key.get_slice("_", 1):
+				"knight": return Vector2i(16, 21)
+				"ranger": return Vector2i(16, 13)
+				"arcanist": return Vector2i(16, 4)
 		"helm": return Vector2i(16, 9)
 		"chest": return Vector2i(16, 14)
 		"gloves": return Vector2i(16, 15)
@@ -302,10 +335,12 @@ func _anchor(key: String) -> Vector2i:
 # ------------------------------------------------------------------ piece families
 
 func _draw_piece(c: Canvas, key: String, v: int, rng: RandomNumberGenerator) -> void:
-	match key:
-		"weapon_knight": _knight_weapon(c, v, rng)
-		"weapon_ranger": _bow(c, v, rng)
-		"weapon_arcanist": _staff(c, v, rng)
+	match key.get_slice("_", 0):
+		"weapon":
+			match key.get_slice("_", 1):
+				"knight": _knight_weapon(c, v, rng)
+				"ranger": _bow(c, v, rng)
+				"arcanist": _staff(c, v, rng)
 		"helm": _helm(c, v, rng)
 		"chest": _chest(c, v, rng)
 		"gloves": _gloves(c, v, rng)
@@ -526,6 +561,45 @@ func _helm(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:
 			c.rect(8, 22, 16, 3, 2)
 			c.poly([Vector2(8, 15), Vector2(1, 6), Vector2(2, 14), Vector2(0, 14), Vector2(5, 18)], 2)
 			c.poly([Vector2(24, 15), Vector2(31, 6), Vector2(30, 14), Vector2(32, 14), Vector2(27, 18)], 2)
+		8:      # ranger: feathered cap
+			c.ell(15.5, 16, 8, 7, 1)
+			c.rect(7, 19, 18, 3, 3)
+			c.rect(3, 22, 26, 3, 2)
+			c.px(3, 22, 0)
+			c.px(28, 22, 0)
+			c.line(21, 13, 29, 3, 2, 2)
+			c.line(22, 12, 28, 4, 4, 1)
+			c.px(29, 2, 4)
+		9:      # ranger: masked cowl
+			c.poly([Vector2(16, 2), Vector2(25, 12), Vector2(26, 27), Vector2(6, 27), Vector2(7, 12)], 1)
+			c.ell(15.5, 17, 6, 7, 3)
+			c.rect(10, 19, 12, 7, 2)
+			c.rect(12, 14, 3, 2, 4)
+			c.rect(18, 14, 3, 2, 4)
+			c.sr(26, 2, 10, 3)
+		10:     # arcanist: pointed hat
+			c.poly([Vector2(16, 0), Vector2(24, 21), Vector2(8, 21)], 1)
+			c.line(16, 1, 20, 4, 1, 3)
+			c.ell(15.5, 22, 14, 3, 1)
+			c.rect(9, 17, 14, 3, 2)
+			c.rect(14, 16, 4, 5, 4)
+			c.rect(15, 17, 2, 3, 3)
+		11:     # arcanist: wide-brim hat with a buckle
+			c.ell(15.5, 12, 7, 5, 1)
+			c.rect(9, 11, 14, 9, 1)
+			c.ell(15.5, 21, 15, 4, 1)
+			c.rect(9, 17, 14, 3, 3)
+			c.rect(13, 16, 6, 5, 2)
+			c.rect(15, 17, 2, 3, 4)
+			c.line(21, 7, 27, 1, 2, 2)
+		12:     # arcanist: circlet with a gem and wings
+			c.rect(5, 16, 22, 4, 1)
+			c.rect(5, 16, 22, 1, 2)
+			c.poly([Vector2(16, 6), Vector2(21, 13), Vector2(16, 21), Vector2(11, 13)], 4)
+			c.line(5, 17, 1, 8, 2, 2)
+			c.line(26, 17, 30, 8, 2, 2)
+			c.poly([Vector2(8, 16), Vector2(9, 11), Vector2(11, 16)], 2)
+			c.poly([Vector2(21, 16), Vector2(22, 11), Vector2(24, 16)], 2)
 
 
 func _chest(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:
@@ -574,6 +648,30 @@ func _chest(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:
 			c.poly([Vector2(8, 7), Vector2(12, 7), Vector2(24, 22), Vector2(20, 24)], 2)
 			c.rect(14, 15, 4, 4, 4)
 			c.rect(9, 24, 14, 3, 3)
+		8:      # ranger: leather vest, shoulder guard and quiver strap
+			c.poly(torso, 1)
+			c.disc(8, 8, 4, 2)
+			c.line(22, 6, 10, 25, 3, 3)
+			c.rect(14, 15, 4, 3, 2)
+			c.rect(9, 24, 14, 3, 3)
+			c.rect(22, 1, 3, 8, 3)
+			c.px(23, 0, 2)
+			c.px(24, 0, 2)
+		9:      # arcanist: star robe with flared sleeves
+			c.poly([Vector2(11, 4), Vector2(21, 4), Vector2(24, 8), Vector2(26, 28), Vector2(6, 28), Vector2(8, 8)], 1)
+			c.poly([Vector2(8, 8), Vector2(2, 14), Vector2(2, 24), Vector2(8, 22)], 1)
+			c.poly([Vector2(24, 8), Vector2(30, 14), Vector2(30, 24), Vector2(24, 22)], 1)
+			c.rect(12, 4, 8, 3, 3)
+			c.rect(9, 18, 14, 2, 2)
+			c.rect(2, 22, 6, 2, 2)
+			c.rect(24, 22, 6, 2, 2)
+			c.rect(6, 26, 20, 2, 2)
+		10:     # arcanist: hooded mantle with a clasp
+			c.poly([Vector2(8, 3), Vector2(24, 3), Vector2(28, 11), Vector2(4, 11)], 3)
+			c.poly([Vector2(6, 9), Vector2(26, 9), Vector2(30, 28), Vector2(2, 28)], 1)
+			c.disc(15.5, 11, 3, 4)
+			c.rect(8, 22, 16, 2, 2)
+			c.rect(15, 14, 2, 8, 3)
 
 
 func _gloves(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:
@@ -610,6 +708,10 @@ func _gloves(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:
 			c.rect(10, 9, 13, 2, 3)
 		7:      # plated back
 			c.rect(12, 14, 9, 6, 2)
+		8:      # arcanist: flared sleeve with a rune
+			c.poly([Vector2(6, 22), Vector2(26, 22), Vector2(30, 31), Vector2(2, 31)], 2)
+			c.rect(14, 25, 4, 4, 4)
+			c.rect(10, 24, 12, 1, 1)
 
 
 func _boots(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:
@@ -639,6 +741,10 @@ func _boots(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:
 			for y in range(21, 26, 2):
 				c.rect(14, y, 14, 1, 3)
 			c.rect(8, 14, 10, 1, 3)
+		8:      # arcanist: curled slipper with a bell
+			c.line(27, 22, 30, 14, 1, 3)
+			c.disc(30, 12, 2, 4)
+			c.rect(8, 11, 10, 2, 2)
 
 
 func _ring(c: Canvas, v: int, rng: RandomNumberGenerator) -> void:

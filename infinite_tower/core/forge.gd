@@ -5,7 +5,7 @@ extends RefCounted
 ## is the main sink of the economy: weak loot keeps a use, strong loot stays rare.
 ##
 ## EVOLVE is the second merge: `count` items of one SET (same kind and rarity)
-## become ONE item of the next set in the chain of 20 (same rarity). Weapons have
+## become ONE item of the next set in the chain of 20 (same rarity). Gear has
 ## a chance to come out as another class. See data/items.json forge.evolve.
 
 const DataDB = preload("res://core/data_db.gd")
@@ -198,8 +198,8 @@ static func evolve(state: Dictionary, rarity: String, set_id: String, key: Strin
 	state["forges"] = n + 1
 	var slot := key.get_slice("/", 0)
 	var cls := key.get_slice("/", 1)
-	# Weapons may come out as a different class.
-	if slot == "weapon" and rng.randf() < float(evolve_rules()["class_change"]):
+	# Class gear may come out as another class.
+	if cls != "" and rng.randf() < float(evolve_rules()["class_change"]):
 		var others := ["knight", "ranger", "arcanist"].filter(func(c): return c != cls)
 		cls = others[rng.randi() % others.size()]
 	var to_set: String = q["to_set"]

@@ -155,11 +155,48 @@ static func migrate(state: Dictionary) -> Dictionary:
 		state["training"][key] = int(state["training"][key])
 	for key in state["ascension"]:
 		state["ascension"][key] = int(state["ascension"][key])
+	_migrate_gear_classes(state)
 	if int(state.get("version", 1)) < 2:
 		# v2: nothing equips itself any more.
 		state["settings"]["auto_equip"] = false
 	state["version"] = VERSION
 	return state
+
+
+const GEAR_CODES := {"knight": "k", "ranger": "r", "arcanist": "a"}
+
+
+## 0.9.3: armour and rings became class gear (a Knight's plate, a Ranger's
+## leathers, an Arcanist's robes). Pieces from older saves had no class: the ones
+## a hero wears become that hero's class, the rest are shared out evenly.
+static func _migrate_gear_classes(state: Dictionary) -> void:
+	var by_id := {}
+	for b in DataDB.items()["bases"]:
+		by_id[b["id"]] = b
+	for hero in state["heroes"] + state["bench"]:
+		var cls: String = hero["class"] if hero["class"] in GEAR_CODES else "knight"
+		for slot in hero["equipment"]:
+			_gear_class(hero["equipment"][slot], cls, by_id)
+	for item in state["inventory"]:
+		_gear_class(item, "", by_id)
+	for offer in state.get("market", {}).get("offers", []):
+		if offer.has("item"):
+			_gear_class(offer["item"], "", by_id)
+
+
+static func _gear_class(item: Variant, cls_hint: String, by_id: Dictionary) -> void:
+	if typeof(item) != TYPE_DICTIONARY or String(item.get("class", "")) != "" or String(item.get("slot", "weapon")) == "weapon":
+		return
+	var cls := cls_hint
+	if cls == "":
+		cls = ["knight", "ranger", "arcanist"][int(item.get("uid", 0)) % 3]
+	var nb: Dictionary = by_id.get("%s_%s" % [item.get("base", ""), GEAR_CODES[cls]], {})
+	if nb.is_empty():
+		return
+	item["base"] = nb["id"]
+	item["class"] = cls
+	var suffix := String(item.get("suffix_en", ""))
+	item["name"] = nb["name"] + ((" " + Loc.t(suffix)) if suffix != "" else "")
 
 
 static func add_history(state: Dictionary, kind: String, text: String) -> void:

@@ -22,6 +22,11 @@ var unit_uid := ""
 ## Heroes use their walk strip as poses (frame 0 stands, the stride frames are
 ## for walking and for the strike); monsters loop their strip as an idle.
 var stand_pose := false
+## Fall Back: how much of a pale spirit the hero has become (0..1), and whether
+## it is tumbling like a wheel (`roll_speed` in rad/s, negative = counter-clockwise).
+var spirit := 0.0
+var rolling := false
+var roll_speed := 0.0
 
 ## Attack timeline, in seconds from the start of the attack.
 const WIND := 0.10       # pull back
@@ -53,6 +58,9 @@ var _dead_req := false
 var _dead_wait := 0.0
 var _hp_lag := 1.0
 var _lag_wait := 0.0
+var _roll := 0.0
+
+static var _ghosts := {}
 
 
 ## Built-in text sprites are 12 art pixels tall and drawn at px_scale. Imported
@@ -163,6 +171,13 @@ func _process(delta: float) -> void:
 	_kb *= exp(-delta * 15.0)
 	if _kb < 0.01:
 		_kb = 0.0
+	if rolling:
+		_roll += roll_speed * delta
+	elif _roll != 0.0:
+		# Wheel stops: settle upright by the shortest way.
+		_roll = wrapf(_roll, -PI, PI) * exp(-delta * 12.0)
+		if absf(_roll) < 0.01:
+			_roll = 0.0
 	# The pale "recent damage" bar trails behind the real one.
 	if hp_ratio >= _hp_lag:
 		_hp_lag = hp_ratio
@@ -218,14 +233,59 @@ func _frame_index() -> int:
 	return int(_anim_t * (6.0 if walking else 5.0) + _bob_phase) % n
 
 
-func _draw_body(tex: Texture2D, sz: Vector2, off: Vector2, rot: float, sc: Vector2, mod: Color) -> void:
-	draw_set_transform(off, rot, sc)
+func _draw_body(tex: Texture2D, sz: Vector2, off: Vector2, rot: float, sc: Vector2, mod: Color, centre: bool = false) -> void:
+	# `centre` pivots on the middle of the body (a rolling wheel), else on the feet.
 	var rect := Rect2(Vector2(-sz.x * 0.5, -sz.y), sz)
+	if centre:
+		off += Vector2(0.0, -sz.y * 0.5)
+		rect.position.y = -sz.y * 0.5
+	draw_set_transform(off, rot, sc)
 	if face_left:
 		# A negative width mirrors the sprite in place (the rect spans position..position+|size|).
 		rect.size.x = -rect.size.x
 	draw_texture_rect(tex, rect, false, mod)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## The pale "spirit" version of a frame: the art's lights and darks remapped to
+## cool blues, fading away toward the feet. Cached per texture.
+static func _ghost_of(tex: Texture2D) -> Texture2D:
+	var key := tex.get_instance_id()
+	if _ghosts.has(key):
+		return _ghosts[key]
+	var img := tex.get_image()
+	if img == null:
+		return tex
+	img.convert(Image.FORMAT_RGBA8)
+	var w := img.get_width()
+	var h := img.get_height()
+	var deep := Color(0.16, 0.42, 0.74)
+	var pale := Color(0.88, 1.0, 1.0)
+	for y in h:
+		var tail := lerpf(1.0, 0.3, smoothstep(0.55, 1.0, float(y) / h))
+		for x in w:
+			var c := img.get_pixel(x, y)
+			if c.a <= 0.0:
+				continue
+			var g := deep.lerp(pale, clampf(c.get_luminance() * 1.25, 0.0, 1.0))
+			g.a = c.a * tail
+			img.set_pixel(x, y, g)
+	var out := ImageTexture.create_from_image(img)
+	_ghosts[key] = out
+	return out
+
+
+## Soft glow and a few motes circling a spirit.
+func _draw_spirit_aura(sz: Vector2, off: Vector2, a: float) -> void:
+	var c := off + Vector2(0.0, -sz.y * 0.5)
+	var r := maxf(sz.x, sz.y) * 0.62
+	for i in 4:
+		draw_circle(c, r * (1.0 - i * 0.18), Color(0.55, 0.9, 1.0, 0.07 * a * (1 + i * 0.35)))
+	for i in 3:
+		var ang := _anim_t * 3.2 + i * TAU / 3.0 + _bob_phase
+		var m := c + Vector2(cos(ang) * r * 0.85, sin(ang) * r * 0.5)
+		var ms := maxf(1.0, px_scale * 0.9)
+		draw_rect(Rect2(m - Vector2(ms, ms) * 0.5, Vector2(ms, ms)), Color(0.85, 1.0, 1.0, 0.8 * a))
 
 
 func _draw() -> void:
@@ -281,14 +341,17 @@ func _draw() -> void:
 			var gm := Color(0.85, 0.92, 1.0, 0.22 * (4 - i) / 3.0 * _fade)
 			var goff := Vector2(dir * g.x, off.y).round()
 			_draw_body(tex, sz, goff, rot, Vector2(sc.x * g.y / maxf(atk.y, 0.01), sc.y), gm)
-	_draw_body(tex, sz, off, rot, sc, mod)
-	if show_hp_bar and not dead and mp_ratio >= 0.0 and (hp_ratio < 0.999 or mp_ratio < 0.999):
+	if spirit > 0.0 and not dead:
+		_draw_spirit(tex, sz, off, rot, sc, mod)
+	else:
+		_draw_body(tex, sz, off, rot, sc, mod)
+	if show_hp_bar and not dead and spirit < 0.3 and mp_ratio >= 0.0 and (hp_ratio < 0.999 or mp_ratio < 0.999):
 		var mw := absf(sz.x) * 0.8
 		var mh := maxf(1.0, px_scale * 0.75)
 		var mp := Vector2(-mw * 0.5, -sz.y - maxf(1.0, px_scale)) + off
 		draw_rect(Rect2(mp, Vector2(mw, mh)), Color(0, 0, 0, 0.7 * _fade))
 		draw_rect(Rect2(mp, Vector2(mw * mp_ratio, mh)), Color(0.35, 0.6, 1.0, _fade))
-	if show_hp_bar and not dead and (hp_ratio < 0.999 or _hp_lag > hp_ratio + 0.004 or (mp_ratio >= 0.0 and mp_ratio < 0.999)):
+	if show_hp_bar and not dead and spirit < 0.3 and (hp_ratio < 0.999 or _hp_lag > hp_ratio + 0.004 or (mp_ratio >= 0.0 and mp_ratio < 0.999)):
 		var bw := absf(sz.x) * 0.8
 		var bh := maxf(1.0, px_scale)
 		var bp := Vector2(-bw * 0.5, -sz.y - bh * 2.0) + off
@@ -298,3 +361,23 @@ func _draw() -> void:
 		var col := Color("#5fd35f") if hp_ratio > 0.5 else (Color("#ffd23f") if hp_ratio > 0.25 else Color("#ff4f4f"))
 		col.a = _fade
 		draw_rect(Rect2(bp, Vector2(bw * hp_ratio, bh)), col)
+
+
+## A spirit: the body fades into a pale ghost with a halo; while rolling it is
+## drawn as a wheel (pivoting on its middle) with a motion blur of past angles.
+func _draw_spirit(tex: Texture2D, sz: Vector2, off: Vector2, rot: float, sc: Vector2, mod: Color) -> void:
+	var ghost := _ghost_of(tex)
+	var a := spirit * _fade
+	var float_off := Vector2(0.0, -sin(_anim_t * 4.0 + _bob_phase) * 0.9 * px_scale * spirit)
+	var o := off + float_off
+	_draw_spirit_aura(sz, o, a)
+	if rolling:
+		var wheel := 0.88
+		var lift := Vector2(0.0, -sz.y * 0.08)
+		for i in range(4, 0, -1):
+			var blur := _roll - signf(roll_speed) * i * 0.2
+			_draw_body(ghost, sz, o + lift, blur, sc * wheel, Color(0.7, 1.0, 1.0, 0.16 * a * (5 - i) / 4.0), true)
+		_draw_body(ghost, sz, o + lift, _roll, sc * wheel, Color(1, 1, 1, 0.92 * a), true)
+	else:
+		_draw_body(tex, sz, o, rot, sc, Color(mod.r, mod.g, mod.b, mod.a * (1.0 - spirit)))
+		_draw_body(ghost, sz, o, rot, sc, Color(1, 1, 1, 0.9 * a))

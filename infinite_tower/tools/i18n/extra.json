@@ -758,5 +758,117 @@
 	"Save file": [
 		"Arquivo de save",
 		"Archivo de guardado"
+	],
+	"FALL BACK! Your spirits roll down to the bonfire on floor %d...": [
+		"QUEDA! Seus espíritos rolam de volta até a fogueira do andar %d...",
+		"¡CAÍDA! Tus espíritus ruedan de vuelta hasta la hoguera del piso %d..."
+	],
+	"Running back to rest at the bonfire on floor %d...": [
+		"Correndo de volta para descansar na fogueira do andar %d...",
+		"Corriendo de vuelta para descansar en la hoguera del piso %d..."
+	],
+	"Fuse heroes": [
+		"Fundir heróis",
+		"Fusionar héroes"
+	],
+	"Fuse %d heroes of the same rarity into one hero of the next rarity. You keep the one you choose, with its level, gear and skills; the others are consumed and their gear goes back to the bag. The Stairborn cannot be fused.": [
+		"Funda %d heróis da mesma raridade em um herói da raridade seguinte. Você fica com o que escolher, com nível, equipamento e habilidades; os outros são consumidos e o equipamento deles volta para a bolsa. O Stairborn não pode ser fundido.",
+		"Fusiona %d héroes de la misma rareza en un héroe de la rareza siguiente. Te quedas con el que elijas, con su nivel, equipo y habilidades; los demás se consumen y su equipo vuelve a la bolsa. El Stairborn no se puede fusionar."
+	],
+	"%d× %s → %s  (%s gold)": [
+		"%d× %s → %s  (%s de ouro)",
+		"%d× %s → %s  (%s de oro)"
+	],
+	"You have no heroes to fuse yet.": [
+		"Você ainda não tem heróis para fundir.",
+		"Aún no tienes héroes para fusionar."
+	],
+	"You have: %s": [
+		"Você tem: %s",
+		"Tienes: %s"
+	],
+	"Keep %s · %s · %s · %s": [
+		"Manter %s · %s · %s · %s",
+		"Conservar %s · %s · %s · %s"
+	],
+	"%s becomes %s (stats ×%.2f).": [
+		"%s vira %s (atributos ×%.2f).",
+		"%s pasa a ser %s (atributos ×%.2f)."
+	],
+	"Fused away: %s.": [
+		"Serão fundidos: %s.",
+		"Se fusionarán: %s."
+	],
+	"Click again to fuse": [
+		"Clique de novo para fundir",
+		"Haz clic otra vez para fusionar"
+	],
+	"Fuse  (%s gold)": [
+		"Fundir  (%s de ouro)",
+		"Fusionar  (%s de oro)"
+	],
+	"%s is now %s!": [
+		"%s agora é %s!",
+		"¡%s ahora es %s!"
+	],
+	"%d items went back to the bag.": [
+		"%d itens voltaram para a bolsa.",
+		"%d objetos volvieron a la bolsa."
+	],
+	"Not enough heroes of the same rarity": [
+		"Heróis insuficientes da mesma raridade",
+		"Héroes insuficientes de la misma rareza"
+	],
+	"Fused %d heroes: %s is now %s": [
+		"%d heróis fundidos: %s agora é %s",
+		"%d héroes fusionados: %s ahora es %s"
+	],
+	"%s cannot wear this: it is for %s only": [
+		"%s não pode usar isto: é só para %s",
+		"%s no puede usar esto: es solo para %s"
+	],
+	"Climb": [
+		"Subida",
+		"Subida"
+	],
+	"Defeat": [
+		"Derrota",
+		"Derrota"
+	],
+	"Elite": [
+		"Elite",
+		"Élite"
+	],
+	"Rage": [
+		"Fúria",
+		"Furia"
+	],
+	"Music and Fall Back": [
+		"Música e queda",
+		"Música y caída"
+	],
+	"Automatic": [
+		"Automática",
+		"Automática"
+	],
+	"Test the Fall Back": [
+		"Testar a queda",
+		"Probar la caída"
+	],
+	"Now playing: %s": [
+		"Tocando: %s",
+		"Sonando: %s"
+	],
+	"3 Common heroes (fusion)": [
+		"3 heróis Comuns (fusão)",
+		"3 héroes Comunes (fusión)"
+	],
+	"3 Rare heroes (fusion)": [
+		"3 heróis Raros (fusão)",
+		"3 héroes Raros (fusión)"
+	],
+	"%d heroes added": [
+		"%d heróis adicionados",
+		"%d héroes añadidos"
 	]
 }

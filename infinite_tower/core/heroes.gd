@@ -7,6 +7,7 @@ extends RefCounted
 const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
 const Loc = preload("res://core/loc.gd")
+const Loot = preload("res://core/loot_calculator.gd")
 
 const FOUNDER_CLASS := "stairborn"
 
@@ -202,6 +203,157 @@ static func mint(state: Dictionary) -> Dictionary:
 	var hero := generate(state, rng)
 	add_hero(state, hero)
 	return hero
+
+
+# ------------------------------------------------------------------ fusion
+# `count` heroes of one rarity (never the Stairborn) become ONE hero of the next
+# rarity: the one you keep brings its level, gear and skills to the new rarity,
+# the others are consumed and their gear returns to the bag. It is where spare
+# heroes go: the reserve is useful for more than swapping.
+
+static func fusion_count() -> int:
+	return int(DataDB.balance().get("fusion", {}).get("count", 3))
+
+
+## The rarity a fusion of `rarity` makes ("" when it is already the top one).
+static func next_rarity(rarity: String) -> String:
+	var order: Array = DataDB.balance()["hero_rarities"].keys()
+	var i := order.find(rarity)
+	return order[i + 1] if i >= 0 and i + 1 < order.size() else ""
+
+
+static func is_founder(hero: Dictionary) -> bool:
+	return bool(DataDB.classes().get(hero["class"], {}).get("founder", false))
+
+
+static func in_party(state: Dictionary, hero: Dictionary) -> bool:
+	return state["heroes"].any(func(h): return h["id"] == hero["id"])
+
+
+## Gold for the fusion that makes a hero of `to_rarity`.
+static func fusion_fee(to_rarity: String) -> float:
+	return float(DataDB.balance().get("fusion", {}).get("fee", {}).get(to_rarity, 0.0))
+
+
+## Heroes of the party and the reserve that may be fused (everyone but the founder).
+static func fusable(state: Dictionary) -> Array:
+	var out := []
+	for h in state["heroes"] + state["bench"]:
+		if not is_founder(h):
+			out.append(h)
+	return out
+
+
+## How many fusable heroes there are of each rarity.
+static func fusion_counts(state: Dictionary) -> Dictionary:
+	var out := {}
+	for h in fusable(state):
+		var r := String(h.get("rarity", "common"))
+		out[r] = int(out.get(r, 0)) + 1
+	return out
+
+
+## Every fusion that could be done now: [{rarity, to, fee, heroes}] with the
+## heroes of that rarity strongest first.
+static func fusion_groups(state: Dictionary) -> Array:
+	var out := []
+	var all := fusable(state)
+	for r in DataDB.balance()["hero_rarities"]:
+		var to := next_rarity(r)
+		if to == "":
+			continue
+		var of := all.filter(func(h): return String(h.get("rarity", "common")) == r)
+		if of.size() < fusion_count():
+			continue
+		of.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
+		out.append({"rarity": r, "to": to, "fee": fusion_fee(to), "heroes": of})
+	return out
+
+
+## What a fusion would do: {keep, burn, to, fee} or {} when it cannot be done.
+## `keep_id` "" keeps the highest level; the heroes consumed are the weakest
+## others (reserve ones first), unless `burn_ids` names them.
+static func fusion_plan(state: Dictionary, rarity: String, keep_id: String = "", burn_ids: Array = []) -> Dictionary:
+	var to := next_rarity(rarity)
+	if to == "":
+		return {}
+	var pool := fusable(state).filter(func(h): return String(h.get("rarity", "common")) == rarity)
+	if pool.size() < fusion_count():
+		return {}
+	pool.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
+	var keep: Dictionary = pool[0]
+	if keep_id != "":
+		var found := pool.filter(func(h): return h["id"] == keep_id)
+		if found.is_empty():
+			return {}
+		keep = found[0]
+	var others := pool.filter(func(h): return h["id"] != keep["id"])
+	var burn := []
+	if burn_ids.is_empty():
+		# Weakest first; between equals the reserve goes before the party.
+		others.sort_custom(func(a, b):
+			var pa := 1 if in_party(state, a) else 0
+			var pb := 1 if in_party(state, b) else 0
+			return pa < pb if pa != pb else int(a["level"]) < int(b["level"]))
+		burn = others.slice(0, fusion_count() - 1)
+	else:
+		for id in burn_ids:
+			var f := others.filter(func(h): return h["id"] == id)
+			if f.is_empty() or burn.size() >= fusion_count() - 1:
+				return {}
+			burn.append(f[0])
+		if burn.size() != fusion_count() - 1:
+			return {}
+	return {"keep": keep, "burn": burn, "to": to, "fee": fusion_fee(to)}
+
+
+## "" when the fusion can be done, else why not.
+static func fusion_blocker(state: Dictionary, plan: Dictionary) -> String:
+	if plan.is_empty():
+		return Loc.t("Not enough heroes of the same rarity")
+	if float(state["gold"]) < float(plan["fee"]):
+		return Loc.t("Not enough gold")
+	return ""
+
+
+## Does the fusion. Returns the plan that was carried out ({} if it could not be).
+static func fuse(state: Dictionary, rarity: String, keep_id: String = "", burn_ids: Array = []) -> Dictionary:
+	var plan := fusion_plan(state, rarity, keep_id, burn_ids)
+	if fusion_blocker(state, plan) != "":
+		return {}
+	state["gold"] = float(state["gold"]) - float(plan["fee"])
+	var keep: Dictionary = plan["keep"]
+	var cap := int(DataDB.balance()["inventory_cap"])
+	var returned := 0
+	var sold := 0.0
+	for b in plan["burn"]:
+		# Their gear goes back to the bag (or is salvaged when the bag is full).
+		for slot in b["equipment"]:
+			var item = b["equipment"][slot]
+			if item == null:
+				continue
+			if state["inventory"].size() < cap:
+				state["inventory"].append(item)
+				returned += 1
+			else:
+				sold += Loot.salvage_value(item)
+		state["heroes"] = state["heroes"].filter(func(h): return h["id"] != b["id"])
+		state["bench"] = state["bench"].filter(func(h): return h["id"] != b["id"])
+	state["gold"] = float(state["gold"]) + sold
+	# The party must never be left empty.
+	if state["heroes"].is_empty():
+		state["bench"] = state["bench"].filter(func(h): return h["id"] != keep["id"])
+		state["heroes"].append(keep)
+	var rdef: Dictionary = DataDB.balance()["hero_rarities"][plan["to"]]
+	keep["rarity"] = plan["to"]
+	keep["potential"] = float(rdef["potential"])
+	keep["hp_ratio"] = 1.0
+	keep["mp_ratio"] = 1.0
+	var st: Dictionary = state["stats"]
+	st["fusions"] = int(st.get("fusions", 0)) + 1
+	plan["returned_items"] = returned
+	plan["salvaged_gold"] = sold
+	return plan
 
 
 ## Gold to keep aside so auto-training does not eat the next recruit's price.

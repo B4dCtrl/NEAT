@@ -3,6 +3,7 @@ extends RefCounted
 ## Every roll takes the RNG explicitly so offline simulation stays deterministic.
 
 const DataDB = preload("res://core/data_db.gd")
+const Loc = preload("res://core/loc.gd")
 
 
 ## Weighted rarity roll. drop_bonus shifts weight toward higher tiers.
@@ -84,6 +85,8 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 			slots.append(b["slot"])
 	var slot: String = slots[rng.randi() % slots.size()]
 	var of_slot: Array = bases.filter(func(b): return b["slot"] == slot)
+	if not base_filter.is_valid():
+		of_slot = _favour_classes(rng, state, of_slot)
 	var base: Dictionary = of_slot[rng.randi() % of_slot.size()]
 	var ilvl := maxi(floor_num, 1)
 	var scale := float(rdef["mult"]) * pow(float(data["item_growth"]), ilvl - 1) * rng.randf_range(0.9, 1.1)
@@ -120,6 +123,34 @@ static func generate_item(rng: RandomNumberGenerator, state: Dictionary, floor_n
 		"stats": stats,
 		"set": base["set"],
 	}
+
+
+## Gear is class-bound, so drops lean toward the classes you actually field: every
+## class counts once, plus two for each hero who can wear it. A Knight, a Ranger
+## and an Arcanist see the same share of the loot, and a lone Stairborn (who wears
+## Knight and Ranger gear) mostly finds pieces it can use.
+static func _favour_classes(rng: RandomNumberGenerator, state: Dictionary, of_slot: Array) -> Array:
+	var weights := {}
+	for b in of_slot:
+		weights[String(b["class"])] = 1.0
+	if weights.size() < 2:
+		return of_slot
+	for h in state.get("heroes", []) + state.get("bench", []):
+		var uses: Array = [h["class"]] + DataDB.classes().get(h["class"], {}).get("uses", [])
+		for c in uses:
+			if weights.has(c):
+				weights[c] += 2.0
+	var total := 0.0
+	for c in weights:
+		total += float(weights[c])
+	var roll := rng.randf() * total
+	var picked := ""
+	for c in weights:
+		picked = c
+		roll -= float(weights[c])
+		if roll <= 0.0:
+			break
+	return of_slot.filter(func(b): return String(b["class"]) == picked)
 
 
 ## Picks an unowned relic, or "" when every relic is already owned.
@@ -218,6 +249,17 @@ static func can_equip(item: Dictionary, class_id: String) -> bool:
 	if item["class"] == "" or item["class"] == class_id:
 		return true
 	return item["class"] in DataDB.classes().get(class_id, {}).get("uses", [])
+
+
+## "every hero", or the names of the classes that can wear a class-bound piece.
+static func users_text(item: Dictionary) -> String:
+	if item["class"] == "":
+		return Loc.t("every hero")
+	var names := []
+	for id in DataDB.classes():
+		if item["class"] == id or item["class"] in DataDB.classes()[id].get("uses", []):
+			names.append(DataDB.classes()[id]["name"])
+	return ", ".join(names)
 
 
 static func salvage_value(item: Dictionary) -> float:

@@ -9,6 +9,7 @@ const Expedition = preload("res://core/expedition.gd")
 const SaveSystem = preload("res://core/save_system.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
 const Inventory = preload("res://core/inventory.gd")
+const Loot = preload("res://core/loot_calculator.gd")
 const Progression = preload("res://core/progression.gd")
 const PlatformServices = preload("res://core/platform_services.gd")
 const Heroes = preload("res://core/heroes.gd")
@@ -415,6 +416,13 @@ func current_enemy_name() -> String:
 func equip(hero_idx: int, uid: int) -> void:
 	if Inventory.equip_uid(state, hero_idx, uid):
 		inventory_changed.emit()
+		return
+	# Gear is class-bound: say why a piece did not go on.
+	var item = Inventory.find_inventory_item(state, uid)
+	if item != null and hero_idx < state["heroes"].size():
+		var hero: Dictionary = state["heroes"][hero_idx]
+		notified.emit("info", Loc.t("%s cannot wear this: it is for %s only") % [hero["name"], Loot.users_text(item)])
+		sfx_requested.emit("miss")
 
 
 func unequip(hero_idx: int, slot: String) -> void:
@@ -749,6 +757,22 @@ func mint_hero() -> void:
 		notified.emit("milestone", Loc.t("Minted %s the %s") % [hero["name"], DataDB.classes()[hero["class"]]["name"]])
 		party_changed.emit()
 		state_changed.emit()
+
+
+## Fuses heroes of one rarity into one of the next (see Heroes.fuse).
+func fuse_heroes(rarity: String, keep_id: String = "") -> Dictionary:
+	var plan := Heroes.fuse(state, rarity, keep_id)
+	if plan.is_empty():
+		return plan
+	var keep: Dictionary = plan["keep"]
+	var rarity_name := Loc.t(String(plan["to"]).capitalize())
+	GameState.add_history(state, "info", Loc.t("Fused %d heroes: %s is now %s") % [Heroes.fusion_count(), keep["name"], rarity_name])
+	notified.emit("milestone", Loc.t("%s is now %s!") % [keep["name"], rarity_name])
+	sfx_requested.emit("legendary" if String(plan["to"]) in ["epic", "legendary"] else "fanfare")
+	party_changed.emit()
+	inventory_changed.emit()
+	state_changed.emit()
+	return plan
 
 
 ## Your Stairborn (or any hero) can be renamed; the story and the game stay "Stairborn".

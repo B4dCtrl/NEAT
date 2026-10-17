@@ -10,7 +10,10 @@ const Loc = preload("res://core/loc.gd")
 const Torment = preload("res://core/torment.gd")
 
 var host
+const THEME_NAMES := {"climb": "Climb", "boss": "Guardian", "camp": "Bonfire", "fall": "Defeat", "elite": "Elite", "lord": "Tower Lord", "rage": "Rage"}
+
 var _speed_label: Label
+var _music_label: Label
 var _floor_spin: SpinBox
 var _torment_spin: SpinBox
 var _reset_btn: Button
@@ -66,6 +69,9 @@ func _ready() -> void:
 	_btn(row, Loc.t("All level 50"), func(): Admin.level_heroes(Game, 0, 50))
 	row = _row(v)
 	_btn(row, Loc.t("Free hero (mint)"), func(): Admin.free_hero(Game))
+	row = _row(v)
+	_btn(row, Loc.t("3 Common heroes (fusion)"), func(): Admin.give_heroes(Game, "common", 3))
+	_btn(row, Loc.t("3 Rare heroes (fusion)"), func(): Admin.give_heroes(Game, "rare", 3))
 
 	_section(v, Loc.t("Items"))
 	row = _row(v)
@@ -92,6 +98,16 @@ func _ready() -> void:
 	row.add_child(_torment_spin)
 	_btn(row, Loc.t("Unlock Torment"), func(): Admin.set_torment(Game, int(_torment_spin.value)))
 
+	_section(v, Loc.t("Music and Fall Back"))
+	row = _row(v)
+	for t in Audio.track_names():
+		_btn(row, Loc.t(String(THEME_NAMES[t])), func(): Audio.force_track(t))
+	_btn(row, Loc.t("Automatic"), func(): Audio.force_track(""))
+	row = _row(v)
+	_btn(row, Loc.t("Test the Fall Back"), func(): Admin.test_fall(Game))
+	_music_label = Ornate.small_label("", Ornate.ACCENT, 11)
+	v.add_child(_music_label)
+
 	_section(v, Loc.t("Save file"))
 	row = _row(v)
 	_btn(row, Loc.t("Skip intro"), func(): Admin.skip_intro(Game))
@@ -104,6 +120,7 @@ func _process(delta: float) -> void:
 	if not is_visible_in_tree():
 		return
 	_speed_label.text = Loc.t("Speed x%d") % int(Game.time_scale) + "   ·   " + Loc.t("Floor %d") % int(Game.state["floor"])
+	_music_label.text = Loc.t("Now playing: %s") % Loc.t(String(THEME_NAMES.get(Audio.current_track(), "Climb")))
 	if _reset_armed > 0.0:
 		_reset_armed -= delta
 		if _reset_armed <= 0.0:

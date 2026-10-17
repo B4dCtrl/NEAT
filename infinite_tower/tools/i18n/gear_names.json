@@ -1,0 +1,1202 @@
+{
+	"Wayfarer Helm": [
+		"Elmo Andarilho",
+		"Yelmo Caminante"
+	],
+	"Wayfarer Hood": [
+		"Capuz Andarilho",
+		"Capucha Caminante"
+	],
+	"Wayfarer Circlet": [
+		"Diadema Andarilho",
+		"Diadema Caminante"
+	],
+	"Wayfarer Cuirass": [
+		"Couraça Andarilho",
+		"Coraza Caminante"
+	],
+	"Wayfarer Jerkin": [
+		"Gibão Andarilho",
+		"Jubón Caminante"
+	],
+	"Wayfarer Robe": [
+		"Túnica Andarilho",
+		"Túnica Caminante"
+	],
+	"Wayfarer Gauntlets": [
+		"Manoplas Andarilho",
+		"Guanteletes Caminante"
+	],
+	"Wayfarer Bracers": [
+		"Braçadeiras Andarilho",
+		"Muñequeras Caminante"
+	],
+	"Wayfarer Mitts": [
+		"Luvas Andarilho",
+		"Guantes Caminante"
+	],
+	"Wayfarer Greaves": [
+		"Grevas Andarilho",
+		"Grebas Caminante"
+	],
+	"Wayfarer Boots": [
+		"Botas Andarilho",
+		"Botas Caminante"
+	],
+	"Wayfarer Sandals": [
+		"Sandálias Andarilho",
+		"Sandalias Caminante"
+	],
+	"Wayfarer Signet": [
+		"Sinete Andarilho",
+		"Sello Caminante"
+	],
+	"Wayfarer Band": [
+		"Anel Andarilho",
+		"Anillo Caminante"
+	],
+	"Wayfarer Sigil": [
+		"Sigilo Andarilho",
+		"Sigilo Caminante"
+	],
+	"Gravebound Greathelm": [
+		"Elmo Pesado Sepulcral",
+		"Yelmo Pesado Sepulcral"
+	],
+	"Gravebound Cowl": [
+		"Touca Sepulcral",
+		"Cogulla Sepulcral"
+	],
+	"Gravebound Pointed Hat": [
+		"Chapéu Pontudo Sepulcral",
+		"Sombrero Puntiagudo Sepulcral"
+	],
+	"Gravebound Breastplate": [
+		"Peitoral Sepulcral",
+		"Peto Sepulcral"
+	],
+	"Gravebound Leathers": [
+		"Couros Sepulcral",
+		"Cueros Sepulcral"
+	],
+	"Gravebound Vestments": [
+		"Vestes Sepulcral",
+		"Vestiduras Sepulcral"
+	],
+	"Gravebound Vambraces": [
+		"Braçais Sepulcral",
+		"Brazales Sepulcral"
+	],
+	"Gravebound Grips": [
+		"Luvas de Couro Sepulcral",
+		"Guantes de Cuero Sepulcral"
+	],
+	"Gravebound Sleeves": [
+		"Mangas Sepulcral",
+		"Mangas Sepulcral"
+	],
+	"Gravebound Sabatons": [
+		"Escarpes Sepulcral",
+		"Escarpes Sepulcral"
+	],
+	"Gravebound Striders": [
+		"Passadas Sepulcral",
+		"Zancadas Sepulcral"
+	],
+	"Gravebound Slippers": [
+		"Chinelos Sepulcral",
+		"Zapatillas Sepulcral"
+	],
+	"Gravebound Seal": [
+		"Selo Sepulcral",
+		"Sigilo Sepulcral"
+	],
+	"Gravebound Loop": [
+		"Aro Sepulcral",
+		"Aro Sepulcral"
+	],
+	"Gravebound Charm": [
+		"Amuleto Sepulcral",
+		"Amuleto Sepulcral"
+	],
+	"Ashen King Visor": [
+		"Viseira Rei das Cinzas",
+		"Visera Rey de las Cenizas"
+	],
+	"Ashen King Cap": [
+		"Boné Rei das Cinzas",
+		"Gorra Rey de las Cenizas"
+	],
+	"Ashen King Diadem": [
+		"Tiara Rei das Cinzas",
+		"Tiara Rey de las Cenizas"
+	],
+	"Ashen King Plate": [
+		"Armadura Rei das Cinzas",
+		"Armadura de Placas Rey de las Cenizas"
+	],
+	"Ashen King Vest": [
+		"Colete Rei das Cinzas",
+		"Chaleco Rey de las Cenizas"
+	],
+	"Ashen King Mantle": [
+		"Manto Rei das Cinzas",
+		"Manto Rey de las Cenizas"
+	],
+	"Ashen King Fists": [
+		"Punhos Rei das Cinzas",
+		"Puños Rey de las Cenizas"
+	],
+	"Ashen King Wraps": [
+		"Faixas Rei das Cinzas",
+		"Vendas Rey de las Cenizas"
+	],
+	"Ashen King Cuffs": [
+		"Mitenes Rei das Cinzas",
+		"Mitones Rey de las Cenizas"
+	],
+	"Ashen King Treads": [
+		"Passos de Placa Rei das Cinzas",
+		"Pasos de Placa Rey de las Cenizas"
+	],
+	"Ashen King Moccasins": [
+		"Mocassins Rei das Cinzas",
+		"Mocasines Rey de las Cenizas"
+	],
+	"Ashen King Shoes": [
+		"Sapatos Rei das Cinzas",
+		"Zapatos Rey de las Cenizas"
+	],
+	"Ashen King Crest": [
+		"Brasão Rei das Cinzas",
+		"Blasón Rey de las Cenizas"
+	],
+	"Ashen King Talon": [
+		"Garra Rei das Cinzas",
+		"Garra Rey de las Cenizas"
+	],
+	"Ashen King Focus": [
+		"Foco Rei das Cinzas",
+		"Foco Rey de las Cenizas"
+	],
+	"Verdant Warden Helm": [
+		"Elmo Guardião Verdejante",
+		"Yelmo Guardián Verdante"
+	],
+	"Verdant Warden Hood": [
+		"Capuz Guardião Verdejante",
+		"Capucha Guardián Verdante"
+	],
+	"Verdant Warden Circlet": [
+		"Diadema Guardião Verdejante",
+		"Diadema Guardián Verdante"
+	],
+	"Verdant Warden Cuirass": [
+		"Couraça Guardião Verdejante",
+		"Coraza Guardián Verdante"
+	],
+	"Verdant Warden Jerkin": [
+		"Gibão Guardião Verdejante",
+		"Jubón Guardián Verdante"
+	],
+	"Verdant Warden Robe": [
+		"Túnica Guardião Verdejante",
+		"Túnica Guardián Verdante"
+	],
+	"Verdant Warden Gauntlets": [
+		"Manoplas Guardião Verdejante",
+		"Guanteletes Guardián Verdante"
+	],
+	"Verdant Warden Bracers": [
+		"Braçadeiras Guardião Verdejante",
+		"Muñequeras Guardián Verdante"
+	],
+	"Verdant Warden Mitts": [
+		"Luvas Guardião Verdejante",
+		"Guantes Guardián Verdante"
+	],
+	"Verdant Warden Greaves": [
+		"Grevas Guardião Verdejante",
+		"Grebas Guardián Verdante"
+	],
+	"Verdant Warden Boots": [
+		"Botas Guardião Verdejante",
+		"Botas Guardián Verdante"
+	],
+	"Verdant Warden Sandals": [
+		"Sandálias Guardião Verdejante",
+		"Sandalias Guardián Verdante"
+	],
+	"Verdant Warden Signet": [
+		"Sinete Guardião Verdejante",
+		"Sello Guardián Verdante"
+	],
+	"Verdant Warden Band": [
+		"Anel Guardião Verdejante",
+		"Anillo Guardián Verdante"
+	],
+	"Verdant Warden Sigil": [
+		"Sigilo Guardião Verdejante",
+		"Sigilo Guardián Verdante"
+	],
+	"Stormcaller Greathelm": [
+		"Elmo Pesado Invocador de Tempestades",
+		"Yelmo Pesado Invocador de Tormentas"
+	],
+	"Stormcaller Cowl": [
+		"Touca Invocador de Tempestades",
+		"Cogulla Invocador de Tormentas"
+	],
+	"Stormcaller Pointed Hat": [
+		"Chapéu Pontudo Invocador de Tempestades",
+		"Sombrero Puntiagudo Invocador de Tormentas"
+	],
+	"Stormcaller Breastplate": [
+		"Peitoral Invocador de Tempestades",
+		"Peto Invocador de Tormentas"
+	],
+	"Stormcaller Leathers": [
+		"Couros Invocador de Tempestades",
+		"Cueros Invocador de Tormentas"
+	],
+	"Stormcaller Vestments": [
+		"Vestes Invocador de Tempestades",
+		"Vestiduras Invocador de Tormentas"
+	],
+	"Stormcaller Vambraces": [
+		"Braçais Invocador de Tempestades",
+		"Brazales Invocador de Tormentas"
+	],
+	"Stormcaller Grips": [
+		"Luvas de Couro Invocador de Tempestades",
+		"Guantes de Cuero Invocador de Tormentas"
+	],
+	"Stormcaller Sleeves": [
+		"Mangas Invocador de Tempestades",
+		"Mangas Invocador de Tormentas"
+	],
+	"Stormcaller Sabatons": [
+		"Escarpes Invocador de Tempestades",
+		"Escarpes Invocador de Tormentas"
+	],
+	"Stormcaller Striders": [
+		"Passadas Invocador de Tempestades",
+		"Zancadas Invocador de Tormentas"
+	],
+	"Stormcaller Slippers": [
+		"Chinelos Invocador de Tempestades",
+		"Zapatillas Invocador de Tormentas"
+	],
+	"Stormcaller Seal": [
+		"Selo Invocador de Tempestades",
+		"Sigilo Invocador de Tormentas"
+	],
+	"Stormcaller Loop": [
+		"Aro Invocador de Tempestades",
+		"Aro Invocador de Tormentas"
+	],
+	"Stormcaller Charm": [
+		"Amuleto Invocador de Tempestades",
+		"Amuleto Invocador de Tormentas"
+	],
+	"Frostbound Visor": [
+		"Viseira Gelo Eterno",
+		"Visera Gélido"
+	],
+	"Frostbound Cap": [
+		"Boné Gelo Eterno",
+		"Gorra Gélido"
+	],
+	"Frostbound Diadem": [
+		"Tiara Gelo Eterno",
+		"Tiara Gélido"
+	],
+	"Frostbound Plate": [
+		"Armadura Gelo Eterno",
+		"Armadura de Placas Gélido"
+	],
+	"Frostbound Vest": [
+		"Colete Gelo Eterno",
+		"Chaleco Gélido"
+	],
+	"Frostbound Mantle": [
+		"Manto Gelo Eterno",
+		"Manto Gélido"
+	],
+	"Frostbound Fists": [
+		"Punhos Gelo Eterno",
+		"Puños Gélido"
+	],
+	"Frostbound Wraps": [
+		"Faixas Gelo Eterno",
+		"Vendas Gélido"
+	],
+	"Frostbound Cuffs": [
+		"Mitenes Gelo Eterno",
+		"Mitones Gélido"
+	],
+	"Frostbound Treads": [
+		"Passos de Placa Gelo Eterno",
+		"Pasos de Placa Gélido"
+	],
+	"Frostbound Moccasins": [
+		"Mocassins Gelo Eterno",
+		"Mocasines Gélido"
+	],
+	"Frostbound Shoes": [
+		"Sapatos Gelo Eterno",
+		"Zapatos Gélido"
+	],
+	"Frostbound Crest": [
+		"Brasão Gelo Eterno",
+		"Blasón Gélido"
+	],
+	"Frostbound Talon": [
+		"Garra Gelo Eterno",
+		"Garra Gélido"
+	],
+	"Frostbound Focus": [
+		"Foco Gelo Eterno",
+		"Foco Gélido"
+	],
+	"Prismatic Vein Helm": [
+		"Elmo Veio Prismático",
+		"Yelmo Veta Prismática"
+	],
+	"Prismatic Vein Hood": [
+		"Capuz Veio Prismático",
+		"Capucha Veta Prismática"
+	],
+	"Prismatic Vein Circlet": [
+		"Diadema Veio Prismático",
+		"Diadema Veta Prismática"
+	],
+	"Prismatic Vein Cuirass": [
+		"Couraça Veio Prismático",
+		"Coraza Veta Prismática"
+	],
+	"Prismatic Vein Jerkin": [
+		"Gibão Veio Prismático",
+		"Jubón Veta Prismática"
+	],
+	"Prismatic Vein Robe": [
+		"Túnica Veio Prismático",
+		"Túnica Veta Prismática"
+	],
+	"Prismatic Vein Gauntlets": [
+		"Manoplas Veio Prismático",
+		"Guanteletes Veta Prismática"
+	],
+	"Prismatic Vein Bracers": [
+		"Braçadeiras Veio Prismático",
+		"Muñequeras Veta Prismática"
+	],
+	"Prismatic Vein Mitts": [
+		"Luvas Veio Prismático",
+		"Guantes Veta Prismática"
+	],
+	"Prismatic Vein Greaves": [
+		"Grevas Veio Prismático",
+		"Grebas Veta Prismática"
+	],
+	"Prismatic Vein Boots": [
+		"Botas Veio Prismático",
+		"Botas Veta Prismática"
+	],
+	"Prismatic Vein Sandals": [
+		"Sandálias Veio Prismático",
+		"Sandalias Veta Prismática"
+	],
+	"Prismatic Vein Signet": [
+		"Sinete Veio Prismático",
+		"Sello Veta Prismática"
+	],
+	"Prismatic Vein Band": [
+		"Anel Veio Prismático",
+		"Anillo Veta Prismática"
+	],
+	"Prismatic Vein Sigil": [
+		"Sigilo Veio Prismático",
+		"Sigilo Veta Prismática"
+	],
+	"Sunken Tide Greathelm": [
+		"Elmo Pesado Maré Submersa",
+		"Yelmo Pesado Marea Sumergida"
+	],
+	"Sunken Tide Cowl": [
+		"Touca Maré Submersa",
+		"Cogulla Marea Sumergida"
+	],
+	"Sunken Tide Pointed Hat": [
+		"Chapéu Pontudo Maré Submersa",
+		"Sombrero Puntiagudo Marea Sumergida"
+	],
+	"Sunken Tide Breastplate": [
+		"Peitoral Maré Submersa",
+		"Peto Marea Sumergida"
+	],
+	"Sunken Tide Leathers": [
+		"Couros Maré Submersa",
+		"Cueros Marea Sumergida"
+	],
+	"Sunken Tide Vestments": [
+		"Vestes Maré Submersa",
+		"Vestiduras Marea Sumergida"
+	],
+	"Sunken Tide Vambraces": [
+		"Braçais Maré Submersa",
+		"Brazales Marea Sumergida"
+	],
+	"Sunken Tide Grips": [
+		"Luvas de Couro Maré Submersa",
+		"Guantes de Cuero Marea Sumergida"
+	],
+	"Sunken Tide Sleeves": [
+		"Mangas Maré Submersa",
+		"Mangas Marea Sumergida"
+	],
+	"Sunken Tide Sabatons": [
+		"Escarpes Maré Submersa",
+		"Escarpes Marea Sumergida"
+	],
+	"Sunken Tide Striders": [
+		"Passadas Maré Submersa",
+		"Zancadas Marea Sumergida"
+	],
+	"Sunken Tide Slippers": [
+		"Chinelos Maré Submersa",
+		"Zapatillas Marea Sumergida"
+	],
+	"Sunken Tide Seal": [
+		"Selo Maré Submersa",
+		"Sigilo Marea Sumergida"
+	],
+	"Sunken Tide Loop": [
+		"Aro Maré Submersa",
+		"Aro Marea Sumergida"
+	],
+	"Sunken Tide Charm": [
+		"Amuleto Maré Submersa",
+		"Amuleto Marea Sumergida"
+	],
+	"Dune Nomad Visor": [
+		"Viseira Nômade das Dunas",
+		"Visera Nómada de las Dunas"
+	],
+	"Dune Nomad Cap": [
+		"Boné Nômade das Dunas",
+		"Gorra Nómada de las Dunas"
+	],
+	"Dune Nomad Diadem": [
+		"Tiara Nômade das Dunas",
+		"Tiara Nómada de las Dunas"
+	],
+	"Dune Nomad Plate": [
+		"Armadura Nômade das Dunas",
+		"Armadura de Placas Nómada de las Dunas"
+	],
+	"Dune Nomad Vest": [
+		"Colete Nômade das Dunas",
+		"Chaleco Nómada de las Dunas"
+	],
+	"Dune Nomad Mantle": [
+		"Manto Nômade das Dunas",
+		"Manto Nómada de las Dunas"
+	],
+	"Dune Nomad Fists": [
+		"Punhos Nômade das Dunas",
+		"Puños Nómada de las Dunas"
+	],
+	"Dune Nomad Wraps": [
+		"Faixas Nômade das Dunas",
+		"Vendas Nómada de las Dunas"
+	],
+	"Dune Nomad Cuffs": [
+		"Mitenes Nômade das Dunas",
+		"Mitones Nómada de las Dunas"
+	],
+	"Dune Nomad Treads": [
+		"Passos de Placa Nômade das Dunas",
+		"Pasos de Placa Nómada de las Dunas"
+	],
+	"Dune Nomad Moccasins": [
+		"Mocassins Nômade das Dunas",
+		"Mocasines Nómada de las Dunas"
+	],
+	"Dune Nomad Shoes": [
+		"Sapatos Nômade das Dunas",
+		"Zapatos Nómada de las Dunas"
+	],
+	"Dune Nomad Crest": [
+		"Brasão Nômade das Dunas",
+		"Blasón Nómada de las Dunas"
+	],
+	"Dune Nomad Talon": [
+		"Garra Nômade das Dunas",
+		"Garra Nómada de las Dunas"
+	],
+	"Dune Nomad Focus": [
+		"Foco Nômade das Dunas",
+		"Foco Nómada de las Dunas"
+	],
+	"Forgeborn Helm": [
+		"Elmo Forjado em Fogo",
+		"Yelmo Forjado en Fuego"
+	],
+	"Forgeborn Hood": [
+		"Capuz Forjado em Fogo",
+		"Capucha Forjado en Fuego"
+	],
+	"Forgeborn Circlet": [
+		"Diadema Forjado em Fogo",
+		"Diadema Forjado en Fuego"
+	],
+	"Forgeborn Cuirass": [
+		"Couraça Forjado em Fogo",
+		"Coraza Forjado en Fuego"
+	],
+	"Forgeborn Jerkin": [
+		"Gibão Forjado em Fogo",
+		"Jubón Forjado en Fuego"
+	],
+	"Forgeborn Robe": [
+		"Túnica Forjado em Fogo",
+		"Túnica Forjado en Fuego"
+	],
+	"Forgeborn Gauntlets": [
+		"Manoplas Forjado em Fogo",
+		"Guanteletes Forjado en Fuego"
+	],
+	"Forgeborn Bracers": [
+		"Braçadeiras Forjado em Fogo",
+		"Muñequeras Forjado en Fuego"
+	],
+	"Forgeborn Mitts": [
+		"Luvas Forjado em Fogo",
+		"Guantes Forjado en Fuego"
+	],
+	"Forgeborn Greaves": [
+		"Grevas Forjado em Fogo",
+		"Grebas Forjado en Fuego"
+	],
+	"Forgeborn Boots": [
+		"Botas Forjado em Fogo",
+		"Botas Forjado en Fuego"
+	],
+	"Forgeborn Sandals": [
+		"Sandálias Forjado em Fogo",
+		"Sandalias Forjado en Fuego"
+	],
+	"Forgeborn Signet": [
+		"Sinete Forjado em Fogo",
+		"Sello Forjado en Fuego"
+	],
+	"Forgeborn Band": [
+		"Anel Forjado em Fogo",
+		"Anillo Forjado en Fuego"
+	],
+	"Forgeborn Sigil": [
+		"Sigilo Forjado em Fogo",
+		"Sigilo Forjado en Fuego"
+	],
+	"Bloodmoon Greathelm": [
+		"Elmo Pesado Lua de Sangue",
+		"Yelmo Pesado Luna de Sangre"
+	],
+	"Bloodmoon Cowl": [
+		"Touca Lua de Sangue",
+		"Cogulla Luna de Sangre"
+	],
+	"Bloodmoon Pointed Hat": [
+		"Chapéu Pontudo Lua de Sangue",
+		"Sombrero Puntiagudo Luna de Sangre"
+	],
+	"Bloodmoon Breastplate": [
+		"Peitoral Lua de Sangue",
+		"Peto Luna de Sangre"
+	],
+	"Bloodmoon Leathers": [
+		"Couros Lua de Sangue",
+		"Cueros Luna de Sangre"
+	],
+	"Bloodmoon Vestments": [
+		"Vestes Lua de Sangue",
+		"Vestiduras Luna de Sangre"
+	],
+	"Bloodmoon Vambraces": [
+		"Braçais Lua de Sangue",
+		"Brazales Luna de Sangre"
+	],
+	"Bloodmoon Grips": [
+		"Luvas de Couro Lua de Sangue",
+		"Guantes de Cuero Luna de Sangre"
+	],
+	"Bloodmoon Sleeves": [
+		"Mangas Lua de Sangue",
+		"Mangas Luna de Sangre"
+	],
+	"Bloodmoon Sabatons": [
+		"Escarpes Lua de Sangue",
+		"Escarpes Luna de Sangre"
+	],
+	"Bloodmoon Striders": [
+		"Passadas Lua de Sangue",
+		"Zancadas Luna de Sangre"
+	],
+	"Bloodmoon Slippers": [
+		"Chinelos Lua de Sangue",
+		"Zapatillas Luna de Sangre"
+	],
+	"Bloodmoon Seal": [
+		"Selo Lua de Sangue",
+		"Sigilo Luna de Sangre"
+	],
+	"Bloodmoon Loop": [
+		"Aro Lua de Sangue",
+		"Aro Luna de Sangre"
+	],
+	"Bloodmoon Charm": [
+		"Amuleto Lua de Sangue",
+		"Amuleto Luna de Sangre"
+	],
+	"Nightbloom Visor": [
+		"Viseira Flor-da-Noite",
+		"Visera Flor de Noche"
+	],
+	"Nightbloom Cap": [
+		"Boné Flor-da-Noite",
+		"Gorra Flor de Noche"
+	],
+	"Nightbloom Diadem": [
+		"Tiara Flor-da-Noite",
+		"Tiara Flor de Noche"
+	],
+	"Nightbloom Plate": [
+		"Armadura Flor-da-Noite",
+		"Armadura de Placas Flor de Noche"
+	],
+	"Nightbloom Vest": [
+		"Colete Flor-da-Noite",
+		"Chaleco Flor de Noche"
+	],
+	"Nightbloom Mantle": [
+		"Manto Flor-da-Noite",
+		"Manto Flor de Noche"
+	],
+	"Nightbloom Fists": [
+		"Punhos Flor-da-Noite",
+		"Puños Flor de Noche"
+	],
+	"Nightbloom Wraps": [
+		"Faixas Flor-da-Noite",
+		"Vendas Flor de Noche"
+	],
+	"Nightbloom Cuffs": [
+		"Mitenes Flor-da-Noite",
+		"Mitones Flor de Noche"
+	],
+	"Nightbloom Treads": [
+		"Passos de Placa Flor-da-Noite",
+		"Pasos de Placa Flor de Noche"
+	],
+	"Nightbloom Moccasins": [
+		"Mocassins Flor-da-Noite",
+		"Mocasines Flor de Noche"
+	],
+	"Nightbloom Shoes": [
+		"Sapatos Flor-da-Noite",
+		"Zapatos Flor de Noche"
+	],
+	"Nightbloom Crest": [
+		"Brasão Flor-da-Noite",
+		"Blasón Flor de Noche"
+	],
+	"Nightbloom Talon": [
+		"Garra Flor-da-Noite",
+		"Garra Flor de Noche"
+	],
+	"Nightbloom Focus": [
+		"Foco Flor-da-Noite",
+		"Foco Flor de Noche"
+	],
+	"Voidtouched Helm": [
+		"Elmo Tocado pelo Vazio",
+		"Yelmo Tocado por el Vacío"
+	],
+	"Voidtouched Hood": [
+		"Capuz Tocado pelo Vazio",
+		"Capucha Tocado por el Vacío"
+	],
+	"Voidtouched Circlet": [
+		"Diadema Tocado pelo Vazio",
+		"Diadema Tocado por el Vacío"
+	],
+	"Voidtouched Cuirass": [
+		"Couraça Tocado pelo Vazio",
+		"Coraza Tocado por el Vacío"
+	],
+	"Voidtouched Jerkin": [
+		"Gibão Tocado pelo Vazio",
+		"Jubón Tocado por el Vacío"
+	],
+	"Voidtouched Robe": [
+		"Túnica Tocado pelo Vazio",
+		"Túnica Tocado por el Vacío"
+	],
+	"Voidtouched Gauntlets": [
+		"Manoplas Tocado pelo Vazio",
+		"Guanteletes Tocado por el Vacío"
+	],
+	"Voidtouched Bracers": [
+		"Braçadeiras Tocado pelo Vazio",
+		"Muñequeras Tocado por el Vacío"
+	],
+	"Voidtouched Mitts": [
+		"Luvas Tocado pelo Vazio",
+		"Guantes Tocado por el Vacío"
+	],
+	"Voidtouched Greaves": [
+		"Grevas Tocado pelo Vazio",
+		"Grebas Tocado por el Vacío"
+	],
+	"Voidtouched Boots": [
+		"Botas Tocado pelo Vazio",
+		"Botas Tocado por el Vacío"
+	],
+	"Voidtouched Sandals": [
+		"Sandálias Tocado pelo Vazio",
+		"Sandalias Tocado por el Vacío"
+	],
+	"Voidtouched Signet": [
+		"Sinete Tocado pelo Vazio",
+		"Sello Tocado por el Vacío"
+	],
+	"Voidtouched Band": [
+		"Anel Tocado pelo Vazio",
+		"Anillo Tocado por el Vacío"
+	],
+	"Voidtouched Sigil": [
+		"Sigilo Tocado pelo Vazio",
+		"Sigilo Tocado por el Vacío"
+	],
+	"Wraithwoven Greathelm": [
+		"Elmo Pesado Tecido de Espectros",
+		"Yelmo Pesado Tejido de Espectros"
+	],
+	"Wraithwoven Cowl": [
+		"Touca Tecido de Espectros",
+		"Cogulla Tejido de Espectros"
+	],
+	"Wraithwoven Pointed Hat": [
+		"Chapéu Pontudo Tecido de Espectros",
+		"Sombrero Puntiagudo Tejido de Espectros"
+	],
+	"Wraithwoven Breastplate": [
+		"Peitoral Tecido de Espectros",
+		"Peto Tejido de Espectros"
+	],
+	"Wraithwoven Leathers": [
+		"Couros Tecido de Espectros",
+		"Cueros Tejido de Espectros"
+	],
+	"Wraithwoven Vestments": [
+		"Vestes Tecido de Espectros",
+		"Vestiduras Tejido de Espectros"
+	],
+	"Wraithwoven Vambraces": [
+		"Braçais Tecido de Espectros",
+		"Brazales Tejido de Espectros"
+	],
+	"Wraithwoven Grips": [
+		"Luvas de Couro Tecido de Espectros",
+		"Guantes de Cuero Tejido de Espectros"
+	],
+	"Wraithwoven Sleeves": [
+		"Mangas Tecido de Espectros",
+		"Mangas Tejido de Espectros"
+	],
+	"Wraithwoven Sabatons": [
+		"Escarpes Tecido de Espectros",
+		"Escarpes Tejido de Espectros"
+	],
+	"Wraithwoven Striders": [
+		"Passadas Tecido de Espectros",
+		"Zancadas Tejido de Espectros"
+	],
+	"Wraithwoven Slippers": [
+		"Chinelos Tecido de Espectros",
+		"Zapatillas Tejido de Espectros"
+	],
+	"Wraithwoven Seal": [
+		"Selo Tecido de Espectros",
+		"Sigilo Tejido de Espectros"
+	],
+	"Wraithwoven Loop": [
+		"Aro Tecido de Espectros",
+		"Aro Tejido de Espectros"
+	],
+	"Wraithwoven Charm": [
+		"Amuleto Tecido de Espectros",
+		"Amuleto Tejido de Espectros"
+	],
+	"Radiant Choir Visor": [
+		"Viseira Coro Radiante",
+		"Visera Coro Radiante"
+	],
+	"Radiant Choir Cap": [
+		"Boné Coro Radiante",
+		"Gorra Coro Radiante"
+	],
+	"Radiant Choir Diadem": [
+		"Tiara Coro Radiante",
+		"Tiara Coro Radiante"
+	],
+	"Radiant Choir Plate": [
+		"Armadura Coro Radiante",
+		"Armadura de Placas Coro Radiante"
+	],
+	"Radiant Choir Vest": [
+		"Colete Coro Radiante",
+		"Chaleco Coro Radiante"
+	],
+	"Radiant Choir Mantle": [
+		"Manto Coro Radiante",
+		"Manto Coro Radiante"
+	],
+	"Radiant Choir Fists": [
+		"Punhos Coro Radiante",
+		"Puños Coro Radiante"
+	],
+	"Radiant Choir Wraps": [
+		"Faixas Coro Radiante",
+		"Vendas Coro Radiante"
+	],
+	"Radiant Choir Cuffs": [
+		"Mitenes Coro Radiante",
+		"Mitones Coro Radiante"
+	],
+	"Radiant Choir Treads": [
+		"Passos de Placa Coro Radiante",
+		"Pasos de Placa Coro Radiante"
+	],
+	"Radiant Choir Moccasins": [
+		"Mocassins Coro Radiante",
+		"Mocasines Coro Radiante"
+	],
+	"Radiant Choir Shoes": [
+		"Sapatos Coro Radiante",
+		"Zapatos Coro Radiante"
+	],
+	"Radiant Choir Crest": [
+		"Brasão Coro Radiante",
+		"Blasón Coro Radiante"
+	],
+	"Radiant Choir Talon": [
+		"Garra Coro Radiante",
+		"Garra Coro Radiante"
+	],
+	"Radiant Choir Focus": [
+		"Foco Coro Radiante",
+		"Foco Coro Radiante"
+	],
+	"Titanforge Helm": [
+		"Elmo Forja Titânica",
+		"Yelmo Forja Titánica"
+	],
+	"Titanforge Hood": [
+		"Capuz Forja Titânica",
+		"Capucha Forja Titánica"
+	],
+	"Titanforge Circlet": [
+		"Diadema Forja Titânica",
+		"Diadema Forja Titánica"
+	],
+	"Titanforge Cuirass": [
+		"Couraça Forja Titânica",
+		"Coraza Forja Titánica"
+	],
+	"Titanforge Jerkin": [
+		"Gibão Forja Titânica",
+		"Jubón Forja Titánica"
+	],
+	"Titanforge Robe": [
+		"Túnica Forja Titânica",
+		"Túnica Forja Titánica"
+	],
+	"Titanforge Gauntlets": [
+		"Manoplas Forja Titânica",
+		"Guanteletes Forja Titánica"
+	],
+	"Titanforge Bracers": [
+		"Braçadeiras Forja Titânica",
+		"Muñequeras Forja Titánica"
+	],
+	"Titanforge Mitts": [
+		"Luvas Forja Titânica",
+		"Guantes Forja Titánica"
+	],
+	"Titanforge Greaves": [
+		"Grevas Forja Titânica",
+		"Grebas Forja Titánica"
+	],
+	"Titanforge Boots": [
+		"Botas Forja Titânica",
+		"Botas Forja Titánica"
+	],
+	"Titanforge Sandals": [
+		"Sandálias Forja Titânica",
+		"Sandalias Forja Titánica"
+	],
+	"Titanforge Signet": [
+		"Sinete Forja Titânica",
+		"Sello Forja Titánica"
+	],
+	"Titanforge Band": [
+		"Anel Forja Titânica",
+		"Anillo Forja Titánica"
+	],
+	"Titanforge Sigil": [
+		"Sigilo Forja Titânica",
+		"Sigilo Forja Titánica"
+	],
+	"Dragonscale Greathelm": [
+		"Elmo Pesado Escama de Dragão",
+		"Yelmo Pesado Escama de Dragón"
+	],
+	"Dragonscale Cowl": [
+		"Touca Escama de Dragão",
+		"Cogulla Escama de Dragón"
+	],
+	"Dragonscale Pointed Hat": [
+		"Chapéu Pontudo Escama de Dragão",
+		"Sombrero Puntiagudo Escama de Dragón"
+	],
+	"Dragonscale Breastplate": [
+		"Peitoral Escama de Dragão",
+		"Peto Escama de Dragón"
+	],
+	"Dragonscale Leathers": [
+		"Couros Escama de Dragão",
+		"Cueros Escama de Dragón"
+	],
+	"Dragonscale Vestments": [
+		"Vestes Escama de Dragão",
+		"Vestiduras Escama de Dragón"
+	],
+	"Dragonscale Vambraces": [
+		"Braçais Escama de Dragão",
+		"Brazales Escama de Dragón"
+	],
+	"Dragonscale Grips": [
+		"Luvas de Couro Escama de Dragão",
+		"Guantes de Cuero Escama de Dragón"
+	],
+	"Dragonscale Sleeves": [
+		"Mangas Escama de Dragão",
+		"Mangas Escama de Dragón"
+	],
+	"Dragonscale Sabatons": [
+		"Escarpes Escama de Dragão",
+		"Escarpes Escama de Dragón"
+	],
+	"Dragonscale Striders": [
+		"Passadas Escama de Dragão",
+		"Zancadas Escama de Dragón"
+	],
+	"Dragonscale Slippers": [
+		"Chinelos Escama de Dragão",
+		"Zapatillas Escama de Dragón"
+	],
+	"Dragonscale Seal": [
+		"Selo Escama de Dragão",
+		"Sigilo Escama de Dragón"
+	],
+	"Dragonscale Loop": [
+		"Aro Escama de Dragão",
+		"Aro Escama de Dragón"
+	],
+	"Dragonscale Charm": [
+		"Amuleto Escama de Dragão",
+		"Amuleto Escama de Dragón"
+	],
+	"Starfall Visor": [
+		"Viseira Queda de Estrelas",
+		"Visera Lluvia de Estrellas"
+	],
+	"Starfall Cap": [
+		"Boné Queda de Estrelas",
+		"Gorra Lluvia de Estrellas"
+	],
+	"Starfall Diadem": [
+		"Tiara Queda de Estrelas",
+		"Tiara Lluvia de Estrellas"
+	],
+	"Starfall Plate": [
+		"Armadura Queda de Estrelas",
+		"Armadura de Placas Lluvia de Estrellas"
+	],
+	"Starfall Vest": [
+		"Colete Queda de Estrelas",
+		"Chaleco Lluvia de Estrellas"
+	],
+	"Starfall Mantle": [
+		"Manto Queda de Estrelas",
+		"Manto Lluvia de Estrellas"
+	],
+	"Starfall Fists": [
+		"Punhos Queda de Estrelas",
+		"Puños Lluvia de Estrellas"
+	],
+	"Starfall Wraps": [
+		"Faixas Queda de Estrelas",
+		"Vendas Lluvia de Estrellas"
+	],
+	"Starfall Cuffs": [
+		"Mitenes Queda de Estrelas",
+		"Mitones Lluvia de Estrellas"
+	],
+	"Starfall Treads": [
+		"Passos de Placa Queda de Estrelas",
+		"Pasos de Placa Lluvia de Estrellas"
+	],
+	"Starfall Moccasins": [
+		"Mocassins Queda de Estrelas",
+		"Mocasines Lluvia de Estrellas"
+	],
+	"Starfall Shoes": [
+		"Sapatos Queda de Estrelas",
+		"Zapatos Lluvia de Estrellas"
+	],
+	"Starfall Crest": [
+		"Brasão Queda de Estrelas",
+		"Blasón Lluvia de Estrellas"
+	],
+	"Starfall Talon": [
+		"Garra Queda de Estrelas",
+		"Garra Lluvia de Estrellas"
+	],
+	"Starfall Focus": [
+		"Foco Queda de Estrelas",
+		"Foco Lluvia de Estrellas"
+	],
+	"Eclipse Helm": [
+		"Elmo Eclipse",
+		"Yelmo Eclipse"
+	],
+	"Eclipse Hood": [
+		"Capuz Eclipse",
+		"Capucha Eclipse"
+	],
+	"Eclipse Circlet": [
+		"Diadema Eclipse",
+		"Diadema Eclipse"
+	],
+	"Eclipse Cuirass": [
+		"Couraça Eclipse",
+		"Coraza Eclipse"
+	],
+	"Eclipse Jerkin": [
+		"Gibão Eclipse",
+		"Jubón Eclipse"
+	],
+	"Eclipse Robe": [
+		"Túnica Eclipse",
+		"Túnica Eclipse"
+	],
+	"Eclipse Gauntlets": [
+		"Manoplas Eclipse",
+		"Guanteletes Eclipse"
+	],
+	"Eclipse Bracers": [
+		"Braçadeiras Eclipse",
+		"Muñequeras Eclipse"
+	],
+	"Eclipse Mitts": [
+		"Luvas Eclipse",
+		"Guantes Eclipse"
+	],
+	"Eclipse Greaves": [
+		"Grevas Eclipse",
+		"Grebas Eclipse"
+	],
+	"Eclipse Boots": [
+		"Botas Eclipse",
+		"Botas Eclipse"
+	],
+	"Eclipse Sandals": [
+		"Sandálias Eclipse",
+		"Sandalias Eclipse"
+	],
+	"Eclipse Signet": [
+		"Sinete Eclipse",
+		"Sello Eclipse"
+	],
+	"Eclipse Band": [
+		"Anel Eclipse",
+		"Anillo Eclipse"
+	],
+	"Eclipse Sigil": [
+		"Sigilo Eclipse",
+		"Sigilo Eclipse"
+	],
+	"Infinite Regalia Greathelm": [
+		"Elmo Pesado Regalia Infinita",
+		"Yelmo Pesado Regalia Infinita"
+	],
+	"Infinite Regalia Cowl": [
+		"Touca Regalia Infinita",
+		"Cogulla Regalia Infinita"
+	],
+	"Infinite Regalia Pointed Hat": [
+		"Chapéu Pontudo Regalia Infinita",
+		"Sombrero Puntiagudo Regalia Infinita"
+	],
+	"Infinite Regalia Breastplate": [
+		"Peitoral Regalia Infinita",
+		"Peto Regalia Infinita"
+	],
+	"Infinite Regalia Leathers": [
+		"Couros Regalia Infinita",
+		"Cueros Regalia Infinita"
+	],
+	"Infinite Regalia Vestments": [
+		"Vestes Regalia Infinita",
+		"Vestiduras Regalia Infinita"
+	],
+	"Infinite Regalia Vambraces": [
+		"Braçais Regalia Infinita",
+		"Brazales Regalia Infinita"
+	],
+	"Infinite Regalia Grips": [
+		"Luvas de Couro Regalia Infinita",
+		"Guantes de Cuero Regalia Infinita"
+	],
+	"Infinite Regalia Sleeves": [
+		"Mangas Regalia Infinita",
+		"Mangas Regalia Infinita"
+	],
+	"Infinite Regalia Sabatons": [
+		"Escarpes Regalia Infinita",
+		"Escarpes Regalia Infinita"
+	],
+	"Infinite Regalia Striders": [
+		"Passadas Regalia Infinita",
+		"Zancadas Regalia Infinita"
+	],
+	"Infinite Regalia Slippers": [
+		"Chinelos Regalia Infinita",
+		"Zapatillas Regalia Infinita"
+	],
+	"Infinite Regalia Seal": [
+		"Selo Regalia Infinita",
+		"Sigilo Regalia Infinita"
+	],
+	"Infinite Regalia Loop": [
+		"Aro Regalia Infinita",
+		"Aro Regalia Infinita"
+	],
+	"Infinite Regalia Charm": [
+		"Amuleto Regalia Infinita",
+		"Amuleto Regalia Infinita"
+	]
+}

@@ -118,8 +118,10 @@ func _refresh() -> void:
 	var biome: String = info.get("biome_name", "")
 	var phase_text := {"walk": Loc.t("Climbing"), "intro": Loc.t("A Guardian appears!"), "combat": Loc.t("Fighting"), "pause": Loc.t("Catching breath"), "camp": Loc.t("Camping at the bonfire")}
 	var line := Loc.t("Floor %d  ·  %s  ·  %s") % [s["floor"], biome, phase_text.get(exp.phase, "")]
-	if exp.phase == "pause" and exp.after_pause == "walk":
-		line = Loc.t("FALL BACK! Tumbling down to the bonfire on floor %d...") % s["floor"]
+	if exp.phase == "pause" and exp.falling == "fall":
+		line = Loc.t("FALL BACK! Your spirits roll down to the bonfire on floor %d...") % s["floor"]
+	elif exp.phase == "pause" and exp.falling == "retreat":
+		line = Loc.t("Running back to rest at the bonfire on floor %d...") % s["floor"]
 	line += Loc.t("   |   Checkpoint: floor %d") % int(s.get("checkpoint", 1))
 	if int(s["wall_floor"]) > 0:
 		line += Loc.t("   |   Wall: floor %d (x%d)") % [s["wall_floor"], s["wall_attempts"]]

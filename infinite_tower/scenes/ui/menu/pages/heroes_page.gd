@@ -4,6 +4,7 @@ extends ScrollContainer
 ##   Mint    - creates a brand-new random hero (odds shown) for gold.
 ##   Reserve - heroes waiting on the bench: "Swap in" puts one in the
 ##             selected party slot (or an empty one).
+##   Fusion  - spare heroes of one rarity become one hero of the next.
 
 const DataDB = preload("res://core/data_db.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
@@ -13,6 +14,7 @@ const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const IconTile = preload("res://scenes/ui/menu/icon_tile.gd")
+const FusionBox = preload("res://scenes/ui/menu/fusion_box.gd")
 
 var host
 var hero_idx := 0
@@ -88,6 +90,10 @@ func _ready() -> void:
 	_reserve = VBoxContainer.new()
 	_reserve.add_theme_constant_override("separation", 3)
 	v.add_child(_reserve)
+
+	var fusion := PanelContainer.new()
+	v.add_child(fusion)
+	fusion.add_child(FusionBox.new())
 
 	Game.party_changed.connect(mark_dirty)
 	Game.state_changed.connect(_refresh_mint)

@@ -10,6 +10,8 @@ const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const Loc = preload("res://core/loc.gd")
 const Trade = preload("res://core/trade.gd")
+const Loot = preload("res://core/loot_calculator.gd")
+const FusionBox = preload("res://scenes/ui/menu/fusion_box.gd")
 
 var _cards_row: HBoxContainer
 var _cards: Array = []
@@ -37,6 +39,9 @@ func _ready() -> void:
 	root.add_child(recruit_panel)
 	_recruit_box = VBoxContainer.new()
 	recruit_panel.add_child(_recruit_box)
+	var fusion_panel := PanelContainer.new()
+	root.add_child(fusion_panel)
+	fusion_panel.add_child(FusionBox.new())
 
 	var train_panel := PanelContainer.new()
 	root.add_child(train_panel)
@@ -315,15 +320,9 @@ static func item_tooltip(item: Dictionary, hints: Array = []) -> String:
 	return "\n".join(lines)
 
 
-## "Everyone", or the classes that can wield a class-locked weapon.
+## "every hero", or the classes that can wear a class-bound piece.
 static func users_text(item: Dictionary) -> String:
-	if item["class"] == "":
-		return Loc.t("every hero")
-	var names := []
-	for id in DataDB.classes():
-		if item["class"] == id or item["class"] in DataDB.classes()[id].get("uses", []):
-			names.append(DataDB.classes()[id]["name"])
-	return ", ".join(names)
+	return Loot.users_text(item)
 
 
 ## Per-stat difference between `item` and what is equipped in its slot.

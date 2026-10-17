@@ -50,6 +50,9 @@ func _init() -> void:
 	test_story()
 	test_upgrades()
 	test_fps_migration()
+	test_class_gear()
+	test_fusion()
+	test_spirit_fall()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -346,18 +349,18 @@ func test_forge() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 77
 	state["inventory"] = []
-	var helm := func(b): return b["slot"] == "helm"
+	var helm := func(b): return b["slot"] == "helm" and b["class"] == "knight"
 	for i in 3:
 		state["inventory"].append(Loot.generate_item(rng, state, 20, "rare", "", helm))
 	# A rare boot does not count towards the helm group.
 	state["inventory"].append(Loot.generate_item(rng, state, 20, "rare", "", func(b): return b["slot"] == "boots"))
 	state["gold"] = 1e9
-	check(not Forge.quote(state, "rare", "helm/")["ok"], "merge needs 4 items of the same kind")
+	check(not Forge.quote(state, "rare", "helm/knight")["ok"], "merge needs 4 items of the same kind")
 	state["inventory"].append(Loot.generate_item(rng, state, 22, "rare", "", helm))
-	var q := Forge.quote(state, "rare", "helm/")
+	var q := Forge.quote(state, "rare", "helm/knight")
 	check(q["ok"] and q["to"] == "epic" and int(q["ilvl"]) == 22, "merge quote: 4 rare helms -> 1 epic at the best item level")
 	var gold_before := float(state["gold"])
-	var made := Forge.merge(state, "rare", "helm/")
+	var made := Forge.merge(state, "rare", "helm/knight")
 	check(made["rarity"] == "epic" and made["slot"] == "helm", "merge makes one epic of the same kind")
 	check(state["inventory"].size() == 2, "the 4 helms are gone, the boot stays")
 	check(float(state["gold"]) < gold_before, "merging costs gold (economy sink)")
@@ -665,3 +668,115 @@ func test_fps_migration() -> void:
 	check(int(fixed["settings"]["fps_taskbar"]) == 60, "old 30 fps default moves to 60")
 	fixed["settings"]["fps_taskbar"] = 15
 	check(int(GameState.migrate(fixed)["settings"]["fps_taskbar"]) == 15, "a later choice (15 fps) is kept")
+
+
+func test_class_gear() -> void:
+	# Every class has its own armour, in every set.
+	var by := {}
+	for b in DataDB.items()["bases"]:
+		var k: String = "%s/%s" % [b["slot"], b["class"]]
+		by[k] = int(by.get(k, 0)) + 1
+		check(b["class"] != "", "%s is class gear" % b["id"])
+	for slot in DataDB.items()["slots"]:
+		for cls in ["knight", "ranger", "arcanist"]:
+			check(int(by.get("%s/%s" % [slot, cls], 0)) == DataDB.items()["sets"].size(), "every set has a %s %s" % [cls, slot])
+	# One class cannot wear another's pieces.
+	var state := GameState.new_game(5)
+	state["gold"] = 1e6
+	Heroes.add_hero(state, Heroes.make_hero(state, "arcanist", "Mira", "common"))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 9
+	var knight_helm := Loot.generate_item(rng, state, 5, "rare", "", func(b): return b["slot"] == "helm" and b["class"] == "knight")
+	var arcanist_helm := Loot.generate_item(rng, state, 5, "rare", "", func(b): return b["slot"] == "helm" and b["class"] == "arcanist")
+	state["inventory"] = [knight_helm, arcanist_helm]
+	check(not Inventory.equip(state, 1, knight_helm), "an Arcanist cannot wear a Knight's helm")
+	check(Inventory.equip(state, 1, arcanist_helm), "an Arcanist wears an Arcanist's helm")
+	check(Inventory.equip(state, 0, knight_helm), "the Stairborn wears Knight gear")
+	var ranger_gloves := Loot.generate_item(rng, state, 5, "rare", "", func(b): return b["slot"] == "gloves" and b["class"] == "ranger")
+	state["inventory"].append(ranger_gloves)
+	check(Inventory.equip(state, 0, ranger_gloves), "the Stairborn also wears Ranger gear")
+	var arc_boots := Loot.generate_item(rng, state, 5, "rare", "", func(b): return b["slot"] == "boots" and b["class"] == "arcanist")
+	state["inventory"].append(arc_boots)
+	check(not Inventory.equip(state, 0, arc_boots), "the Stairborn cannot wear Arcanist gear")
+	check(Loot.users_text(arc_boots) == "Arcanist", "the tooltip names the class (%s)" % Loot.users_text(arc_boots))
+	# Drops lean toward the classes you field.
+	var solo := GameState.new_game(6)
+	var hits := {"knight": 0, "ranger": 0, "arcanist": 0}
+	for i in 600:
+		hits[_armour_class(rng, solo)] += 1
+	check(hits["arcanist"] < hits["knight"] and hits["arcanist"] < hits["ranger"], "a lone Stairborn finds less Arcanist gear (%s)" % str(hits))
+	# Old saves: classless armour gets a class.
+	var old := GameState.new_game(8)
+	var legacy_helm := {"uid": 3, "base": "gravebound_helm", "name": "Skullcap of the Fallen", "slot": "helm", "class": "", "rarity": "rare", "ilvl": 5, "stats": {"hp": 10.0}, "set": "gravebound", "suffix_en": "of Fury"}
+	var worn := {"uid": 4, "base": "wayfarer_chest", "name": "Padded Vest", "slot": "chest", "class": "", "rarity": "common", "ilvl": 1, "stats": {"hp": 20.0}, "set": "wayfarer"}
+	old["inventory"] = [legacy_helm]
+	old["heroes"][0]["equipment"]["chest"] = worn
+	var migrated := GameState.migrate(old)
+	check(String(migrated["inventory"][0]["class"]) != "" and String(migrated["inventory"][0]["base"]).begins_with("gravebound_helm_"), "old armour in the bag gets a class (%s)" % migrated["inventory"][0]["base"])
+	check(migrated["inventory"][0]["name"].ends_with("of Fury") or migrated["inventory"][0]["name"].ends_with(Loc.t("of Fury")), "its affix survives (%s)" % migrated["inventory"][0]["name"])
+	check(migrated["heroes"][0]["equipment"]["chest"]["class"] == "knight", "worn armour takes the hero's class")
+
+
+func _armour_class(rng: RandomNumberGenerator, state: Dictionary) -> String:
+	for i in 40:
+		var it := Loot.generate_item(rng, state, 10, "common")
+		if it["slot"] != "ring" and it["slot"] != "weapon":
+			return it["class"]
+	return "knight"
+
+
+func test_fusion() -> void:
+	var state := GameState.new_game(21)
+	state["gold"] = 1e6
+	check(Heroes.fusion_groups(state).is_empty(), "the lone Stairborn has nothing to fuse")
+	for i in 3:
+		Heroes.add_hero(state, Heroes.make_hero(state, ["knight", "ranger", "arcanist"][i], "Hero%d" % i, "common"))
+	var gs := Heroes.fusion_groups(state)
+	check(gs.size() == 1 and gs[0]["rarity"] == "common" and gs[0]["to"] == "uncommon", "3 commons can fuse into an uncommon")
+	check(Heroes.fusable(state).size() == 3, "the Stairborn is not fusable")
+	# Levels and gear: the one kept brings its own, the rest return their gear.
+	state["heroes"][1]["level"] = 9
+	var spare := {"uid": 77, "base": "wayfarer_helm_k", "name": "Wayfarer Helm", "slot": "helm", "class": "knight", "rarity": "common", "ilvl": 1, "stats": {"hp": 5.0}, "set": "wayfarer"}
+	state["bench"][0]["equipment"]["helm"] = spare
+	state["inventory"] = []
+	var gold_before := float(state["gold"])
+	var plan := Heroes.fusion_plan(state, "common")
+	check(int(plan["keep"]["level"]) == 9, "the highest level is kept by default (%s)" % plan["keep"]["name"])
+	var done := Heroes.fuse(state, "common")
+	check(not done.is_empty(), "the fusion happens")
+	check(Heroes.total_heroes(state) == 2, "three heroes became one (founder + fused: %d)" % Heroes.total_heroes(state))
+	var fused: Dictionary = done["keep"]
+	check(fused["rarity"] == "uncommon" and is_equal_approx(float(fused["potential"]), 1.08), "the survivor is uncommon with its potential")
+	check(int(fused["level"]) == 9, "it keeps its level")
+	check(float(state["gold"]) == gold_before - Heroes.fusion_fee("uncommon"), "the fee is paid")
+	check(state["inventory"].size() == 1 and state["inventory"][0]["uid"] == 77, "the consumed hero's gear goes back to the bag")
+	check(Heroes.fusion_groups(state).is_empty(), "nothing left to fuse")
+	# Legendary heroes are the end of the line, and gold is required.
+	check(Heroes.next_rarity("legendary") == "", "legendary cannot fuse further")
+	var poor := GameState.new_game(22)
+	poor["gold"] = 0.0
+	for i in 3:
+		Heroes.add_hero(poor, Heroes.make_hero(poor, "knight", "P%d" % i, "rare"))
+	check(Heroes.fuse(poor, "rare").is_empty() and Heroes.total_heroes(poor) == 4, "fusing needs the gold")
+
+
+func test_spirit_fall() -> void:
+	# A defeat ends at the bonfire itself: spirits roll there and the party rests.
+	var state := GameState.new_game(41)
+	state["floor"] = 18
+	state["max_floor"] = 18
+	state["checkpoint"] = 11
+	var sim := Expedition.new(state)
+	sim.record_combat_events = false
+	sim.combat = null
+	sim._fall_back()
+	check(sim.falling == "fall" and sim.phase == "pause" and sim.after_pause == "arrive", "a defeat starts the spirit fall")
+	check(int(state["floor"]) == 11, "the spirits head for the last bonfire")
+	sim.advance(float(DataDB.balance()["fall_pause"]) + 0.1)
+	check(sim.falling == "" and (sim.phase == "pause" or sim.phase == "camp") and sim.floor_info.get("type", "") == "bonfire", "the party arrives at the bonfire and rests (%s / %s)" % [sim.phase, sim.floor_info.get("type", "")])
+	check(sim.combat == null, "the old fight is gone")
+	# A retreat just runs back.
+	state["floor"] = 15
+	state["checkpoint"] = 11
+	sim.retreat_to_bonfire()
+	check(sim.falling == "retreat", "a retreat is a run, not a fall")

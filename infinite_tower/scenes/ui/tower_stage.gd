@@ -44,6 +44,11 @@ const ENEMY_START := 0.115              # first enemy, ahead of the party anchor
 const ENEMY_SLOT := 0.05
 const FIGHT_CENTER := 0.1               # the camera frames party + enemies around here
 const BOSS_SCALE := 1.35
+## Fall Back timeline, as shares of the pause: the party dies and rises as
+## spirits, rolls down the helix, then takes shape again at the bonfire.
+const FALL_RISE := 0.14
+const FALL_LAND := 0.80
+const SPIRIT := Color("#8fe8ff")
 const BRICK_H := 6.0
 const BRICKS_PER_TURN := 14
 
@@ -73,6 +78,7 @@ var _imp_sprite: Node2D
 var _imp_t := 0.0
 var _pending: Array = []   # [{t, fn}] visuals that wait for a blow to land
 var _boss_lag := 1.0       # the pale "recent damage" part of the boss bar
+var _fall_marks := {}      # one-shot effects of the Fall Back being played
 
 
 func _ready() -> void:
@@ -157,21 +163,47 @@ func party_t() -> float:
 	var f := int(Game.state["floor"])
 	if exp.phase == "walk":
 		return lerpf(rest_t(f - 1), rest_t(f), exp.walk_progress())
-	if _is_falling(exp) and not exp.last_fall.is_empty():
-		# Fall Back: the party tumbles down the helix to the bonfire.
-		var k: float = 1.0 - exp.phase_left / maxf(exp.phase_total, 0.001)
-		k = k * k * (3.0 - 2.0 * k)
-		return lerpf(rest_t(int(exp.last_fall["from"])), rest_t(int(exp.last_fall["to"])), k)
+	if _is_falling(exp):
+		return lerpf(rest_t(int(exp.last_fall["from"])), rest_t(int(exp.last_fall["to"])), _fall_travel(exp))
 	return rest_t(f)
 
 
+## "fall" while the defeated party rolls back as spirits, "retreat" while it
+## runs back to rest, else "".
+func _fall_kind(exp) -> String:
+	if exp.phase != "pause" or exp.falling == "" or exp.last_fall.is_empty():
+		return ""
+	return exp.falling
+
+
 func _is_falling(exp) -> bool:
-	return exp.phase == "pause" and exp.after_pause == "walk"
+	return _fall_kind(exp) != ""
+
+
+## How far through the pause the fall is (0..1).
+func _fall_k(exp) -> float:
+	return clampf(1.0 - exp.phase_left / maxf(exp.phase_total, 0.001), 0.0, 1.0)
+
+
+## 0..1: how far down the helix the party has travelled (slow start, fast
+## middle, soft arrival).
+func _fall_travel(exp) -> float:
+	var fall: bool = exp.falling == "fall"
+	var a := FALL_RISE if fall else 0.0
+	var b := FALL_LAND if fall else 0.8
+	var u := clampf((_fall_k(exp) - a) / (b - a), 0.0, 1.0)
+	return u * u * (3.0 - 2.0 * u)
 
 
 ## The camera frames the whole fight when there is one.
 func _target_cam_t() -> float:
 	var exp = Game.expedition
+	if _is_falling(exp):
+		# The defeated party is first seen where it fell (with the victors),
+		# then the camera follows the spirits.
+		if exp.falling == "fall" and _fall_k(exp) < FALL_RISE:
+			return rest_t(int(exp.last_fall["from"])) + FIGHT_CENTER
+		return party_t()
 	if exp.phase in ["combat", "intro"] or (exp.phase == "pause" and exp.after_pause == "next_floor"):
 		return rest_t(int(Game.state["floor"])) + FIGHT_CENTER
 	return party_t()
@@ -192,15 +224,21 @@ func _process(delta: float) -> void:
 	_update_palette()
 
 	_fall = 1.0 if _is_falling(exp) else 0.0
+	_fall_effects(exp)
 
 	var target_t := _target_cam_t()
 	var target_h := smooth_h(party_t())
 	if absf(target_t - _cam_t) > 40.0:
 		_snap_camera()
-	# During a Fall Back the camera rides along the tumbling party.
+	# During a Fall Back the camera rides along with the party: once the
+	# spirits are rolling it is locked on them (a loose camera would leave
+	# them behind the tower at this speed).
 	var rate := 12.0 if _fall > 0.0 else (2.5 if absf(target_t - _cam_t) > 1.0 else 8.0)
-	_cam_t = lerpf(_cam_t, target_t, minf(1.0, delta * rate))
-	_cam_h = lerpf(_cam_h, target_h, minf(1.0, delta * rate))
+	var follow := minf(1.0, delta * rate)
+	if _fall > 0.0:
+		follow = maxf(follow, clampf((_fall_k(exp) - FALL_RISE) / 0.06, 0.0, 1.0))
+	_cam_t = lerpf(_cam_t, target_t, follow)
+	_cam_h = lerpf(_cam_h, target_h, follow)
 
 	_sync_enemies(exp)
 	_place_heroes(exp)
@@ -288,19 +326,18 @@ func _place_heroes(exp) -> void:
 	var base_t := party_t()
 	var order := _hero_order()
 	var walking: bool = exp.phase == "walk"
+	var kind := _fall_kind(exp)
+	var k := _fall_k(exp)
 	var centre := (order.size() - 1) * 0.5
 	for slot in order.size():
 		var i: int = order[slot]
 		var sp = hero_sprites[i]
 		var t := base_t + (slot - centre) * HERO_SLOT
 		var p := project(t, R_WALK, ground_h(t))
-		var pos := Vector2(p.x, p.y)
-		if _fall > 0.0:
-			# Tumbling: little hops as they roll down the steps.
-			pos.y -= absf(sin(_time * 14.0 + slot)) * 3.0 * px
+		var pos := _fall_pose(sp, slot, kind, k, Vector2(p.x, p.y), exp)
 		sp.position = pos.round()
 		sp.visible = p.z > 0.05
-		sp.walking = walking or _fall > 0.0
+		sp.walking = walking or kind != ""
 		sp.modulate.a = 1.0
 		var u = exp.combat.heroes[i] if exp.combat != null and exp.phase == "combat" and i < exp.combat.heroes.size() else null
 		if u != null:
@@ -311,6 +348,81 @@ func _place_heroes(exp) -> void:
 			sp.hp_ratio = float(Game.state["heroes"][i]["hp_ratio"])
 			sp.mp_ratio = float(Game.state["heroes"][i].get("mp_ratio", 1.0))
 			sp.set_dead(false)
+
+
+## Fall Back body language for one sprite (a hero or the pet): `k` is how far
+## through the pause we are. A defeated party rises as spirits (the sprite turns
+## into a pale ghost with a halo), rolls like a wheel down the helix, and
+## takes shape again at the bonfire. A voluntary retreat just runs back.
+## Returns the adjusted screen position.
+func _fall_pose(sp, slot: int, kind: String, k: float, pos: Vector2, exp) -> Vector2:
+	sp.spirit = 0.0
+	sp.rolling = false
+	sp.roll_speed = 0.0
+	sp.face_left = kind != ""
+	if kind == "retreat":
+		pos.y -= absf(sin(_time * 16.0 + slot * 1.7)) * 2.2 * px
+	elif kind == "fall":
+		var rise := _smooth(clampf((k - slot * 0.012) / (FALL_RISE * 0.9), 0.0, 1.0))
+		var form := _smooth(clampf((k - FALL_LAND - slot * 0.015) / 0.14, 0.0, 1.0))
+		var spirit := rise * (1.0 - form)
+		sp.spirit = spirit
+		var u := _fall_travel(exp)
+		var speed := 6.0 * u * (1.0 - u)          # 0..1.5, the slope of the travel curve
+		var rolling := k > FALL_RISE * 0.55 and k < FALL_LAND + 0.04
+		sp.rolling = rolling
+		sp.roll_speed = -(6.0 + 14.0 * speed)      # counter-clockwise: heading down the helix
+		# Floats up while turning into a spirit; bounces off the steps while rolling.
+		pos.y -= spirit * 3.0 * px
+		if rolling:
+			pos.y -= absf(sin(_time * 12.0 + slot * 1.3)) * (0.8 + 1.6 * speed) * px
+	return pos
+
+
+static func _smooth(x: float) -> float:
+	return x * x * (3.0 - 2.0 * x)
+
+
+## One-shot sounds and bursts of the Fall Back, the first time each moment is
+## reached.
+func _fall_effects(exp) -> void:
+	var kind := _fall_kind(exp)
+	if kind == "":
+		_fall_marks.clear()
+		return
+	if kind != "fall" or not is_visible_in_tree():
+		return
+	var k := _fall_k(exp)
+	if not _fall_marks.has("rise"):
+		_fall_marks["rise"] = true
+		for i in hero_sprites.size():
+			var sp = hero_sprites[i]
+			var at := _center(sp)
+			_fx.spawn("burst", at, at, SPIRIT, 1.7, 0.8, i * 0.08)
+			_fx.spawn("burst", at, at, Color.WHITE, 1.0, 0.5, i * 0.08)
+			_fx.burst_particles(at, SPIRIT, 18, 36.0 * px, 1.1, -26.0 * px, 1.0)
+			sp.cast(SPIRIT)
+		_fx.add_shake(0.45)
+		Game.sfx_requested.emit("spirit")
+	if k > FALL_RISE and k < FALL_LAND:
+		# Wisps stream off the rolling spirits.
+		for sp in hero_sprites:
+			if randf() < 0.8:
+				var at := _center(sp) + Vector2(randf_range(-5.0, 5.0), randf_range(-3.0, 6.0)) * px
+				_fx.burst_particles(at, SPIRIT, 1, 8.0 * px, 1.0, -34.0 * px, 0.55)
+	if k >= FALL_LAND and not _fall_marks.has("land"):
+		_fall_marks["land"] = true
+		var land := rest_t(int(exp.last_fall["to"]))
+		var fire := project(land + FIGHT_CENTER, R_WALK, ground_h(land + FIGHT_CENTER))
+		for i in hero_sprites.size():
+			var sp = hero_sprites[i]
+			var at := _center(sp)
+			_fx.spawn("shockwave", at, at, Color("#ffd9a0"), 0.9, 0.6, i * 0.06)
+			_fx.burst_particles(at, Color("#ffb13d"), 14, 40.0 * px, 1.0, 30.0 * px, 0.9)
+			sp.cast(Color("#ffd9a0"))
+		_fx.burst_particles(Vector2(fire.x, fire.y) - Vector2(0, 5.0 * px), Color("#ffb13d"), 30, 44.0 * px, 1.1, -30.0 * px, 1.2)
+		_fx.add_shake(0.3)
+		Game.sfx_requested.emit("reform")
 
 
 ## The equipped pet trots behind the party.
@@ -332,12 +444,12 @@ func _place_pet(exp) -> void:
 	var n := mini(Game.state["heroes"].size(), hero_sprites.size())
 	var t := party_t() - ((n - 1) * 0.5 + 0.9) * HERO_SLOT
 	var p := project(t, R_WALK, ground_h(t))
-	var pos := Vector2(p.x, p.y)
+	var pos := _fall_pose(_pet_sprite, n, _fall_kind(exp), _fall_k(exp), Vector2(p.x, p.y), exp)
 	if exp.phase == "walk":
 		pos.y -= absf(sin(_time * 11.0)) * 2.0 * px
 	_pet_sprite.position = pos.round()
 	_pet_sprite.visible = p.z > 0.05
-	_pet_sprite.walking = exp.phase == "walk"
+	_pet_sprite.walking = exp.phase == "walk" or _fall_kind(exp) != ""
 
 
 ## The Treasure Imp: a golden imp scurrying around the party for a few seconds.
@@ -422,7 +534,8 @@ func _place_enemies(exp) -> void:
 	var c = exp.combat
 	if c == null:
 		return
-	var land := rest_t(int(Game.state["floor"]))
+	# After a defeat the victors stay on the floor they won, while the party leaves.
+	var land := rest_t(int(exp.last_fall["from"])) if _fall_kind(exp) != "" else rest_t(int(Game.state["floor"]))
 	var extra := 0.0
 	var slot := 0
 	for i in enemy_sprites.size():

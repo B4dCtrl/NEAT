@@ -125,67 +125,207 @@
 			}
 		},
 		{
-			"id": "wayfarer_helm",
-			"name": "Leather Cap",
+			"id": "wayfarer_helm_k",
+			"name": "Wayfarer Helm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "wayfarer",
-			"icon": "wayfarer_helm",
+			"icon": "wayfarer_helm_k",
 			"stats": {
-				"hp": 14.0,
-				"defense": 3.0
+				"hp": 16.1,
+				"defense": 3.8
 			}
 		},
 		{
-			"id": "wayfarer_chest",
-			"name": "Padded Vest",
+			"id": "wayfarer_helm_r",
+			"name": "Wayfarer Hood",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "wayfarer",
+			"icon": "wayfarer_helm_r",
+			"stats": {
+				"hp": 11.2,
+				"defense": 2.1,
+				"attack": 2.4
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "wayfarer_helm_a",
+			"name": "Wayfarer Circlet",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "wayfarer",
+			"icon": "wayfarer_helm_a",
+			"stats": {
+				"hp": 9.8,
+				"defense": 1.8,
+				"magic_power": 3.1
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "wayfarer_chest_k",
+			"name": "Wayfarer Cuirass",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "wayfarer",
-			"icon": "wayfarer_chest",
+			"icon": "wayfarer_chest_k",
 			"stats": {
-				"hp": 26.0,
-				"defense": 5.0
+				"hp": 29.9,
+				"defense": 6.2
 			}
 		},
 		{
-			"id": "wayfarer_gloves",
-			"name": "Leather Grips",
+			"id": "wayfarer_chest_r",
+			"name": "Wayfarer Jerkin",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "wayfarer",
+			"icon": "wayfarer_chest_r",
+			"stats": {
+				"hp": 20.8,
+				"defense": 3.5,
+				"attack": 4.0
+			}
+		},
+		{
+			"id": "wayfarer_chest_a",
+			"name": "Wayfarer Robe",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "wayfarer",
+			"icon": "wayfarer_chest_a",
+			"stats": {
+				"hp": 18.2,
+				"defense": 3.0,
+				"magic_power": 5.3
+			}
+		},
+		{
+			"id": "wayfarer_gloves_k",
+			"name": "Wayfarer Gauntlets",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "wayfarer",
-			"icon": "wayfarer_gloves",
+			"icon": "wayfarer_gloves_k",
 			"stats": {
-				"defense": 2.0,
-				"hp": 8.0,
-				"power": 2.0
+				"hp": 9.2,
+				"defense": 2.5,
+				"attack": 1.6
 			}
 		},
 		{
-			"id": "wayfarer_boots",
-			"name": "Leather Boots",
-			"slot": "boots",
-			"class": "",
+			"id": "wayfarer_gloves_r",
+			"name": "Wayfarer Bracers",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "wayfarer",
-			"icon": "wayfarer_boots",
+			"icon": "wayfarer_gloves_r",
 			"stats": {
-				"hp": 12.0,
-				"defense": 3.0
+				"hp": 6.4,
+				"defense": 1.4,
+				"attack": 3.9
+			}
+		},
+		{
+			"id": "wayfarer_gloves_a",
+			"name": "Wayfarer Mitts",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "wayfarer",
+			"icon": "wayfarer_gloves_a",
+			"stats": {
+				"hp": 5.6,
+				"defense": 1.2,
+				"magic_power": 4.4
+			}
+		},
+		{
+			"id": "wayfarer_boots_k",
+			"name": "Wayfarer Greaves",
+			"slot": "boots",
+			"class": "knight",
+			"set": "wayfarer",
+			"icon": "wayfarer_boots_k",
+			"stats": {
+				"hp": 13.8,
+				"defense": 3.8
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "wayfarer_ring",
-			"name": "Copper Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "wayfarer_boots_r",
+			"name": "Wayfarer Boots",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "wayfarer",
-			"icon": "wayfarer_ring",
+			"icon": "wayfarer_boots_r",
 			"stats": {
-				"hp": 16.0,
-				"power": 3.0
+				"hp": 9.6,
+				"defense": 2.1,
+				"attack": 2.3
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "wayfarer_boots_a",
+			"name": "Wayfarer Sandals",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "wayfarer",
+			"icon": "wayfarer_boots_a",
+			"stats": {
+				"hp": 8.4,
+				"defense": 1.8,
+				"magic_power": 3.0
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "wayfarer_ring_k",
+			"name": "Wayfarer Signet",
+			"slot": "ring",
+			"class": "knight",
+			"set": "wayfarer",
+			"icon": "wayfarer_ring_k",
+			"stats": {
+				"hp": 18.4,
+				"attack": 2.4
+			}
+		},
+		{
+			"id": "wayfarer_ring_r",
+			"name": "Wayfarer Band",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "wayfarer",
+			"icon": "wayfarer_ring_r",
+			"stats": {
+				"hp": 12.8,
+				"attack": 4.2
+			}
+		},
+		{
+			"id": "wayfarer_ring_a",
+			"name": "Wayfarer Sigil",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "wayfarer",
+			"icon": "wayfarer_ring_a",
+			"stats": {
+				"hp": 11.2,
+				"magic_power": 4.4
 			}
 		},
 		{
@@ -229,65 +369,195 @@
 			}
 		},
 		{
-			"id": "gravebound_helm",
-			"name": "Skullcap of the Fallen",
+			"id": "gravebound_helm_k",
+			"name": "Gravebound Greathelm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "gravebound",
-			"icon": "gravebound_helm",
+			"icon": "gravebound_helm_k",
 			"stats": {
-				"hp": 8.6,
-				"power": 3.2
+				"hp": 9.9,
+				"attack": 2.6
 			}
 		},
 		{
-			"id": "gravebound_chest",
-			"name": "Ribcage Plate",
+			"id": "gravebound_helm_r",
+			"name": "Gravebound Cowl",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "gravebound",
+			"icon": "gravebound_helm_r",
+			"stats": {
+				"hp": 6.9,
+				"attack": 4.2
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "gravebound_helm_a",
+			"name": "Gravebound Pointed Hat",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "gravebound",
+			"icon": "gravebound_helm_a",
+			"stats": {
+				"hp": 6.0,
+				"magic_power": 4.3
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "gravebound_chest_k",
+			"name": "Gravebound Breastplate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "gravebound",
-			"icon": "gravebound_chest",
+			"icon": "gravebound_chest_k",
 			"stats": {
-				"hp": 19.4,
-				"power": 4.3
+				"hp": 22.4,
+				"attack": 3.5
 			}
 		},
 		{
-			"id": "gravebound_gloves",
-			"name": "Knucklebone Gauntlets",
+			"id": "gravebound_chest_r",
+			"name": "Gravebound Leathers",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "gravebound",
+			"icon": "gravebound_chest_r",
+			"stats": {
+				"hp": 15.6,
+				"attack": 6.0
+			}
+		},
+		{
+			"id": "gravebound_chest_a",
+			"name": "Gravebound Vestments",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "gravebound",
+			"icon": "gravebound_chest_a",
+			"stats": {
+				"hp": 13.6,
+				"magic_power": 6.2
+			}
+		},
+		{
+			"id": "gravebound_gloves_k",
+			"name": "Gravebound Vambraces",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "gravebound",
-			"icon": "gravebound_gloves",
+			"icon": "gravebound_gloves_k",
 			"stats": {
-				"power": 4.3,
-				"hp": 4.3
+				"hp": 5.0,
+				"attack": 3.5
 			}
 		},
 		{
-			"id": "gravebound_boots",
-			"name": "Marrow Treads",
-			"slot": "boots",
-			"class": "",
+			"id": "gravebound_gloves_r",
+			"name": "Gravebound Grips",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "gravebound",
-			"icon": "gravebound_boots",
+			"icon": "gravebound_gloves_r",
 			"stats": {
-				"hp": 8.6,
-				"power": 2.2
+				"hp": 3.5,
+				"attack": 5.4
+			}
+		},
+		{
+			"id": "gravebound_gloves_a",
+			"name": "Gravebound Sleeves",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "gravebound",
+			"icon": "gravebound_gloves_a",
+			"stats": {
+				"hp": 3.0,
+				"magic_power": 5.4
+			}
+		},
+		{
+			"id": "gravebound_boots_k",
+			"name": "Gravebound Sabatons",
+			"slot": "boots",
+			"class": "knight",
+			"set": "gravebound",
+			"icon": "gravebound_boots_k",
+			"stats": {
+				"hp": 9.9,
+				"attack": 1.7
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "gravebound_ring",
-			"name": "Tomb Signet",
-			"slot": "ring",
-			"class": "",
+			"id": "gravebound_boots_r",
+			"name": "Gravebound Striders",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "gravebound",
-			"icon": "gravebound_ring",
+			"icon": "gravebound_boots_r",
 			"stats": {
-				"power": 6.5
+				"hp": 6.9,
+				"attack": 2.9
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "gravebound_boots_a",
+			"name": "Gravebound Slippers",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "gravebound",
+			"icon": "gravebound_boots_a",
+			"stats": {
+				"hp": 6.0,
+				"magic_power": 3.0
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "gravebound_ring_k",
+			"name": "Gravebound Seal",
+			"slot": "ring",
+			"class": "knight",
+			"set": "gravebound",
+			"icon": "gravebound_ring_k",
+			"stats": {
+				"attack": 5.2
+			}
+		},
+		{
+			"id": "gravebound_ring_r",
+			"name": "Gravebound Loop",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "gravebound",
+			"icon": "gravebound_ring_r",
+			"stats": {
+				"attack": 7.8
+			}
+		},
+		{
+			"id": "gravebound_ring_a",
+			"name": "Gravebound Charm",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "gravebound",
+			"icon": "gravebound_ring_a",
+			"stats": {
+				"magic_power": 7.8
 			}
 		},
 		{
@@ -331,67 +601,207 @@
 			}
 		},
 		{
-			"id": "ashen_king_helm",
-			"name": "Crown of Cinders",
+			"id": "ashen_king_helm_k",
+			"name": "Ashen King Visor",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "ashen_king",
-			"icon": "ashen_king_helm",
+			"icon": "ashen_king_helm_k",
 			"stats": {
-				"hp": 16.2,
-				"defense": 3.5
+				"hp": 18.7,
+				"defense": 4.3
 			}
 		},
 		{
-			"id": "ashen_king_chest",
-			"name": "Ashen Mantle",
+			"id": "ashen_king_helm_r",
+			"name": "Ashen King Cap",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "ashen_king",
+			"icon": "ashen_king_helm_r",
+			"stats": {
+				"hp": 13.0,
+				"defense": 2.4,
+				"attack": 2.7
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "ashen_king_helm_a",
+			"name": "Ashen King Diadem",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "ashen_king",
+			"icon": "ashen_king_helm_a",
+			"stats": {
+				"hp": 11.4,
+				"defense": 2.1,
+				"magic_power": 3.6
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "ashen_king_chest_k",
+			"name": "Ashen King Plate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "ashen_king",
-			"icon": "ashen_king_chest",
+			"icon": "ashen_king_chest_k",
 			"stats": {
-				"hp": 30.2,
-				"defense": 5.8
+				"hp": 34.7,
+				"defense": 7.2
 			}
 		},
 		{
-			"id": "ashen_king_gloves",
-			"name": "Smoldering Grasp",
+			"id": "ashen_king_chest_r",
+			"name": "Ashen King Vest",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "ashen_king",
+			"icon": "ashen_king_chest_r",
+			"stats": {
+				"hp": 24.1,
+				"defense": 4.1,
+				"attack": 4.7
+			}
+		},
+		{
+			"id": "ashen_king_chest_a",
+			"name": "Ashen King Mantle",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "ashen_king",
+			"icon": "ashen_king_chest_a",
+			"stats": {
+				"hp": 21.1,
+				"defense": 3.5,
+				"magic_power": 6.1
+			}
+		},
+		{
+			"id": "ashen_king_gloves_k",
+			"name": "Ashen King Fists",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "ashen_king",
-			"icon": "ashen_king_gloves",
+			"icon": "ashen_king_gloves_k",
 			"stats": {
-				"defense": 2.3,
-				"hp": 9.3,
-				"power": 2.3
+				"hp": 10.7,
+				"defense": 2.9,
+				"attack": 1.9
 			}
 		},
 		{
-			"id": "ashen_king_boots",
-			"name": "Charred Sabatons",
-			"slot": "boots",
-			"class": "",
+			"id": "ashen_king_gloves_r",
+			"name": "Ashen King Wraps",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "ashen_king",
-			"icon": "ashen_king_boots",
+			"icon": "ashen_king_gloves_r",
 			"stats": {
-				"hp": 13.9,
-				"defense": 3.5
+				"hp": 7.4,
+				"defense": 1.6,
+				"attack": 4.5
+			}
+		},
+		{
+			"id": "ashen_king_gloves_a",
+			"name": "Ashen King Cuffs",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "ashen_king",
+			"icon": "ashen_king_gloves_a",
+			"stats": {
+				"hp": 6.5,
+				"defense": 1.4,
+				"magic_power": 5.1
+			}
+		},
+		{
+			"id": "ashen_king_boots_k",
+			"name": "Ashen King Treads",
+			"slot": "boots",
+			"class": "knight",
+			"set": "ashen_king",
+			"icon": "ashen_king_boots_k",
+			"stats": {
+				"hp": 16.0,
+				"defense": 4.3
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "ashen_king_ring",
-			"name": "Ember Seal",
-			"slot": "ring",
-			"class": "",
+			"id": "ashen_king_boots_r",
+			"name": "Ashen King Moccasins",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "ashen_king",
-			"icon": "ashen_king_ring",
+			"icon": "ashen_king_boots_r",
 			"stats": {
-				"hp": 18.6,
-				"power": 3.5
+				"hp": 11.1,
+				"defense": 2.4,
+				"attack": 2.6
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "ashen_king_boots_a",
+			"name": "Ashen King Shoes",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "ashen_king",
+			"icon": "ashen_king_boots_a",
+			"stats": {
+				"hp": 9.7,
+				"defense": 2.1,
+				"magic_power": 3.5
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "ashen_king_ring_k",
+			"name": "Ashen King Crest",
+			"slot": "ring",
+			"class": "knight",
+			"set": "ashen_king",
+			"icon": "ashen_king_ring_k",
+			"stats": {
+				"hp": 21.3,
+				"attack": 2.8
+			}
+		},
+		{
+			"id": "ashen_king_ring_r",
+			"name": "Ashen King Talon",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "ashen_king",
+			"icon": "ashen_king_ring_r",
+			"stats": {
+				"hp": 14.8,
+				"attack": 4.9
+			}
+		},
+		{
+			"id": "ashen_king_ring_a",
+			"name": "Ashen King Focus",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "ashen_king",
+			"icon": "ashen_king_ring_a",
+			"stats": {
+				"hp": 13.0,
+				"magic_power": 5.1
 			}
 		},
 		{
@@ -435,65 +845,195 @@
 			}
 		},
 		{
-			"id": "verdant_warden_helm",
-			"name": "Warden's Hood",
+			"id": "verdant_warden_helm_k",
+			"name": "Verdant Warden Helm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "verdant_warden",
-			"icon": "verdant_warden_helm",
+			"icon": "verdant_warden_helm_k",
 			"stats": {
-				"hp": 9.9,
-				"power": 3.7
+				"hp": 11.4,
+				"attack": 3.0
 			}
 		},
 		{
-			"id": "verdant_warden_chest",
-			"name": "Barkskin Vest",
+			"id": "verdant_warden_helm_r",
+			"name": "Verdant Warden Hood",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_helm_r",
+			"stats": {
+				"hp": 7.9,
+				"attack": 4.9
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "verdant_warden_helm_a",
+			"name": "Verdant Warden Circlet",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_helm_a",
+			"stats": {
+				"hp": 6.9,
+				"magic_power": 5.0
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "verdant_warden_chest_k",
+			"name": "Verdant Warden Cuirass",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "verdant_warden",
-			"icon": "verdant_warden_chest",
+			"icon": "verdant_warden_chest_k",
 			"stats": {
-				"hp": 22.3,
-				"power": 5.0
+				"hp": 25.7,
+				"attack": 4.0
 			}
 		},
 		{
-			"id": "verdant_warden_gloves",
-			"name": "Vinegrips",
+			"id": "verdant_warden_chest_r",
+			"name": "Verdant Warden Jerkin",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_chest_r",
+			"stats": {
+				"hp": 17.9,
+				"attack": 6.8
+			}
+		},
+		{
+			"id": "verdant_warden_chest_a",
+			"name": "Verdant Warden Robe",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_chest_a",
+			"stats": {
+				"hp": 15.6,
+				"magic_power": 7.1
+			}
+		},
+		{
+			"id": "verdant_warden_gloves_k",
+			"name": "Verdant Warden Gauntlets",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "verdant_warden",
-			"icon": "verdant_warden_gloves",
+			"icon": "verdant_warden_gloves_k",
 			"stats": {
-				"power": 5.0,
-				"hp": 5.0
+				"hp": 5.7,
+				"attack": 4.0
 			}
 		},
 		{
-			"id": "verdant_warden_boots",
-			"name": "Rootwalkers",
-			"slot": "boots",
-			"class": "",
+			"id": "verdant_warden_gloves_r",
+			"name": "Verdant Warden Bracers",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "verdant_warden",
-			"icon": "verdant_warden_boots",
+			"icon": "verdant_warden_gloves_r",
 			"stats": {
-				"hp": 9.9,
-				"power": 2.5
+				"hp": 4.0,
+				"attack": 6.2
+			}
+		},
+		{
+			"id": "verdant_warden_gloves_a",
+			"name": "Verdant Warden Mitts",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_gloves_a",
+			"stats": {
+				"hp": 3.5,
+				"magic_power": 6.2
+			}
+		},
+		{
+			"id": "verdant_warden_boots_k",
+			"name": "Verdant Warden Greaves",
+			"slot": "boots",
+			"class": "knight",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_boots_k",
+			"stats": {
+				"hp": 11.4,
+				"attack": 2.0
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "verdant_warden_ring",
-			"name": "Seedstone Band",
-			"slot": "ring",
-			"class": "",
+			"id": "verdant_warden_boots_r",
+			"name": "Verdant Warden Boots",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "verdant_warden",
-			"icon": "verdant_warden_ring",
+			"icon": "verdant_warden_boots_r",
 			"stats": {
-				"power": 7.4
+				"hp": 7.9,
+				"attack": 3.4
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "verdant_warden_boots_a",
+			"name": "Verdant Warden Sandals",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_boots_a",
+			"stats": {
+				"hp": 6.9,
+				"magic_power": 3.5
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "verdant_warden_ring_k",
+			"name": "Verdant Warden Signet",
+			"slot": "ring",
+			"class": "knight",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_ring_k",
+			"stats": {
+				"attack": 6.0
+			}
+		},
+		{
+			"id": "verdant_warden_ring_r",
+			"name": "Verdant Warden Band",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_ring_r",
+			"stats": {
+				"attack": 8.9
+			}
+		},
+		{
+			"id": "verdant_warden_ring_a",
+			"name": "Verdant Warden Sigil",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "verdant_warden",
+			"icon": "verdant_warden_ring_a",
+			"stats": {
+				"magic_power": 8.9
 			}
 		},
 		{
@@ -537,67 +1077,207 @@
 			}
 		},
 		{
-			"id": "stormcaller_helm",
-			"name": "Storm Visage",
+			"id": "stormcaller_helm_k",
+			"name": "Stormcaller Greathelm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "stormcaller",
-			"icon": "stormcaller_helm",
+			"icon": "stormcaller_helm_k",
 			"stats": {
-				"hp": 18.5,
-				"defense": 4.0
+				"hp": 21.3,
+				"defense": 5.0
 			}
 		},
 		{
-			"id": "stormcaller_chest",
-			"name": "Galeweave",
+			"id": "stormcaller_helm_r",
+			"name": "Stormcaller Cowl",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "stormcaller",
+			"icon": "stormcaller_helm_r",
+			"stats": {
+				"hp": 14.8,
+				"defense": 2.8,
+				"attack": 3.1
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "stormcaller_helm_a",
+			"name": "Stormcaller Pointed Hat",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "stormcaller",
+			"icon": "stormcaller_helm_a",
+			"stats": {
+				"hp": 12.9,
+				"defense": 2.4,
+				"magic_power": 4.1
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "stormcaller_chest_k",
+			"name": "Stormcaller Breastplate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "stormcaller",
-			"icon": "stormcaller_chest",
+			"icon": "stormcaller_chest_k",
 			"stats": {
-				"hp": 34.3,
-				"defense": 6.6
+				"hp": 39.5,
+				"defense": 8.2
 			}
 		},
 		{
-			"id": "stormcaller_gloves",
-			"name": "Sparkknuckles",
+			"id": "stormcaller_chest_r",
+			"name": "Stormcaller Leathers",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "stormcaller",
+			"icon": "stormcaller_chest_r",
+			"stats": {
+				"hp": 27.5,
+				"defense": 4.6,
+				"attack": 5.3
+			}
+		},
+		{
+			"id": "stormcaller_chest_a",
+			"name": "Stormcaller Vestments",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "stormcaller",
+			"icon": "stormcaller_chest_a",
+			"stats": {
+				"hp": 24.0,
+				"defense": 4.0,
+				"magic_power": 7.0
+			}
+		},
+		{
+			"id": "stormcaller_gloves_k",
+			"name": "Stormcaller Vambraces",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "stormcaller",
-			"icon": "stormcaller_gloves",
+			"icon": "stormcaller_gloves_k",
 			"stats": {
-				"defense": 2.6,
-				"hp": 10.6,
-				"power": 2.6
+				"hp": 12.1,
+				"defense": 3.3,
+				"attack": 2.1
 			}
 		},
 		{
-			"id": "stormcaller_boots",
-			"name": "Striders of Lightning",
-			"slot": "boots",
-			"class": "",
+			"id": "stormcaller_gloves_r",
+			"name": "Stormcaller Grips",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "stormcaller",
-			"icon": "stormcaller_boots",
+			"icon": "stormcaller_gloves_r",
 			"stats": {
-				"hp": 15.8,
-				"defense": 4.0
+				"hp": 8.4,
+				"defense": 1.8,
+				"attack": 5.2
+			}
+		},
+		{
+			"id": "stormcaller_gloves_a",
+			"name": "Stormcaller Sleeves",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "stormcaller",
+			"icon": "stormcaller_gloves_a",
+			"stats": {
+				"hp": 7.4,
+				"defense": 1.6,
+				"magic_power": 5.8
+			}
+		},
+		{
+			"id": "stormcaller_boots_k",
+			"name": "Stormcaller Sabatons",
+			"slot": "boots",
+			"class": "knight",
+			"set": "stormcaller",
+			"icon": "stormcaller_boots_k",
+			"stats": {
+				"hp": 18.2,
+				"defense": 5.0
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "stormcaller_ring",
-			"name": "Band of the Tempest",
-			"slot": "ring",
-			"class": "",
+			"id": "stormcaller_boots_r",
+			"name": "Stormcaller Striders",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "stormcaller",
-			"icon": "stormcaller_ring",
+			"icon": "stormcaller_boots_r",
 			"stats": {
-				"hp": 21.1,
-				"power": 4.0
+				"hp": 12.7,
+				"defense": 2.8,
+				"attack": 3.0
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "stormcaller_boots_a",
+			"name": "Stormcaller Slippers",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "stormcaller",
+			"icon": "stormcaller_boots_a",
+			"stats": {
+				"hp": 11.1,
+				"defense": 2.4,
+				"magic_power": 4.0
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "stormcaller_ring_k",
+			"name": "Stormcaller Seal",
+			"slot": "ring",
+			"class": "knight",
+			"set": "stormcaller",
+			"icon": "stormcaller_ring_k",
+			"stats": {
+				"hp": 24.3,
+				"attack": 3.2
+			}
+		},
+		{
+			"id": "stormcaller_ring_r",
+			"name": "Stormcaller Loop",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "stormcaller",
+			"icon": "stormcaller_ring_r",
+			"stats": {
+				"hp": 16.9,
+				"attack": 5.6
+			}
+		},
+		{
+			"id": "stormcaller_ring_a",
+			"name": "Stormcaller Charm",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "stormcaller",
+			"icon": "stormcaller_ring_a",
+			"stats": {
+				"hp": 14.8,
+				"magic_power": 5.8
 			}
 		},
 		{
@@ -641,65 +1321,195 @@
 			}
 		},
 		{
-			"id": "frostbound_helm",
-			"name": "Hoarfrost Helm",
+			"id": "frostbound_helm_k",
+			"name": "Frostbound Visor",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "frostbound",
-			"icon": "frostbound_helm",
+			"icon": "frostbound_helm_k",
 			"stats": {
-				"hp": 11.2,
-				"power": 4.2
+				"hp": 12.9,
+				"attack": 3.4
 			}
 		},
 		{
-			"id": "frostbound_chest",
-			"name": "Iceplate Cuirass",
+			"id": "frostbound_helm_r",
+			"name": "Frostbound Cap",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "frostbound",
+			"icon": "frostbound_helm_r",
+			"stats": {
+				"hp": 9.0,
+				"attack": 5.5
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "frostbound_helm_a",
+			"name": "Frostbound Diadem",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "frostbound",
+			"icon": "frostbound_helm_a",
+			"stats": {
+				"hp": 7.8,
+				"magic_power": 5.6
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "frostbound_chest_k",
+			"name": "Frostbound Plate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "frostbound",
-			"icon": "frostbound_chest",
+			"icon": "frostbound_chest_k",
 			"stats": {
-				"hp": 25.2,
-				"power": 5.6
+				"hp": 29.0,
+				"attack": 4.5
 			}
 		},
 		{
-			"id": "frostbound_gloves",
-			"name": "Frostbite Gauntlets",
+			"id": "frostbound_chest_r",
+			"name": "Frostbound Vest",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "frostbound",
+			"icon": "frostbound_chest_r",
+			"stats": {
+				"hp": 20.2,
+				"attack": 7.7
+			}
+		},
+		{
+			"id": "frostbound_chest_a",
+			"name": "Frostbound Mantle",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "frostbound",
+			"icon": "frostbound_chest_a",
+			"stats": {
+				"hp": 17.6,
+				"magic_power": 8.0
+			}
+		},
+		{
+			"id": "frostbound_gloves_k",
+			"name": "Frostbound Fists",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "frostbound",
-			"icon": "frostbound_gloves",
+			"icon": "frostbound_gloves_k",
 			"stats": {
-				"power": 5.6,
-				"hp": 5.6
+				"hp": 6.4,
+				"attack": 4.5
 			}
 		},
 		{
-			"id": "frostbound_boots",
-			"name": "Snowdrift Boots",
-			"slot": "boots",
-			"class": "",
+			"id": "frostbound_gloves_r",
+			"name": "Frostbound Wraps",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "frostbound",
-			"icon": "frostbound_boots",
+			"icon": "frostbound_gloves_r",
 			"stats": {
-				"hp": 11.2,
-				"power": 2.8
+				"hp": 4.5,
+				"attack": 6.9
+			}
+		},
+		{
+			"id": "frostbound_gloves_a",
+			"name": "Frostbound Cuffs",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "frostbound",
+			"icon": "frostbound_gloves_a",
+			"stats": {
+				"hp": 3.9,
+				"magic_power": 7.0
+			}
+		},
+		{
+			"id": "frostbound_boots_k",
+			"name": "Frostbound Treads",
+			"slot": "boots",
+			"class": "knight",
+			"set": "frostbound",
+			"icon": "frostbound_boots_k",
+			"stats": {
+				"hp": 12.9,
+				"attack": 2.2
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "frostbound_ring",
-			"name": "Rime Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "frostbound_boots_r",
+			"name": "Frostbound Moccasins",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "frostbound",
-			"icon": "frostbound_ring",
+			"icon": "frostbound_boots_r",
 			"stats": {
-				"power": 8.4
+				"hp": 9.0,
+				"attack": 3.8
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "frostbound_boots_a",
+			"name": "Frostbound Shoes",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "frostbound",
+			"icon": "frostbound_boots_a",
+			"stats": {
+				"hp": 7.8,
+				"magic_power": 3.9
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "frostbound_ring_k",
+			"name": "Frostbound Crest",
+			"slot": "ring",
+			"class": "knight",
+			"set": "frostbound",
+			"icon": "frostbound_ring_k",
+			"stats": {
+				"attack": 6.7
+			}
+		},
+		{
+			"id": "frostbound_ring_r",
+			"name": "Frostbound Talon",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "frostbound",
+			"icon": "frostbound_ring_r",
+			"stats": {
+				"attack": 10.1
+			}
+		},
+		{
+			"id": "frostbound_ring_a",
+			"name": "Frostbound Focus",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "frostbound",
+			"icon": "frostbound_ring_a",
+			"stats": {
+				"magic_power": 10.1
 			}
 		},
 		{
@@ -743,67 +1553,207 @@
 			}
 		},
 		{
-			"id": "prismatic_helm",
-			"name": "Geode Crown",
+			"id": "prismatic_helm_k",
+			"name": "Prismatic Vein Helm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "prismatic",
-			"icon": "prismatic_helm",
+			"icon": "prismatic_helm_k",
 			"stats": {
-				"hp": 20.7,
-				"defense": 4.4
+				"hp": 23.8,
+				"defense": 5.5
 			}
 		},
 		{
-			"id": "prismatic_chest",
-			"name": "Crystalmail",
+			"id": "prismatic_helm_r",
+			"name": "Prismatic Vein Hood",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "prismatic",
+			"icon": "prismatic_helm_r",
+			"stats": {
+				"hp": 16.6,
+				"defense": 3.1,
+				"attack": 3.5
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "prismatic_helm_a",
+			"name": "Prismatic Vein Circlet",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "prismatic",
+			"icon": "prismatic_helm_a",
+			"stats": {
+				"hp": 14.5,
+				"defense": 2.7,
+				"magic_power": 4.6
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "prismatic_chest_k",
+			"name": "Prismatic Vein Cuirass",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "prismatic",
-			"icon": "prismatic_chest",
+			"icon": "prismatic_chest_k",
 			"stats": {
-				"hp": 38.5,
-				"defense": 7.4
+				"hp": 44.3,
+				"defense": 9.2
 			}
 		},
 		{
-			"id": "prismatic_gloves",
-			"name": "Gemgrasp Gloves",
+			"id": "prismatic_chest_r",
+			"name": "Prismatic Vein Jerkin",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "prismatic",
+			"icon": "prismatic_chest_r",
+			"stats": {
+				"hp": 30.8,
+				"defense": 5.2,
+				"attack": 6.0
+			}
+		},
+		{
+			"id": "prismatic_chest_a",
+			"name": "Prismatic Vein Robe",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "prismatic",
+			"icon": "prismatic_chest_a",
+			"stats": {
+				"hp": 26.9,
+				"defense": 4.4,
+				"magic_power": 7.8
+			}
+		},
+		{
+			"id": "prismatic_gloves_k",
+			"name": "Prismatic Vein Gauntlets",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "prismatic",
-			"icon": "prismatic_gloves",
+			"icon": "prismatic_gloves_k",
 			"stats": {
-				"defense": 3.0,
-				"hp": 11.8,
-				"power": 3.0
+				"hp": 13.6,
+				"defense": 3.7,
+				"attack": 2.4
 			}
 		},
 		{
-			"id": "prismatic_boots",
-			"name": "Glassstep Boots",
-			"slot": "boots",
-			"class": "",
+			"id": "prismatic_gloves_r",
+			"name": "Prismatic Vein Bracers",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "prismatic",
-			"icon": "prismatic_boots",
+			"icon": "prismatic_gloves_r",
 			"stats": {
-				"hp": 17.8,
-				"defense": 4.4
+				"hp": 9.5,
+				"defense": 2.1,
+				"attack": 5.8
+			}
+		},
+		{
+			"id": "prismatic_gloves_a",
+			"name": "Prismatic Vein Mitts",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "prismatic",
+			"icon": "prismatic_gloves_a",
+			"stats": {
+				"hp": 8.3,
+				"defense": 1.8,
+				"magic_power": 6.5
+			}
+		},
+		{
+			"id": "prismatic_boots_k",
+			"name": "Prismatic Vein Greaves",
+			"slot": "boots",
+			"class": "knight",
+			"set": "prismatic",
+			"icon": "prismatic_boots_k",
+			"stats": {
+				"hp": 20.4,
+				"defense": 5.5
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "prismatic_ring",
-			"name": "Prism Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "prismatic_boots_r",
+			"name": "Prismatic Vein Boots",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "prismatic",
-			"icon": "prismatic_ring",
+			"icon": "prismatic_boots_r",
 			"stats": {
-				"hp": 23.7,
-				"power": 4.4
+				"hp": 14.2,
+				"defense": 3.1,
+				"attack": 3.4
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "prismatic_boots_a",
+			"name": "Prismatic Vein Sandals",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "prismatic",
+			"icon": "prismatic_boots_a",
+			"stats": {
+				"hp": 12.4,
+				"defense": 2.7,
+				"magic_power": 4.4
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "prismatic_ring_k",
+			"name": "Prismatic Vein Signet",
+			"slot": "ring",
+			"class": "knight",
+			"set": "prismatic",
+			"icon": "prismatic_ring_k",
+			"stats": {
+				"hp": 27.2,
+				"attack": 3.6
+			}
+		},
+		{
+			"id": "prismatic_ring_r",
+			"name": "Prismatic Vein Band",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "prismatic",
+			"icon": "prismatic_ring_r",
+			"stats": {
+				"hp": 18.9,
+				"attack": 6.3
+			}
+		},
+		{
+			"id": "prismatic_ring_a",
+			"name": "Prismatic Vein Sigil",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "prismatic",
+			"icon": "prismatic_ring_a",
+			"stats": {
+				"hp": 16.6,
+				"magic_power": 6.5
 			}
 		},
 		{
@@ -847,65 +1797,195 @@
 			}
 		},
 		{
-			"id": "sunken_tide_helm",
-			"name": "Diver's Helm",
+			"id": "sunken_tide_helm_k",
+			"name": "Sunken Tide Greathelm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "sunken_tide",
-			"icon": "sunken_tide_helm",
+			"icon": "sunken_tide_helm_k",
 			"stats": {
-				"hp": 12.5,
-				"power": 4.7
+				"hp": 14.4,
+				"attack": 3.7
 			}
 		},
 		{
-			"id": "sunken_tide_chest",
-			"name": "Barnacle Plate",
+			"id": "sunken_tide_helm_r",
+			"name": "Sunken Tide Cowl",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_helm_r",
+			"stats": {
+				"hp": 10.0,
+				"attack": 6.1
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "sunken_tide_helm_a",
+			"name": "Sunken Tide Pointed Hat",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_helm_a",
+			"stats": {
+				"hp": 8.7,
+				"magic_power": 6.2
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "sunken_tide_chest_k",
+			"name": "Sunken Tide Breastplate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "sunken_tide",
-			"icon": "sunken_tide_chest",
+			"icon": "sunken_tide_chest_k",
 			"stats": {
-				"hp": 28.1,
-				"power": 6.2
+				"hp": 32.3,
+				"attack": 5.0
 			}
 		},
 		{
-			"id": "sunken_tide_gloves",
-			"name": "Kelp Wraps",
+			"id": "sunken_tide_chest_r",
+			"name": "Sunken Tide Leathers",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_chest_r",
+			"stats": {
+				"hp": 22.5,
+				"attack": 8.6
+			}
+		},
+		{
+			"id": "sunken_tide_chest_a",
+			"name": "Sunken Tide Vestments",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_chest_a",
+			"stats": {
+				"hp": 19.7,
+				"magic_power": 8.9
+			}
+		},
+		{
+			"id": "sunken_tide_gloves_k",
+			"name": "Sunken Tide Vambraces",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "sunken_tide",
-			"icon": "sunken_tide_gloves",
+			"icon": "sunken_tide_gloves_k",
 			"stats": {
-				"power": 6.2,
-				"hp": 6.2
+				"hp": 7.2,
+				"attack": 5.0
 			}
 		},
 		{
-			"id": "sunken_tide_boots",
-			"name": "Tidewalkers",
-			"slot": "boots",
-			"class": "",
+			"id": "sunken_tide_gloves_r",
+			"name": "Sunken Tide Grips",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "sunken_tide",
-			"icon": "sunken_tide_boots",
+			"icon": "sunken_tide_gloves_r",
 			"stats": {
-				"hp": 12.5,
-				"power": 3.1
+				"hp": 5.0,
+				"attack": 7.7
+			}
+		},
+		{
+			"id": "sunken_tide_gloves_a",
+			"name": "Sunken Tide Sleeves",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_gloves_a",
+			"stats": {
+				"hp": 4.4,
+				"magic_power": 7.8
+			}
+		},
+		{
+			"id": "sunken_tide_boots_k",
+			"name": "Sunken Tide Sabatons",
+			"slot": "boots",
+			"class": "knight",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_boots_k",
+			"stats": {
+				"hp": 14.4,
+				"attack": 2.5
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "sunken_tide_ring",
-			"name": "Pearl Band",
-			"slot": "ring",
-			"class": "",
+			"id": "sunken_tide_boots_r",
+			"name": "Sunken Tide Striders",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "sunken_tide",
-			"icon": "sunken_tide_ring",
+			"icon": "sunken_tide_boots_r",
 			"stats": {
-				"power": 9.4
+				"hp": 10.0,
+				"attack": 4.2
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "sunken_tide_boots_a",
+			"name": "Sunken Tide Slippers",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_boots_a",
+			"stats": {
+				"hp": 8.7,
+				"magic_power": 4.4
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "sunken_tide_ring_k",
+			"name": "Sunken Tide Seal",
+			"slot": "ring",
+			"class": "knight",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_ring_k",
+			"stats": {
+				"attack": 7.5
+			}
+		},
+		{
+			"id": "sunken_tide_ring_r",
+			"name": "Sunken Tide Loop",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_ring_r",
+			"stats": {
+				"attack": 11.2
+			}
+		},
+		{
+			"id": "sunken_tide_ring_a",
+			"name": "Sunken Tide Charm",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "sunken_tide",
+			"icon": "sunken_tide_ring_a",
+			"stats": {
+				"magic_power": 11.2
 			}
 		},
 		{
@@ -949,67 +2029,207 @@
 			}
 		},
 		{
-			"id": "dune_nomad_helm",
-			"name": "Sunveil Turban",
+			"id": "dune_nomad_helm_k",
+			"name": "Dune Nomad Visor",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "dune_nomad",
-			"icon": "dune_nomad_helm",
+			"icon": "dune_nomad_helm_k",
 			"stats": {
-				"hp": 23.0,
-				"defense": 4.9
+				"hp": 26.4,
+				"defense": 6.2
 			}
 		},
 		{
-			"id": "dune_nomad_chest",
-			"name": "Nomad's Robe",
+			"id": "dune_nomad_helm_r",
+			"name": "Dune Nomad Cap",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_helm_r",
+			"stats": {
+				"hp": 18.4,
+				"defense": 3.4,
+				"attack": 3.9
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "dune_nomad_helm_a",
+			"name": "Dune Nomad Diadem",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_helm_a",
+			"stats": {
+				"hp": 16.1,
+				"defense": 3.0,
+				"magic_power": 5.1
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "dune_nomad_chest_k",
+			"name": "Dune Nomad Plate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "dune_nomad",
-			"icon": "dune_nomad_chest",
+			"icon": "dune_nomad_chest_k",
 			"stats": {
-				"hp": 42.6,
-				"defense": 8.2
+				"hp": 49.0,
+				"defense": 10.3
 			}
 		},
 		{
-			"id": "dune_nomad_gloves",
-			"name": "Sandsilk Gloves",
+			"id": "dune_nomad_chest_r",
+			"name": "Dune Nomad Vest",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_chest_r",
+			"stats": {
+				"hp": 34.1,
+				"defense": 5.7,
+				"attack": 6.6
+			}
+		},
+		{
+			"id": "dune_nomad_chest_a",
+			"name": "Dune Nomad Mantle",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_chest_a",
+			"stats": {
+				"hp": 29.8,
+				"defense": 4.9,
+				"magic_power": 8.7
+			}
+		},
+		{
+			"id": "dune_nomad_gloves_k",
+			"name": "Dune Nomad Fists",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "dune_nomad",
-			"icon": "dune_nomad_gloves",
+			"icon": "dune_nomad_gloves_k",
 			"stats": {
-				"defense": 3.3,
-				"hp": 13.1,
-				"power": 3.3
+				"hp": 15.1,
+				"defense": 4.1,
+				"attack": 2.6
 			}
 		},
 		{
-			"id": "dune_nomad_boots",
-			"name": "Duststriders",
-			"slot": "boots",
-			"class": "",
+			"id": "dune_nomad_gloves_r",
+			"name": "Dune Nomad Wraps",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "dune_nomad",
-			"icon": "dune_nomad_boots",
+			"icon": "dune_nomad_gloves_r",
 			"stats": {
-				"hp": 19.7,
-				"defense": 4.9
+				"hp": 10.5,
+				"defense": 2.3,
+				"attack": 6.4
+			}
+		},
+		{
+			"id": "dune_nomad_gloves_a",
+			"name": "Dune Nomad Cuffs",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_gloves_a",
+			"stats": {
+				"hp": 9.2,
+				"defense": 2.0,
+				"magic_power": 7.2
+			}
+		},
+		{
+			"id": "dune_nomad_boots_k",
+			"name": "Dune Nomad Treads",
+			"slot": "boots",
+			"class": "knight",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_boots_k",
+			"stats": {
+				"hp": 22.6,
+				"defense": 6.2
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "dune_nomad_ring",
-			"name": "Scarab Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "dune_nomad_boots_r",
+			"name": "Dune Nomad Moccasins",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "dune_nomad",
-			"icon": "dune_nomad_ring",
+			"icon": "dune_nomad_boots_r",
 			"stats": {
-				"hp": 26.2,
-				"power": 4.9
+				"hp": 15.7,
+				"defense": 3.4,
+				"attack": 3.7
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "dune_nomad_boots_a",
+			"name": "Dune Nomad Shoes",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_boots_a",
+			"stats": {
+				"hp": 13.8,
+				"defense": 3.0,
+				"magic_power": 4.9
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "dune_nomad_ring_k",
+			"name": "Dune Nomad Crest",
+			"slot": "ring",
+			"class": "knight",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_ring_k",
+			"stats": {
+				"hp": 30.2,
+				"attack": 3.9
+			}
+		},
+		{
+			"id": "dune_nomad_ring_r",
+			"name": "Dune Nomad Talon",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_ring_r",
+			"stats": {
+				"hp": 21.0,
+				"attack": 7.0
+			}
+		},
+		{
+			"id": "dune_nomad_ring_a",
+			"name": "Dune Nomad Focus",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "dune_nomad",
+			"icon": "dune_nomad_ring_a",
+			"stats": {
+				"hp": 18.4,
+				"magic_power": 7.2
 			}
 		},
 		{
@@ -1053,65 +2273,195 @@
 			}
 		},
 		{
-			"id": "forgeborn_helm",
-			"name": "Foundry Helm",
+			"id": "forgeborn_helm_k",
+			"name": "Forgeborn Helm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "forgeborn",
-			"icon": "forgeborn_helm",
+			"icon": "forgeborn_helm_k",
 			"stats": {
-				"hp": 13.8,
-				"power": 5.2
+				"hp": 15.8,
+				"attack": 4.1
 			}
 		},
 		{
-			"id": "forgeborn_chest",
-			"name": "Blastplate",
+			"id": "forgeborn_helm_r",
+			"name": "Forgeborn Hood",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "forgeborn",
+			"icon": "forgeborn_helm_r",
+			"stats": {
+				"hp": 11.0,
+				"attack": 6.7
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "forgeborn_helm_a",
+			"name": "Forgeborn Circlet",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "forgeborn",
+			"icon": "forgeborn_helm_a",
+			"stats": {
+				"hp": 9.6,
+				"magic_power": 6.9
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "forgeborn_chest_k",
+			"name": "Forgeborn Cuirass",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "forgeborn",
-			"icon": "forgeborn_chest",
+			"icon": "forgeborn_chest_k",
 			"stats": {
-				"hp": 31.0,
-				"power": 6.9
+				"hp": 35.6,
+				"attack": 5.5
 			}
 		},
 		{
-			"id": "forgeborn_gloves",
-			"name": "Tongs Gauntlets",
+			"id": "forgeborn_chest_r",
+			"name": "Forgeborn Jerkin",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "forgeborn",
+			"icon": "forgeborn_chest_r",
+			"stats": {
+				"hp": 24.8,
+				"attack": 9.5
+			}
+		},
+		{
+			"id": "forgeborn_chest_a",
+			"name": "Forgeborn Robe",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "forgeborn",
+			"icon": "forgeborn_chest_a",
+			"stats": {
+				"hp": 21.7,
+				"magic_power": 9.8
+			}
+		},
+		{
+			"id": "forgeborn_gloves_k",
+			"name": "Forgeborn Gauntlets",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "forgeborn",
-			"icon": "forgeborn_gloves",
+			"icon": "forgeborn_gloves_k",
 			"stats": {
-				"power": 6.9,
-				"hp": 6.9
+				"hp": 7.9,
+				"attack": 5.5
 			}
 		},
 		{
-			"id": "forgeborn_boots",
-			"name": "Cinder Greaves",
-			"slot": "boots",
-			"class": "",
+			"id": "forgeborn_gloves_r",
+			"name": "Forgeborn Bracers",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "forgeborn",
-			"icon": "forgeborn_boots",
+			"icon": "forgeborn_gloves_r",
 			"stats": {
-				"hp": 13.8,
-				"power": 3.4
+				"hp": 5.5,
+				"attack": 8.5
+			}
+		},
+		{
+			"id": "forgeborn_gloves_a",
+			"name": "Forgeborn Mitts",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "forgeborn",
+			"icon": "forgeborn_gloves_a",
+			"stats": {
+				"hp": 4.8,
+				"magic_power": 8.6
+			}
+		},
+		{
+			"id": "forgeborn_boots_k",
+			"name": "Forgeborn Greaves",
+			"slot": "boots",
+			"class": "knight",
+			"set": "forgeborn",
+			"icon": "forgeborn_boots_k",
+			"stats": {
+				"hp": 15.8,
+				"attack": 2.8
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "forgeborn_ring",
-			"name": "Molten Signet",
-			"slot": "ring",
-			"class": "",
+			"id": "forgeborn_boots_r",
+			"name": "Forgeborn Boots",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "forgeborn",
-			"icon": "forgeborn_ring",
+			"icon": "forgeborn_boots_r",
 			"stats": {
-				"power": 10.3
+				"hp": 11.0,
+				"attack": 4.7
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "forgeborn_boots_a",
+			"name": "Forgeborn Sandals",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "forgeborn",
+			"icon": "forgeborn_boots_a",
+			"stats": {
+				"hp": 9.6,
+				"magic_power": 4.8
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "forgeborn_ring_k",
+			"name": "Forgeborn Signet",
+			"slot": "ring",
+			"class": "knight",
+			"set": "forgeborn",
+			"icon": "forgeborn_ring_k",
+			"stats": {
+				"attack": 8.3
+			}
+		},
+		{
+			"id": "forgeborn_ring_r",
+			"name": "Forgeborn Band",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "forgeborn",
+			"icon": "forgeborn_ring_r",
+			"stats": {
+				"attack": 12.4
+			}
+		},
+		{
+			"id": "forgeborn_ring_a",
+			"name": "Forgeborn Sigil",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "forgeborn",
+			"icon": "forgeborn_ring_a",
+			"stats": {
+				"magic_power": 12.4
 			}
 		},
 		{
@@ -1155,67 +2505,207 @@
 			}
 		},
 		{
-			"id": "bloodmoon_helm",
-			"name": "Bloodmoon Crown",
+			"id": "bloodmoon_helm_k",
+			"name": "Bloodmoon Greathelm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "bloodmoon",
-			"icon": "bloodmoon_helm",
+			"icon": "bloodmoon_helm_k",
 			"stats": {
-				"hp": 25.2,
-				"defense": 5.4
+				"hp": 29.0,
+				"defense": 6.8
 			}
 		},
 		{
-			"id": "bloodmoon_chest",
-			"name": "Sanguine Mail",
+			"id": "bloodmoon_helm_r",
+			"name": "Bloodmoon Cowl",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_helm_r",
+			"stats": {
+				"hp": 20.2,
+				"defense": 3.8,
+				"attack": 4.2
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "bloodmoon_helm_a",
+			"name": "Bloodmoon Pointed Hat",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_helm_a",
+			"stats": {
+				"hp": 17.6,
+				"defense": 3.2,
+				"magic_power": 5.6
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "bloodmoon_chest_k",
+			"name": "Bloodmoon Breastplate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "bloodmoon",
-			"icon": "bloodmoon_chest",
+			"icon": "bloodmoon_chest_k",
 			"stats": {
-				"hp": 46.8,
-				"defense": 9.0
+				"hp": 53.8,
+				"defense": 11.2
 			}
 		},
 		{
-			"id": "bloodmoon_gloves",
-			"name": "Clawed Mitts",
+			"id": "bloodmoon_chest_r",
+			"name": "Bloodmoon Leathers",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_chest_r",
+			"stats": {
+				"hp": 37.4,
+				"defense": 6.3,
+				"attack": 7.3
+			}
+		},
+		{
+			"id": "bloodmoon_chest_a",
+			"name": "Bloodmoon Vestments",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_chest_a",
+			"stats": {
+				"hp": 32.8,
+				"defense": 5.4,
+				"magic_power": 9.5
+			}
+		},
+		{
+			"id": "bloodmoon_gloves_k",
+			"name": "Bloodmoon Vambraces",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "bloodmoon",
-			"icon": "bloodmoon_gloves",
+			"icon": "bloodmoon_gloves_k",
 			"stats": {
-				"defense": 3.6,
-				"hp": 14.4,
-				"power": 3.6
+				"hp": 16.6,
+				"defense": 4.5,
+				"attack": 2.9
 			}
 		},
 		{
-			"id": "bloodmoon_boots",
-			"name": "Hunter's Boots",
-			"slot": "boots",
-			"class": "",
+			"id": "bloodmoon_gloves_r",
+			"name": "Bloodmoon Grips",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "bloodmoon",
-			"icon": "bloodmoon_boots",
+			"icon": "bloodmoon_gloves_r",
 			"stats": {
-				"hp": 21.6,
-				"defense": 5.4
+				"hp": 11.5,
+				"defense": 2.5,
+				"attack": 7.1
+			}
+		},
+		{
+			"id": "bloodmoon_gloves_a",
+			"name": "Bloodmoon Sleeves",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_gloves_a",
+			"stats": {
+				"hp": 10.1,
+				"defense": 2.2,
+				"magic_power": 7.9
+			}
+		},
+		{
+			"id": "bloodmoon_boots_k",
+			"name": "Bloodmoon Sabatons",
+			"slot": "boots",
+			"class": "knight",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_boots_k",
+			"stats": {
+				"hp": 24.8,
+				"defense": 6.8
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "bloodmoon_ring",
-			"name": "Fangsigil",
-			"slot": "ring",
-			"class": "",
+			"id": "bloodmoon_boots_r",
+			"name": "Bloodmoon Striders",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "bloodmoon",
-			"icon": "bloodmoon_ring",
+			"icon": "bloodmoon_boots_r",
 			"stats": {
-				"hp": 28.8,
-				"power": 5.4
+				"hp": 17.3,
+				"defense": 3.8,
+				"attack": 4.1
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "bloodmoon_boots_a",
+			"name": "Bloodmoon Slippers",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_boots_a",
+			"stats": {
+				"hp": 15.1,
+				"defense": 3.2,
+				"magic_power": 5.4
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "bloodmoon_ring_k",
+			"name": "Bloodmoon Seal",
+			"slot": "ring",
+			"class": "knight",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_ring_k",
+			"stats": {
+				"hp": 33.1,
+				"attack": 4.3
+			}
+		},
+		{
+			"id": "bloodmoon_ring_r",
+			"name": "Bloodmoon Loop",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_ring_r",
+			"stats": {
+				"hp": 23.0,
+				"attack": 7.6
+			}
+		},
+		{
+			"id": "bloodmoon_ring_a",
+			"name": "Bloodmoon Charm",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "bloodmoon",
+			"icon": "bloodmoon_ring_a",
+			"stats": {
+				"hp": 20.2,
+				"magic_power": 7.9
 			}
 		},
 		{
@@ -1259,65 +2749,195 @@
 			}
 		},
 		{
-			"id": "nightbloom_helm",
-			"name": "Belladonna Hood",
+			"id": "nightbloom_helm_k",
+			"name": "Nightbloom Visor",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "nightbloom",
-			"icon": "nightbloom_helm",
+			"icon": "nightbloom_helm_k",
 			"stats": {
-				"hp": 15.0,
-				"power": 5.6
+				"hp": 17.3,
+				"attack": 4.5
 			}
 		},
 		{
-			"id": "nightbloom_chest",
+			"id": "nightbloom_helm_r",
+			"name": "Nightbloom Cap",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "nightbloom",
+			"icon": "nightbloom_helm_r",
+			"stats": {
+				"hp": 12.0,
+				"attack": 7.4
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "nightbloom_helm_a",
+			"name": "Nightbloom Diadem",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "nightbloom",
+			"icon": "nightbloom_helm_a",
+			"stats": {
+				"hp": 10.5,
+				"magic_power": 7.5
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "nightbloom_chest_k",
+			"name": "Nightbloom Plate",
+			"slot": "chest",
+			"class": "knight",
+			"set": "nightbloom",
+			"icon": "nightbloom_chest_k",
+			"stats": {
+				"hp": 38.9,
+				"attack": 6.0
+			}
+		},
+		{
+			"id": "nightbloom_chest_r",
 			"name": "Nightbloom Vest",
 			"slot": "chest",
-			"class": "",
+			"class": "ranger",
 			"set": "nightbloom",
-			"icon": "nightbloom_chest",
+			"icon": "nightbloom_chest_r",
 			"stats": {
-				"hp": 33.8,
-				"power": 7.5
+				"hp": 27.1,
+				"attack": 10.4
 			}
 		},
 		{
-			"id": "nightbloom_gloves",
-			"name": "Toxin Grips",
+			"id": "nightbloom_chest_a",
+			"name": "Nightbloom Mantle",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "nightbloom",
+			"icon": "nightbloom_chest_a",
+			"stats": {
+				"hp": 23.7,
+				"magic_power": 10.7
+			}
+		},
+		{
+			"id": "nightbloom_gloves_k",
+			"name": "Nightbloom Fists",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "nightbloom",
-			"icon": "nightbloom_gloves",
+			"icon": "nightbloom_gloves_k",
 			"stats": {
-				"power": 7.5,
-				"hp": 7.5
+				"hp": 8.6,
+				"attack": 6.0
 			}
 		},
 		{
-			"id": "nightbloom_boots",
-			"name": "Creeper Boots",
-			"slot": "boots",
-			"class": "",
+			"id": "nightbloom_gloves_r",
+			"name": "Nightbloom Wraps",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "nightbloom",
-			"icon": "nightbloom_boots",
+			"icon": "nightbloom_gloves_r",
 			"stats": {
-				"hp": 15.0,
-				"power": 3.8
+				"hp": 6.0,
+				"attack": 9.3
+			}
+		},
+		{
+			"id": "nightbloom_gloves_a",
+			"name": "Nightbloom Cuffs",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "nightbloom",
+			"icon": "nightbloom_gloves_a",
+			"stats": {
+				"hp": 5.3,
+				"magic_power": 9.4
+			}
+		},
+		{
+			"id": "nightbloom_boots_k",
+			"name": "Nightbloom Treads",
+			"slot": "boots",
+			"class": "knight",
+			"set": "nightbloom",
+			"icon": "nightbloom_boots_k",
+			"stats": {
+				"hp": 17.3,
+				"attack": 3.0
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "nightbloom_ring",
-			"name": "Blossom Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "nightbloom_boots_r",
+			"name": "Nightbloom Moccasins",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "nightbloom",
-			"icon": "nightbloom_ring",
+			"icon": "nightbloom_boots_r",
 			"stats": {
-				"power": 11.3
+				"hp": 12.0,
+				"attack": 5.1
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "nightbloom_boots_a",
+			"name": "Nightbloom Shoes",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "nightbloom",
+			"icon": "nightbloom_boots_a",
+			"stats": {
+				"hp": 10.5,
+				"magic_power": 5.3
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "nightbloom_ring_k",
+			"name": "Nightbloom Crest",
+			"slot": "ring",
+			"class": "knight",
+			"set": "nightbloom",
+			"icon": "nightbloom_ring_k",
+			"stats": {
+				"attack": 9.0
+			}
+		},
+		{
+			"id": "nightbloom_ring_r",
+			"name": "Nightbloom Talon",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "nightbloom",
+			"icon": "nightbloom_ring_r",
+			"stats": {
+				"attack": 13.5
+			}
+		},
+		{
+			"id": "nightbloom_ring_a",
+			"name": "Nightbloom Focus",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "nightbloom",
+			"icon": "nightbloom_ring_a",
+			"stats": {
+				"magic_power": 13.5
 			}
 		},
 		{
@@ -1361,67 +2981,207 @@
 			}
 		},
 		{
-			"id": "voidtouched_helm",
-			"name": "Gazing Helm",
+			"id": "voidtouched_helm_k",
+			"name": "Voidtouched Helm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "voidtouched",
-			"icon": "voidtouched_helm",
+			"icon": "voidtouched_helm_k",
 			"stats": {
-				"hp": 27.4,
-				"defense": 5.9
+				"hp": 31.6,
+				"defense": 7.3
 			}
 		},
 		{
-			"id": "voidtouched_chest",
-			"name": "Voidwoven Robe",
+			"id": "voidtouched_helm_r",
+			"name": "Voidtouched Hood",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "voidtouched",
+			"icon": "voidtouched_helm_r",
+			"stats": {
+				"hp": 22.0,
+				"defense": 4.1,
+				"attack": 4.6
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "voidtouched_helm_a",
+			"name": "Voidtouched Circlet",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "voidtouched",
+			"icon": "voidtouched_helm_a",
+			"stats": {
+				"hp": 19.2,
+				"defense": 3.5,
+				"magic_power": 6.1
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "voidtouched_chest_k",
+			"name": "Voidtouched Cuirass",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "voidtouched",
-			"icon": "voidtouched_chest",
+			"icon": "voidtouched_chest_k",
 			"stats": {
-				"hp": 51.0,
-				"defense": 9.8
+				"hp": 58.6,
+				"defense": 12.2
 			}
 		},
 		{
-			"id": "voidtouched_gloves",
-			"name": "Umbral Grasp",
+			"id": "voidtouched_chest_r",
+			"name": "Voidtouched Jerkin",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "voidtouched",
+			"icon": "voidtouched_chest_r",
+			"stats": {
+				"hp": 40.8,
+				"defense": 6.9,
+				"attack": 7.9
+			}
+		},
+		{
+			"id": "voidtouched_chest_a",
+			"name": "Voidtouched Robe",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "voidtouched",
+			"icon": "voidtouched_chest_a",
+			"stats": {
+				"hp": 35.7,
+				"defense": 5.9,
+				"magic_power": 10.4
+			}
+		},
+		{
+			"id": "voidtouched_gloves_k",
+			"name": "Voidtouched Gauntlets",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "voidtouched",
-			"icon": "voidtouched_gloves",
+			"icon": "voidtouched_gloves_k",
 			"stats": {
-				"defense": 3.9,
-				"hp": 15.7,
-				"power": 3.9
+				"hp": 18.0,
+				"defense": 4.9,
+				"attack": 3.1
 			}
 		},
 		{
-			"id": "voidtouched_boots",
-			"name": "Nullwalkers",
-			"slot": "boots",
-			"class": "",
+			"id": "voidtouched_gloves_r",
+			"name": "Voidtouched Bracers",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "voidtouched",
-			"icon": "voidtouched_boots",
+			"icon": "voidtouched_gloves_r",
 			"stats": {
-				"hp": 23.5,
-				"defense": 5.9
+				"hp": 12.5,
+				"defense": 2.7,
+				"attack": 7.7
+			}
+		},
+		{
+			"id": "voidtouched_gloves_a",
+			"name": "Voidtouched Mitts",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "voidtouched",
+			"icon": "voidtouched_gloves_a",
+			"stats": {
+				"hp": 11.0,
+				"defense": 2.4,
+				"magic_power": 8.6
+			}
+		},
+		{
+			"id": "voidtouched_boots_k",
+			"name": "Voidtouched Greaves",
+			"slot": "boots",
+			"class": "knight",
+			"set": "voidtouched",
+			"icon": "voidtouched_boots_k",
+			"stats": {
+				"hp": 27.0,
+				"defense": 7.3
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "voidtouched_ring",
-			"name": "Eye Signet",
-			"slot": "ring",
-			"class": "",
+			"id": "voidtouched_boots_r",
+			"name": "Voidtouched Boots",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "voidtouched",
-			"icon": "voidtouched_ring",
+			"icon": "voidtouched_boots_r",
 			"stats": {
-				"hp": 31.4,
-				"power": 5.9
+				"hp": 18.8,
+				"defense": 4.1,
+				"attack": 4.5
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "voidtouched_boots_a",
+			"name": "Voidtouched Sandals",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "voidtouched",
+			"icon": "voidtouched_boots_a",
+			"stats": {
+				"hp": 16.5,
+				"defense": 3.5,
+				"magic_power": 5.9
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "voidtouched_ring_k",
+			"name": "Voidtouched Signet",
+			"slot": "ring",
+			"class": "knight",
+			"set": "voidtouched",
+			"icon": "voidtouched_ring_k",
+			"stats": {
+				"hp": 36.1,
+				"attack": 4.7
+			}
+		},
+		{
+			"id": "voidtouched_ring_r",
+			"name": "Voidtouched Band",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "voidtouched",
+			"icon": "voidtouched_ring_r",
+			"stats": {
+				"hp": 25.1,
+				"attack": 8.3
+			}
+		},
+		{
+			"id": "voidtouched_ring_a",
+			"name": "Voidtouched Sigil",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "voidtouched",
+			"icon": "voidtouched_ring_a",
+			"stats": {
+				"hp": 22.0,
+				"magic_power": 8.6
 			}
 		},
 		{
@@ -1465,65 +3225,195 @@
 			}
 		},
 		{
-			"id": "wraithwoven_helm",
-			"name": "Shroud Hood",
+			"id": "wraithwoven_helm_k",
+			"name": "Wraithwoven Greathelm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "wraithwoven",
-			"icon": "wraithwoven_helm",
+			"icon": "wraithwoven_helm_k",
 			"stats": {
-				"hp": 16.3,
-				"power": 6.1
+				"hp": 18.8,
+				"attack": 4.9
 			}
 		},
 		{
-			"id": "wraithwoven_chest",
-			"name": "Ghostlace Tunic",
+			"id": "wraithwoven_helm_r",
+			"name": "Wraithwoven Cowl",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_helm_r",
+			"stats": {
+				"hp": 13.1,
+				"attack": 8.0
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "wraithwoven_helm_a",
+			"name": "Wraithwoven Pointed Hat",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_helm_a",
+			"stats": {
+				"hp": 11.4,
+				"magic_power": 8.2
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "wraithwoven_chest_k",
+			"name": "Wraithwoven Breastplate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "wraithwoven",
-			"icon": "wraithwoven_chest",
+			"icon": "wraithwoven_chest_k",
 			"stats": {
-				"hp": 36.7,
-				"power": 8.2
+				"hp": 42.2,
+				"attack": 6.5
 			}
 		},
 		{
-			"id": "wraithwoven_gloves",
-			"name": "Phantom Fingers",
+			"id": "wraithwoven_chest_r",
+			"name": "Wraithwoven Leathers",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_chest_r",
+			"stats": {
+				"hp": 29.4,
+				"attack": 11.3
+			}
+		},
+		{
+			"id": "wraithwoven_chest_a",
+			"name": "Wraithwoven Vestments",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_chest_a",
+			"stats": {
+				"hp": 25.7,
+				"magic_power": 11.6
+			}
+		},
+		{
+			"id": "wraithwoven_gloves_k",
+			"name": "Wraithwoven Vambraces",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "wraithwoven",
-			"icon": "wraithwoven_gloves",
+			"icon": "wraithwoven_gloves_k",
 			"stats": {
-				"power": 8.2,
-				"hp": 8.2
+				"hp": 9.4,
+				"attack": 6.5
 			}
 		},
 		{
-			"id": "wraithwoven_boots",
-			"name": "Hollow Steps",
-			"slot": "boots",
-			"class": "",
+			"id": "wraithwoven_gloves_r",
+			"name": "Wraithwoven Grips",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "wraithwoven",
-			"icon": "wraithwoven_boots",
+			"icon": "wraithwoven_gloves_r",
 			"stats": {
-				"hp": 16.3,
-				"power": 4.1
+				"hp": 6.5,
+				"attack": 10.1
+			}
+		},
+		{
+			"id": "wraithwoven_gloves_a",
+			"name": "Wraithwoven Sleeves",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_gloves_a",
+			"stats": {
+				"hp": 5.7,
+				"magic_power": 10.2
+			}
+		},
+		{
+			"id": "wraithwoven_boots_k",
+			"name": "Wraithwoven Sabatons",
+			"slot": "boots",
+			"class": "knight",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_boots_k",
+			"stats": {
+				"hp": 18.8,
+				"attack": 3.3
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "wraithwoven_ring",
-			"name": "Soul Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "wraithwoven_boots_r",
+			"name": "Wraithwoven Striders",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "wraithwoven",
-			"icon": "wraithwoven_ring",
+			"icon": "wraithwoven_boots_r",
 			"stats": {
-				"power": 12.2
+				"hp": 13.1,
+				"attack": 5.5
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "wraithwoven_boots_a",
+			"name": "Wraithwoven Slippers",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_boots_a",
+			"stats": {
+				"hp": 11.4,
+				"magic_power": 5.7
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "wraithwoven_ring_k",
+			"name": "Wraithwoven Seal",
+			"slot": "ring",
+			"class": "knight",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_ring_k",
+			"stats": {
+				"attack": 9.8
+			}
+		},
+		{
+			"id": "wraithwoven_ring_r",
+			"name": "Wraithwoven Loop",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_ring_r",
+			"stats": {
+				"attack": 14.7
+			}
+		},
+		{
+			"id": "wraithwoven_ring_a",
+			"name": "Wraithwoven Charm",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "wraithwoven",
+			"icon": "wraithwoven_ring_a",
+			"stats": {
+				"magic_power": 14.7
 			}
 		},
 		{
@@ -1567,67 +3457,207 @@
 			}
 		},
 		{
-			"id": "radiant_choir_helm",
-			"name": "Aureole Helm",
+			"id": "radiant_choir_helm_k",
+			"name": "Radiant Choir Visor",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "radiant_choir",
-			"icon": "radiant_choir_helm",
+			"icon": "radiant_choir_helm_k",
 			"stats": {
-				"hp": 29.7,
-				"defense": 6.4
+				"hp": 34.1,
+				"defense": 8.0
 			}
 		},
 		{
-			"id": "radiant_choir_chest",
-			"name": "Chorister's Plate",
+			"id": "radiant_choir_helm_r",
+			"name": "Radiant Choir Cap",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_helm_r",
+			"stats": {
+				"hp": 23.7,
+				"defense": 4.5,
+				"attack": 5.0
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "radiant_choir_helm_a",
+			"name": "Radiant Choir Diadem",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_helm_a",
+			"stats": {
+				"hp": 20.8,
+				"defense": 3.8,
+				"magic_power": 6.6
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "radiant_choir_chest_k",
+			"name": "Radiant Choir Plate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "radiant_choir",
-			"icon": "radiant_choir_chest",
+			"icon": "radiant_choir_chest_k",
 			"stats": {
-				"hp": 55.1,
-				"defense": 10.6
+				"hp": 63.4,
+				"defense": 13.3
 			}
 		},
 		{
-			"id": "radiant_choir_gloves",
-			"name": "Blessed Gauntlets",
+			"id": "radiant_choir_chest_r",
+			"name": "Radiant Choir Vest",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_chest_r",
+			"stats": {
+				"hp": 44.1,
+				"defense": 7.4,
+				"attack": 8.6
+			}
+		},
+		{
+			"id": "radiant_choir_chest_a",
+			"name": "Radiant Choir Mantle",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_chest_a",
+			"stats": {
+				"hp": 38.6,
+				"defense": 6.4,
+				"magic_power": 11.2
+			}
+		},
+		{
+			"id": "radiant_choir_gloves_k",
+			"name": "Radiant Choir Fists",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "radiant_choir",
-			"icon": "radiant_choir_gloves",
+			"icon": "radiant_choir_gloves_k",
 			"stats": {
-				"defense": 4.2,
-				"hp": 17.0,
-				"power": 4.2
+				"hp": 19.5,
+				"defense": 5.3,
+				"attack": 3.4
 			}
 		},
 		{
-			"id": "radiant_choir_boots",
-			"name": "Lightstep Sandals",
-			"slot": "boots",
-			"class": "",
+			"id": "radiant_choir_gloves_r",
+			"name": "Radiant Choir Wraps",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "radiant_choir",
-			"icon": "radiant_choir_boots",
+			"icon": "radiant_choir_gloves_r",
 			"stats": {
-				"hp": 25.4,
-				"defense": 6.4
+				"hp": 13.6,
+				"defense": 3.0,
+				"attack": 8.3
+			}
+		},
+		{
+			"id": "radiant_choir_gloves_a",
+			"name": "Radiant Choir Cuffs",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_gloves_a",
+			"stats": {
+				"hp": 11.9,
+				"defense": 2.5,
+				"magic_power": 9.3
+			}
+		},
+		{
+			"id": "radiant_choir_boots_k",
+			"name": "Radiant Choir Treads",
+			"slot": "boots",
+			"class": "knight",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_boots_k",
+			"stats": {
+				"hp": 29.3,
+				"defense": 8.0
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "radiant_choir_ring",
-			"name": "Sunlit Band",
-			"slot": "ring",
-			"class": "",
+			"id": "radiant_choir_boots_r",
+			"name": "Radiant Choir Moccasins",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "radiant_choir",
-			"icon": "radiant_choir_ring",
+			"icon": "radiant_choir_boots_r",
 			"stats": {
-				"hp": 33.9,
-				"power": 6.4
+				"hp": 20.4,
+				"defense": 4.5,
+				"attack": 4.8
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "radiant_choir_boots_a",
+			"name": "Radiant Choir Shoes",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_boots_a",
+			"stats": {
+				"hp": 17.8,
+				"defense": 3.8,
+				"magic_power": 6.4
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "radiant_choir_ring_k",
+			"name": "Radiant Choir Crest",
+			"slot": "ring",
+			"class": "knight",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_ring_k",
+			"stats": {
+				"hp": 39.0,
+				"attack": 5.1
+			}
+		},
+		{
+			"id": "radiant_choir_ring_r",
+			"name": "Radiant Choir Talon",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_ring_r",
+			"stats": {
+				"hp": 27.1,
+				"attack": 9.0
+			}
+		},
+		{
+			"id": "radiant_choir_ring_a",
+			"name": "Radiant Choir Focus",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "radiant_choir",
+			"icon": "radiant_choir_ring_a",
+			"stats": {
+				"hp": 23.7,
+				"magic_power": 9.3
 			}
 		},
 		{
@@ -1671,65 +3701,195 @@
 			}
 		},
 		{
-			"id": "titanforge_helm",
-			"name": "Titan Helm",
+			"id": "titanforge_helm_k",
+			"name": "Titanforge Helm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "titanforge",
-			"icon": "titanforge_helm",
+			"icon": "titanforge_helm_k",
 			"stats": {
-				"hp": 17.6,
-				"power": 6.6
+				"hp": 20.2,
+				"attack": 5.3
 			}
 		},
 		{
-			"id": "titanforge_chest",
-			"name": "Colossus Plate",
+			"id": "titanforge_helm_r",
+			"name": "Titanforge Hood",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "titanforge",
+			"icon": "titanforge_helm_r",
+			"stats": {
+				"hp": 14.1,
+				"attack": 8.6
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "titanforge_helm_a",
+			"name": "Titanforge Circlet",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "titanforge",
+			"icon": "titanforge_helm_a",
+			"stats": {
+				"hp": 12.3,
+				"magic_power": 8.8
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "titanforge_chest_k",
+			"name": "Titanforge Cuirass",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "titanforge",
-			"icon": "titanforge_chest",
+			"icon": "titanforge_chest_k",
 			"stats": {
-				"hp": 39.6,
-				"power": 8.8
+				"hp": 45.5,
+				"attack": 7.0
 			}
 		},
 		{
-			"id": "titanforge_gloves",
-			"name": "Titan Fists",
+			"id": "titanforge_chest_r",
+			"name": "Titanforge Jerkin",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "titanforge",
+			"icon": "titanforge_chest_r",
+			"stats": {
+				"hp": 31.7,
+				"attack": 12.1
+			}
+		},
+		{
+			"id": "titanforge_chest_a",
+			"name": "Titanforge Robe",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "titanforge",
+			"icon": "titanforge_chest_a",
+			"stats": {
+				"hp": 27.7,
+				"magic_power": 12.5
+			}
+		},
+		{
+			"id": "titanforge_gloves_k",
+			"name": "Titanforge Gauntlets",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "titanforge",
-			"icon": "titanforge_gloves",
+			"icon": "titanforge_gloves_k",
 			"stats": {
-				"power": 8.8,
-				"hp": 8.8
+				"hp": 10.1,
+				"attack": 7.0
 			}
 		},
 		{
-			"id": "titanforge_boots",
-			"name": "Titan Greaves",
-			"slot": "boots",
-			"class": "",
+			"id": "titanforge_gloves_r",
+			"name": "Titanforge Bracers",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "titanforge",
-			"icon": "titanforge_boots",
+			"icon": "titanforge_gloves_r",
 			"stats": {
-				"hp": 17.6,
-				"power": 4.4
+				"hp": 7.0,
+				"attack": 10.9
+			}
+		},
+		{
+			"id": "titanforge_gloves_a",
+			"name": "Titanforge Mitts",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "titanforge",
+			"icon": "titanforge_gloves_a",
+			"stats": {
+				"hp": 6.2,
+				"magic_power": 11.0
+			}
+		},
+		{
+			"id": "titanforge_boots_k",
+			"name": "Titanforge Greaves",
+			"slot": "boots",
+			"class": "knight",
+			"set": "titanforge",
+			"icon": "titanforge_boots_k",
+			"stats": {
+				"hp": 20.2,
+				"attack": 3.5
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "titanforge_ring",
-			"name": "Titan Seal",
-			"slot": "ring",
-			"class": "",
+			"id": "titanforge_boots_r",
+			"name": "Titanforge Boots",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "titanforge",
-			"icon": "titanforge_ring",
+			"icon": "titanforge_boots_r",
 			"stats": {
-				"power": 13.2
+				"hp": 14.1,
+				"attack": 6.0
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "titanforge_boots_a",
+			"name": "Titanforge Sandals",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "titanforge",
+			"icon": "titanforge_boots_a",
+			"stats": {
+				"hp": 12.3,
+				"magic_power": 6.2
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "titanforge_ring_k",
+			"name": "Titanforge Signet",
+			"slot": "ring",
+			"class": "knight",
+			"set": "titanforge",
+			"icon": "titanforge_ring_k",
+			"stats": {
+				"attack": 10.6
+			}
+		},
+		{
+			"id": "titanforge_ring_r",
+			"name": "Titanforge Band",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "titanforge",
+			"icon": "titanforge_ring_r",
+			"stats": {
+				"attack": 15.8
+			}
+		},
+		{
+			"id": "titanforge_ring_a",
+			"name": "Titanforge Sigil",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "titanforge",
+			"icon": "titanforge_ring_a",
+			"stats": {
+				"magic_power": 15.8
 			}
 		},
 		{
@@ -1773,67 +3933,207 @@
 			}
 		},
 		{
-			"id": "dragonscale_helm",
-			"name": "Dragonhelm",
+			"id": "dragonscale_helm_k",
+			"name": "Dragonscale Greathelm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "dragonscale",
-			"icon": "dragonscale_helm",
+			"icon": "dragonscale_helm_k",
 			"stats": {
-				"hp": 31.9,
-				"defense": 6.8
+				"hp": 36.7,
+				"defense": 8.6
 			}
 		},
 		{
-			"id": "dragonscale_chest",
-			"name": "Scalemail",
+			"id": "dragonscale_helm_r",
+			"name": "Dragonscale Cowl",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "dragonscale",
+			"icon": "dragonscale_helm_r",
+			"stats": {
+				"hp": 25.5,
+				"defense": 4.8,
+				"attack": 5.4
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "dragonscale_helm_a",
+			"name": "Dragonscale Pointed Hat",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "dragonscale",
+			"icon": "dragonscale_helm_a",
+			"stats": {
+				"hp": 22.3,
+				"defense": 4.1,
+				"magic_power": 7.1
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "dragonscale_chest_k",
+			"name": "Dragonscale Breastplate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "dragonscale",
-			"icon": "dragonscale_chest",
+			"icon": "dragonscale_chest_k",
 			"stats": {
-				"hp": 59.3,
-				"defense": 11.4
+				"hp": 68.2,
+				"defense": 14.3
 			}
 		},
 		{
-			"id": "dragonscale_gloves",
-			"name": "Talon Gauntlets",
+			"id": "dragonscale_chest_r",
+			"name": "Dragonscale Leathers",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "dragonscale",
+			"icon": "dragonscale_chest_r",
+			"stats": {
+				"hp": 47.4,
+				"defense": 8.0,
+				"attack": 9.2
+			}
+		},
+		{
+			"id": "dragonscale_chest_a",
+			"name": "Dragonscale Vestments",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "dragonscale",
+			"icon": "dragonscale_chest_a",
+			"stats": {
+				"hp": 41.5,
+				"defense": 6.8,
+				"magic_power": 12.1
+			}
+		},
+		{
+			"id": "dragonscale_gloves_k",
+			"name": "Dragonscale Vambraces",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "dragonscale",
-			"icon": "dragonscale_gloves",
+			"icon": "dragonscale_gloves_k",
 			"stats": {
-				"defense": 4.6,
-				"hp": 18.2,
-				"power": 4.6
+				"hp": 21.0,
+				"defense": 5.7,
+				"attack": 3.6
 			}
 		},
 		{
-			"id": "dragonscale_boots",
-			"name": "Wyrmstriders",
-			"slot": "boots",
-			"class": "",
+			"id": "dragonscale_gloves_r",
+			"name": "Dragonscale Grips",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "dragonscale",
-			"icon": "dragonscale_boots",
+			"icon": "dragonscale_gloves_r",
 			"stats": {
-				"hp": 27.4,
-				"defense": 6.8
+				"hp": 14.6,
+				"defense": 3.2,
+				"attack": 8.9
+			}
+		},
+		{
+			"id": "dragonscale_gloves_a",
+			"name": "Dragonscale Sleeves",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "dragonscale",
+			"icon": "dragonscale_gloves_a",
+			"stats": {
+				"hp": 12.8,
+				"defense": 2.7,
+				"magic_power": 10.0
+			}
+		},
+		{
+			"id": "dragonscale_boots_k",
+			"name": "Dragonscale Sabatons",
+			"slot": "boots",
+			"class": "knight",
+			"set": "dragonscale",
+			"icon": "dragonscale_boots_k",
+			"stats": {
+				"hp": 31.5,
+				"defense": 8.6
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "dragonscale_ring",
-			"name": "Dragon's Eye Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "dragonscale_boots_r",
+			"name": "Dragonscale Striders",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "dragonscale",
-			"icon": "dragonscale_ring",
+			"icon": "dragonscale_boots_r",
 			"stats": {
-				"hp": 36.5,
-				"power": 6.8
+				"hp": 21.9,
+				"defense": 4.8,
+				"attack": 5.2
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "dragonscale_boots_a",
+			"name": "Dragonscale Slippers",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "dragonscale",
+			"icon": "dragonscale_boots_a",
+			"stats": {
+				"hp": 19.2,
+				"defense": 4.1,
+				"magic_power": 6.8
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "dragonscale_ring_k",
+			"name": "Dragonscale Seal",
+			"slot": "ring",
+			"class": "knight",
+			"set": "dragonscale",
+			"icon": "dragonscale_ring_k",
+			"stats": {
+				"hp": 42.0,
+				"attack": 5.5
+			}
+		},
+		{
+			"id": "dragonscale_ring_r",
+			"name": "Dragonscale Loop",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "dragonscale",
+			"icon": "dragonscale_ring_r",
+			"stats": {
+				"hp": 29.2,
+				"attack": 9.7
+			}
+		},
+		{
+			"id": "dragonscale_ring_a",
+			"name": "Dragonscale Charm",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "dragonscale",
+			"icon": "dragonscale_ring_a",
+			"stats": {
+				"hp": 25.5,
+				"magic_power": 10.0
 			}
 		},
 		{
@@ -1877,65 +4177,195 @@
 			}
 		},
 		{
-			"id": "starfall_helm",
-			"name": "Starcrown",
+			"id": "starfall_helm_k",
+			"name": "Starfall Visor",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "starfall",
-			"icon": "starfall_helm",
+			"icon": "starfall_helm_k",
 			"stats": {
-				"hp": 18.9,
-				"power": 7.1
+				"hp": 21.7,
+				"attack": 5.7
 			}
 		},
 		{
-			"id": "starfall_chest",
-			"name": "Nebula Robe",
+			"id": "starfall_helm_r",
+			"name": "Starfall Cap",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "starfall",
+			"icon": "starfall_helm_r",
+			"stats": {
+				"hp": 15.1,
+				"attack": 9.3
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "starfall_helm_a",
+			"name": "Starfall Diadem",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "starfall",
+			"icon": "starfall_helm_a",
+			"stats": {
+				"hp": 13.2,
+				"magic_power": 9.4
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "starfall_chest_k",
+			"name": "Starfall Plate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "starfall",
-			"icon": "starfall_chest",
+			"icon": "starfall_chest_k",
 			"stats": {
-				"hp": 42.5,
-				"power": 9.4
+				"hp": 48.9,
+				"attack": 7.6
 			}
 		},
 		{
-			"id": "starfall_gloves",
-			"name": "Stardust Gloves",
+			"id": "starfall_chest_r",
+			"name": "Starfall Vest",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "starfall",
+			"icon": "starfall_chest_r",
+			"stats": {
+				"hp": 34.0,
+				"attack": 13.0
+			}
+		},
+		{
+			"id": "starfall_chest_a",
+			"name": "Starfall Mantle",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "starfall",
+			"icon": "starfall_chest_a",
+			"stats": {
+				"hp": 29.7,
+				"magic_power": 13.5
+			}
+		},
+		{
+			"id": "starfall_gloves_k",
+			"name": "Starfall Fists",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "starfall",
-			"icon": "starfall_gloves",
+			"icon": "starfall_gloves_k",
 			"stats": {
-				"power": 9.4,
-				"hp": 9.4
+				"hp": 10.9,
+				"attack": 7.6
 			}
 		},
 		{
-			"id": "starfall_boots",
-			"name": "Meteor Boots",
-			"slot": "boots",
-			"class": "",
+			"id": "starfall_gloves_r",
+			"name": "Starfall Wraps",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "starfall",
-			"icon": "starfall_boots",
+			"icon": "starfall_gloves_r",
 			"stats": {
-				"hp": 18.9,
-				"power": 4.7
+				"hp": 7.6,
+				"attack": 11.7
+			}
+		},
+		{
+			"id": "starfall_gloves_a",
+			"name": "Starfall Cuffs",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "starfall",
+			"icon": "starfall_gloves_a",
+			"stats": {
+				"hp": 6.6,
+				"magic_power": 11.8
+			}
+		},
+		{
+			"id": "starfall_boots_k",
+			"name": "Starfall Treads",
+			"slot": "boots",
+			"class": "knight",
+			"set": "starfall",
+			"icon": "starfall_boots_k",
+			"stats": {
+				"hp": 21.7,
+				"attack": 3.8
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "starfall_ring",
-			"name": "Constellation Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "starfall_boots_r",
+			"name": "Starfall Moccasins",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "starfall",
-			"icon": "starfall_ring",
+			"icon": "starfall_boots_r",
 			"stats": {
-				"power": 14.2
+				"hp": 15.1,
+				"attack": 6.4
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "starfall_boots_a",
+			"name": "Starfall Shoes",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "starfall",
+			"icon": "starfall_boots_a",
+			"stats": {
+				"hp": 13.2,
+				"magic_power": 6.6
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "starfall_ring_k",
+			"name": "Starfall Crest",
+			"slot": "ring",
+			"class": "knight",
+			"set": "starfall",
+			"icon": "starfall_ring_k",
+			"stats": {
+				"attack": 11.3
+			}
+		},
+		{
+			"id": "starfall_ring_r",
+			"name": "Starfall Talon",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "starfall",
+			"icon": "starfall_ring_r",
+			"stats": {
+				"attack": 17.0
+			}
+		},
+		{
+			"id": "starfall_ring_a",
+			"name": "Starfall Focus",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "starfall",
+			"icon": "starfall_ring_a",
+			"stats": {
+				"magic_power": 17.0
 			}
 		},
 		{
@@ -1979,67 +4409,207 @@
 			}
 		},
 		{
-			"id": "eclipse_helm",
-			"name": "Eclipse Visage",
+			"id": "eclipse_helm_k",
+			"name": "Eclipse Helm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "eclipse",
-			"icon": "eclipse_helm",
+			"icon": "eclipse_helm_k",
 			"stats": {
-				"hp": 34.2,
-				"defense": 7.3
+				"hp": 39.3,
+				"defense": 9.2
 			}
 		},
 		{
-			"id": "eclipse_chest",
-			"name": "Penumbra Plate",
+			"id": "eclipse_helm_r",
+			"name": "Eclipse Hood",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "eclipse",
+			"icon": "eclipse_helm_r",
+			"stats": {
+				"hp": 27.3,
+				"defense": 5.1,
+				"attack": 5.8
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "eclipse_helm_a",
+			"name": "Eclipse Circlet",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "eclipse",
+			"icon": "eclipse_helm_a",
+			"stats": {
+				"hp": 23.9,
+				"defense": 4.4,
+				"magic_power": 7.6
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "eclipse_chest_k",
+			"name": "Eclipse Cuirass",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "eclipse",
-			"icon": "eclipse_chest",
+			"icon": "eclipse_chest_k",
 			"stats": {
-				"hp": 63.4,
-				"defense": 12.2
+				"hp": 73.0,
+				"defense": 15.2
 			}
 		},
 		{
-			"id": "eclipse_gloves",
-			"name": "Dusk Gauntlets",
+			"id": "eclipse_chest_r",
+			"name": "Eclipse Jerkin",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "eclipse",
+			"icon": "eclipse_chest_r",
+			"stats": {
+				"hp": 50.8,
+				"defense": 8.5,
+				"attack": 9.9
+			}
+		},
+		{
+			"id": "eclipse_chest_a",
+			"name": "Eclipse Robe",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "eclipse",
+			"icon": "eclipse_chest_a",
+			"stats": {
+				"hp": 44.4,
+				"defense": 7.3,
+				"magic_power": 12.9
+			}
+		},
+		{
+			"id": "eclipse_gloves_k",
+			"name": "Eclipse Gauntlets",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "eclipse",
-			"icon": "eclipse_gloves",
+			"icon": "eclipse_gloves_k",
 			"stats": {
-				"defense": 4.9,
-				"hp": 19.5,
-				"power": 4.9
+				"hp": 22.4,
+				"defense": 6.1,
+				"attack": 3.9
 			}
 		},
 		{
-			"id": "eclipse_boots",
-			"name": "Shadowfall Boots",
-			"slot": "boots",
-			"class": "",
+			"id": "eclipse_gloves_r",
+			"name": "Eclipse Bracers",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "eclipse",
-			"icon": "eclipse_boots",
+			"icon": "eclipse_gloves_r",
 			"stats": {
-				"hp": 29.3,
-				"defense": 7.3
+				"hp": 15.6,
+				"defense": 3.4,
+				"attack": 9.6
+			}
+		},
+		{
+			"id": "eclipse_gloves_a",
+			"name": "Eclipse Mitts",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "eclipse",
+			"icon": "eclipse_gloves_a",
+			"stats": {
+				"hp": 13.7,
+				"defense": 2.9,
+				"magic_power": 10.7
+			}
+		},
+		{
+			"id": "eclipse_boots_k",
+			"name": "Eclipse Greaves",
+			"slot": "boots",
+			"class": "knight",
+			"set": "eclipse",
+			"icon": "eclipse_boots_k",
+			"stats": {
+				"hp": 33.7,
+				"defense": 9.2
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "eclipse_ring",
-			"name": "Corona Ring",
-			"slot": "ring",
-			"class": "",
+			"id": "eclipse_boots_r",
+			"name": "Eclipse Boots",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "eclipse",
-			"icon": "eclipse_ring",
+			"icon": "eclipse_boots_r",
 			"stats": {
-				"hp": 39.0,
-				"power": 7.3
+				"hp": 23.4,
+				"defense": 5.1,
+				"attack": 5.6
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "eclipse_boots_a",
+			"name": "Eclipse Sandals",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "eclipse",
+			"icon": "eclipse_boots_a",
+			"stats": {
+				"hp": 20.5,
+				"defense": 4.4,
+				"magic_power": 7.3
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "eclipse_ring_k",
+			"name": "Eclipse Signet",
+			"slot": "ring",
+			"class": "knight",
+			"set": "eclipse",
+			"icon": "eclipse_ring_k",
+			"stats": {
+				"hp": 44.9,
+				"attack": 5.9
+			}
+		},
+		{
+			"id": "eclipse_ring_r",
+			"name": "Eclipse Band",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "eclipse",
+			"icon": "eclipse_ring_r",
+			"stats": {
+				"hp": 31.2,
+				"attack": 10.3
+			}
+		},
+		{
+			"id": "eclipse_ring_a",
+			"name": "Eclipse Sigil",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "eclipse",
+			"icon": "eclipse_ring_a",
+			"stats": {
+				"hp": 27.3,
+				"magic_power": 10.7
 			}
 		},
 		{
@@ -2083,65 +4653,195 @@
 			}
 		},
 		{
-			"id": "infinite_helm",
-			"name": "Crown of Stairs",
+			"id": "infinite_helm_k",
+			"name": "Infinite Regalia Greathelm",
 			"slot": "helm",
-			"class": "",
+			"class": "knight",
 			"set": "infinite",
-			"icon": "infinite_helm",
+			"icon": "infinite_helm_k",
 			"stats": {
-				"hp": 20.2,
-				"power": 7.6
+				"hp": 23.2,
+				"attack": 6.0
 			}
 		},
 		{
-			"id": "infinite_chest",
-			"name": "Regalia of the Tower",
+			"id": "infinite_helm_r",
+			"name": "Infinite Regalia Cowl",
+			"slot": "helm",
+			"class": "ranger",
+			"set": "infinite",
+			"icon": "infinite_helm_r",
+			"stats": {
+				"hp": 16.1,
+				"attack": 9.9
+			},
+			"fixed": {
+				"crit_chance": 0.01
+			}
+		},
+		{
+			"id": "infinite_helm_a",
+			"name": "Infinite Regalia Pointed Hat",
+			"slot": "helm",
+			"class": "arcanist",
+			"set": "infinite",
+			"icon": "infinite_helm_a",
+			"stats": {
+				"hp": 14.1,
+				"magic_power": 10.1
+			},
+			"fixed": {
+				"mana_regen_pct": 0.02
+			}
+		},
+		{
+			"id": "infinite_chest_k",
+			"name": "Infinite Regalia Breastplate",
 			"slot": "chest",
-			"class": "",
+			"class": "knight",
 			"set": "infinite",
-			"icon": "infinite_chest",
+			"icon": "infinite_chest_k",
 			"stats": {
-				"hp": 45.4,
-				"power": 10.1
+				"hp": 52.2,
+				"attack": 8.1
 			}
 		},
 		{
-			"id": "infinite_gloves",
-			"name": "Gloves of Ascent",
+			"id": "infinite_chest_r",
+			"name": "Infinite Regalia Leathers",
+			"slot": "chest",
+			"class": "ranger",
+			"set": "infinite",
+			"icon": "infinite_chest_r",
+			"stats": {
+				"hp": 36.3,
+				"attack": 13.9
+			}
+		},
+		{
+			"id": "infinite_chest_a",
+			"name": "Infinite Regalia Vestments",
+			"slot": "chest",
+			"class": "arcanist",
+			"set": "infinite",
+			"icon": "infinite_chest_a",
+			"stats": {
+				"hp": 31.8,
+				"magic_power": 14.4
+			}
+		},
+		{
+			"id": "infinite_gloves_k",
+			"name": "Infinite Regalia Vambraces",
 			"slot": "gloves",
-			"class": "",
+			"class": "knight",
 			"set": "infinite",
-			"icon": "infinite_gloves",
+			"icon": "infinite_gloves_k",
 			"stats": {
-				"power": 10.1,
-				"hp": 10.1
+				"hp": 11.6,
+				"attack": 8.1
 			}
 		},
 		{
-			"id": "infinite_boots",
-			"name": "Boots of the Summit",
-			"slot": "boots",
-			"class": "",
+			"id": "infinite_gloves_r",
+			"name": "Infinite Regalia Grips",
+			"slot": "gloves",
+			"class": "ranger",
 			"set": "infinite",
-			"icon": "infinite_boots",
+			"icon": "infinite_gloves_r",
 			"stats": {
-				"hp": 20.2,
-				"power": 5.0
+				"hp": 8.1,
+				"attack": 12.5
+			}
+		},
+		{
+			"id": "infinite_gloves_a",
+			"name": "Infinite Regalia Sleeves",
+			"slot": "gloves",
+			"class": "arcanist",
+			"set": "infinite",
+			"icon": "infinite_gloves_a",
+			"stats": {
+				"hp": 7.1,
+				"magic_power": 12.6
+			}
+		},
+		{
+			"id": "infinite_boots_k",
+			"name": "Infinite Regalia Sabatons",
+			"slot": "boots",
+			"class": "knight",
+			"set": "infinite",
+			"icon": "infinite_boots_k",
+			"stats": {
+				"hp": 23.2,
+				"attack": 4.0
 			},
 			"fixed": {
 				"move_speed_pct": 0.02
 			}
 		},
 		{
-			"id": "infinite_ring",
-			"name": "Ring of Eternity",
-			"slot": "ring",
-			"class": "",
+			"id": "infinite_boots_r",
+			"name": "Infinite Regalia Striders",
+			"slot": "boots",
+			"class": "ranger",
 			"set": "infinite",
-			"icon": "infinite_ring",
+			"icon": "infinite_boots_r",
 			"stats": {
-				"power": 15.1
+				"hp": 16.1,
+				"attack": 6.9
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "infinite_boots_a",
+			"name": "Infinite Regalia Slippers",
+			"slot": "boots",
+			"class": "arcanist",
+			"set": "infinite",
+			"icon": "infinite_boots_a",
+			"stats": {
+				"hp": 14.1,
+				"magic_power": 7.1
+			},
+			"fixed": {
+				"move_speed_pct": 0.02
+			}
+		},
+		{
+			"id": "infinite_ring_k",
+			"name": "Infinite Regalia Seal",
+			"slot": "ring",
+			"class": "knight",
+			"set": "infinite",
+			"icon": "infinite_ring_k",
+			"stats": {
+				"attack": 12.1
+			}
+		},
+		{
+			"id": "infinite_ring_r",
+			"name": "Infinite Regalia Loop",
+			"slot": "ring",
+			"class": "ranger",
+			"set": "infinite",
+			"icon": "infinite_ring_r",
+			"stats": {
+				"attack": 18.1
+			}
+		},
+		{
+			"id": "infinite_ring_a",
+			"name": "Infinite Regalia Charm",
+			"slot": "ring",
+			"class": "arcanist",
+			"set": "infinite",
+			"icon": "infinite_ring_a",
+			"stats": {
+				"magic_power": 18.1
 			}
 		}
 	],
@@ -2297,11 +4997,11 @@
 			},
 			"pieces": {
 				"weapon": "Iron Sword",
-				"helm": "Leather Cap",
-				"chest": "Padded Vest",
-				"gloves": "Leather Grips",
-				"boots": "Leather Boots",
-				"ring": "Copper Ring"
+				"helm": "Wayfarer Helm",
+				"chest": "Wayfarer Cuirass",
+				"gloves": "Wayfarer Gauntlets",
+				"boots": "Wayfarer Greaves",
+				"ring": "Wayfarer Signet"
 			},
 			"weapons": {
 				"knight": "Iron Sword",
@@ -2343,11 +5043,11 @@
 			},
 			"pieces": {
 				"weapon": "Gravecleaver",
-				"helm": "Skullcap of the Fallen",
-				"chest": "Ribcage Plate",
-				"gloves": "Knucklebone Gauntlets",
-				"boots": "Marrow Treads",
-				"ring": "Tomb Signet"
+				"helm": "Gravebound Greathelm",
+				"chest": "Gravebound Breastplate",
+				"gloves": "Gravebound Vambraces",
+				"boots": "Gravebound Sabatons",
+				"ring": "Gravebound Seal"
 			},
 			"weapons": {
 				"knight": "Gravecleaver",
@@ -2391,11 +5091,11 @@
 			},
 			"pieces": {
 				"weapon": "Ashen Brand",
-				"helm": "Crown of Cinders",
-				"chest": "Ashen Mantle",
-				"gloves": "Smoldering Grasp",
-				"boots": "Charred Sabatons",
-				"ring": "Ember Seal"
+				"helm": "Ashen King Visor",
+				"chest": "Ashen King Plate",
+				"gloves": "Ashen King Fists",
+				"boots": "Ashen King Treads",
+				"ring": "Ashen King Crest"
 			},
 			"weapons": {
 				"knight": "Ashen Brand",
@@ -2445,11 +5145,11 @@
 			},
 			"pieces": {
 				"weapon": "Thornheart",
-				"helm": "Warden's Hood",
-				"chest": "Barkskin Vest",
-				"gloves": "Vinegrips",
-				"boots": "Rootwalkers",
-				"ring": "Seedstone Band"
+				"helm": "Verdant Warden Helm",
+				"chest": "Verdant Warden Cuirass",
+				"gloves": "Verdant Warden Gauntlets",
+				"boots": "Verdant Warden Greaves",
+				"ring": "Verdant Warden Signet"
 			},
 			"weapons": {
 				"knight": "Thornheart",
@@ -2497,11 +5197,11 @@
 			},
 			"pieces": {
 				"weapon": "Tempest Edge",
-				"helm": "Storm Visage",
-				"chest": "Galeweave",
-				"gloves": "Sparkknuckles",
-				"boots": "Striders of Lightning",
-				"ring": "Band of the Tempest"
+				"helm": "Stormcaller Greathelm",
+				"chest": "Stormcaller Breastplate",
+				"gloves": "Stormcaller Vambraces",
+				"boots": "Stormcaller Sabatons",
+				"ring": "Stormcaller Seal"
 			},
 			"weapons": {
 				"knight": "Tempest Edge",
@@ -2548,11 +5248,11 @@
 			},
 			"pieces": {
 				"weapon": "Rimefang Blade",
-				"helm": "Hoarfrost Helm",
-				"chest": "Iceplate Cuirass",
-				"gloves": "Frostbite Gauntlets",
-				"boots": "Snowdrift Boots",
-				"ring": "Rime Ring"
+				"helm": "Frostbound Visor",
+				"chest": "Frostbound Plate",
+				"gloves": "Frostbound Fists",
+				"boots": "Frostbound Treads",
+				"ring": "Frostbound Crest"
 			},
 			"weapons": {
 				"knight": "Rimefang Blade",
@@ -2596,11 +5296,11 @@
 			},
 			"pieces": {
 				"weapon": "Facetblade",
-				"helm": "Geode Crown",
-				"chest": "Crystalmail",
-				"gloves": "Gemgrasp Gloves",
-				"boots": "Glassstep Boots",
-				"ring": "Prism Ring"
+				"helm": "Prismatic Vein Helm",
+				"chest": "Prismatic Vein Cuirass",
+				"gloves": "Prismatic Vein Gauntlets",
+				"boots": "Prismatic Vein Greaves",
+				"ring": "Prismatic Vein Signet"
 			},
 			"weapons": {
 				"knight": "Facetblade",
@@ -2644,11 +5344,11 @@
 			},
 			"pieces": {
 				"weapon": "Tidebreaker",
-				"helm": "Diver's Helm",
-				"chest": "Barnacle Plate",
-				"gloves": "Kelp Wraps",
-				"boots": "Tidewalkers",
-				"ring": "Pearl Band"
+				"helm": "Sunken Tide Greathelm",
+				"chest": "Sunken Tide Breastplate",
+				"gloves": "Sunken Tide Vambraces",
+				"boots": "Sunken Tide Sabatons",
+				"ring": "Sunken Tide Seal"
 			},
 			"weapons": {
 				"knight": "Tidebreaker",
@@ -2692,11 +5392,11 @@
 			},
 			"pieces": {
 				"weapon": "Sandscimitar",
-				"helm": "Sunveil Turban",
-				"chest": "Nomad's Robe",
-				"gloves": "Sandsilk Gloves",
-				"boots": "Duststriders",
-				"ring": "Scarab Ring"
+				"helm": "Dune Nomad Visor",
+				"chest": "Dune Nomad Plate",
+				"gloves": "Dune Nomad Fists",
+				"boots": "Dune Nomad Treads",
+				"ring": "Dune Nomad Crest"
 			},
 			"weapons": {
 				"knight": "Sandscimitar",
@@ -2740,11 +5440,11 @@
 			},
 			"pieces": {
 				"weapon": "Slagmaul",
-				"helm": "Foundry Helm",
-				"chest": "Blastplate",
-				"gloves": "Tongs Gauntlets",
-				"boots": "Cinder Greaves",
-				"ring": "Molten Signet"
+				"helm": "Forgeborn Helm",
+				"chest": "Forgeborn Cuirass",
+				"gloves": "Forgeborn Gauntlets",
+				"boots": "Forgeborn Greaves",
+				"ring": "Forgeborn Signet"
 			},
 			"weapons": {
 				"knight": "Slagmaul",
@@ -2791,11 +5491,11 @@
 			},
 			"pieces": {
 				"weapon": "Crimson Fang",
-				"helm": "Bloodmoon Crown",
-				"chest": "Sanguine Mail",
-				"gloves": "Clawed Mitts",
-				"boots": "Hunter's Boots",
-				"ring": "Fangsigil"
+				"helm": "Bloodmoon Greathelm",
+				"chest": "Bloodmoon Breastplate",
+				"gloves": "Bloodmoon Vambraces",
+				"boots": "Bloodmoon Sabatons",
+				"ring": "Bloodmoon Seal"
 			},
 			"weapons": {
 				"knight": "Crimson Fang",
@@ -2839,11 +5539,11 @@
 			},
 			"pieces": {
 				"weapon": "Venomthorn",
-				"helm": "Belladonna Hood",
-				"chest": "Nightbloom Vest",
-				"gloves": "Toxin Grips",
-				"boots": "Creeper Boots",
-				"ring": "Blossom Ring"
+				"helm": "Nightbloom Visor",
+				"chest": "Nightbloom Plate",
+				"gloves": "Nightbloom Fists",
+				"boots": "Nightbloom Treads",
+				"ring": "Nightbloom Crest"
 			},
 			"weapons": {
 				"knight": "Venomthorn",
@@ -2887,11 +5587,11 @@
 			},
 			"pieces": {
 				"weapon": "Riftblade",
-				"helm": "Gazing Helm",
-				"chest": "Voidwoven Robe",
-				"gloves": "Umbral Grasp",
-				"boots": "Nullwalkers",
-				"ring": "Eye Signet"
+				"helm": "Voidtouched Helm",
+				"chest": "Voidtouched Cuirass",
+				"gloves": "Voidtouched Gauntlets",
+				"boots": "Voidtouched Greaves",
+				"ring": "Voidtouched Signet"
 			},
 			"weapons": {
 				"knight": "Riftblade",
@@ -2936,11 +5636,11 @@
 			},
 			"pieces": {
 				"weapon": "Spectral Edge",
-				"helm": "Shroud Hood",
-				"chest": "Ghostlace Tunic",
-				"gloves": "Phantom Fingers",
-				"boots": "Hollow Steps",
-				"ring": "Soul Ring"
+				"helm": "Wraithwoven Greathelm",
+				"chest": "Wraithwoven Breastplate",
+				"gloves": "Wraithwoven Vambraces",
+				"boots": "Wraithwoven Sabatons",
+				"ring": "Wraithwoven Seal"
 			},
 			"weapons": {
 				"knight": "Spectral Edge",
@@ -2985,11 +5685,11 @@
 			},
 			"pieces": {
 				"weapon": "Halo Brand",
-				"helm": "Aureole Helm",
-				"chest": "Chorister's Plate",
-				"gloves": "Blessed Gauntlets",
-				"boots": "Lightstep Sandals",
-				"ring": "Sunlit Band"
+				"helm": "Radiant Choir Visor",
+				"chest": "Radiant Choir Plate",
+				"gloves": "Radiant Choir Fists",
+				"boots": "Radiant Choir Treads",
+				"ring": "Radiant Choir Crest"
 			},
 			"weapons": {
 				"knight": "Halo Brand",
@@ -3036,11 +5736,11 @@
 			},
 			"pieces": {
 				"weapon": "Colossus Blade",
-				"helm": "Titan Helm",
-				"chest": "Colossus Plate",
-				"gloves": "Titan Fists",
-				"boots": "Titan Greaves",
-				"ring": "Titan Seal"
+				"helm": "Titanforge Helm",
+				"chest": "Titanforge Cuirass",
+				"gloves": "Titanforge Gauntlets",
+				"boots": "Titanforge Greaves",
+				"ring": "Titanforge Signet"
 			},
 			"weapons": {
 				"knight": "Colossus Blade",
@@ -3086,11 +5786,11 @@
 			},
 			"pieces": {
 				"weapon": "Wyrmfang",
-				"helm": "Dragonhelm",
-				"chest": "Scalemail",
-				"gloves": "Talon Gauntlets",
-				"boots": "Wyrmstriders",
-				"ring": "Dragon's Eye Ring"
+				"helm": "Dragonscale Greathelm",
+				"chest": "Dragonscale Breastplate",
+				"gloves": "Dragonscale Vambraces",
+				"boots": "Dragonscale Sabatons",
+				"ring": "Dragonscale Seal"
 			},
 			"weapons": {
 				"knight": "Wyrmfang",
@@ -3137,11 +5837,11 @@
 			},
 			"pieces": {
 				"weapon": "Comet Blade",
-				"helm": "Starcrown",
-				"chest": "Nebula Robe",
-				"gloves": "Stardust Gloves",
-				"boots": "Meteor Boots",
-				"ring": "Constellation Ring"
+				"helm": "Starfall Visor",
+				"chest": "Starfall Plate",
+				"gloves": "Starfall Fists",
+				"boots": "Starfall Treads",
+				"ring": "Starfall Crest"
 			},
 			"weapons": {
 				"knight": "Comet Blade",
@@ -3185,11 +5885,11 @@
 			},
 			"pieces": {
 				"weapon": "Umbra Edge",
-				"helm": "Eclipse Visage",
-				"chest": "Penumbra Plate",
-				"gloves": "Dusk Gauntlets",
-				"boots": "Shadowfall Boots",
-				"ring": "Corona Ring"
+				"helm": "Eclipse Helm",
+				"chest": "Eclipse Cuirass",
+				"gloves": "Eclipse Gauntlets",
+				"boots": "Eclipse Greaves",
+				"ring": "Eclipse Signet"
 			},
 			"weapons": {
 				"knight": "Umbra Edge",
@@ -3236,11 +5936,11 @@
 			},
 			"pieces": {
 				"weapon": "Infinity Brand",
-				"helm": "Crown of Stairs",
-				"chest": "Regalia of the Tower",
-				"gloves": "Gloves of Ascent",
-				"boots": "Boots of the Summit",
-				"ring": "Ring of Eternity"
+				"helm": "Infinite Regalia Greathelm",
+				"chest": "Infinite Regalia Breastplate",
+				"gloves": "Infinite Regalia Vambraces",
+				"boots": "Infinite Regalia Sabatons",
+				"ring": "Infinite Regalia Seal"
 			},
 			"weapons": {
 				"knight": "Infinity Brand",
@@ -3584,7 +6284,7 @@
 			}
 		},
 		"evolve": {
-			"_comment": "Evolve: burn `count` bag items of one set, kind and rarity into ONE item of the NEXT set in set_order (same rarity). Weapons have `class_change` chance to come out as another class.",
+			"_comment": "Evolve: burn `count` bag items of one set, kind and rarity into ONE item of the NEXT set in set_order (same rarity). Class-bound pieces have `class_change` chance to come out as another class.",
 			"count": 3,
 			"class_change": 0.25,
 			"tier_growth": 1.3,

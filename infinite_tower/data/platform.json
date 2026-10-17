@@ -5,6 +5,7 @@
 		"enabled": true,
 		"itemdef_base": 1000,
 		"playtime_drop_itemdef": 900,
+  "icon_base_url": "",
 		"note": "Set steam_app_id once the Steamworks app exists; generate itemdefs with tools/export_steam_itemdefs.gd"
 	},
 	"trade": {

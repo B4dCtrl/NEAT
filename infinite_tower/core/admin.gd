@@ -69,6 +69,18 @@ static func go_to_floor(game, floor_num: int) -> void:
 	_say(game, Loc.t("Going to floor %d") % floor_num)
 
 
+## Plays the Fall Back right now: as if the party had just lost on this floor.
+static func test_fall(game) -> void:
+	var s: Dictionary = game.state
+	var e = game.expedition
+	if int(s["floor"]) < 12:
+		go_to_floor(game, 18)
+	s["checkpoint"] = maxi(1, TowerGen.bonfire_below(int(s["floor"]) - 1))
+	e.combat = null
+	e._fall_back()
+	game.state_changed.emit()
+
+
 ## The next guardian floor (every 10th) above the current one.
 static func next_guardian(game) -> void:
 	var f := int(game.state["floor"])
@@ -103,6 +115,22 @@ static func free_hero(game) -> void:
 	s["best_floor_ever"] = maxi(int(s["best_floor_ever"]), Heroes.mint_floor_required(s))
 	s["gold"] = float(s["gold"]) + Heroes.mint_cost(s)
 	game.mint_hero()
+
+
+## `count` free heroes of one rarity (random classes), to try the fusion.
+static func give_heroes(game, rarity: String, count: int) -> void:
+	var s: Dictionary = game.state
+	var names: Array = DataDB.balance()["hero_names"]
+	var classes := Heroes.hireable_classes()
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	for i in count:
+		var h := Heroes.make_hero(s, classes[rng.randi() % classes.size()], names[rng.randi() % names.size()], rarity)
+		Heroes.add_hero(s, h)
+	s["gold"] = float(s["gold"]) + 20000.0
+	game.party_changed.emit()
+	game.state_changed.emit()
+	_say(game, Loc.t("%d heroes added") % count)
 
 
 # ------------------------------------------------------------------ gear and items

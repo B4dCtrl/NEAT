@@ -9,6 +9,10 @@ ROOT = HERE.parents[1]
 # strings added later go into extra.json (English -> [pt, es]).
 keys = json.load(open(HERE / "keys.json"))
 extra = json.load(open(HERE / "extra.json"))
+# Piece names written by tools/gen_item_data.py ("<set> <noun>" for every class).
+gear = HERE / "gear_names.json"
+if gear.exists():
+    extra.update(json.load(open(gear)))
 for li, lang in enumerate(("pt", "es")):
     tr = {}
     for n in range(1, 5):
