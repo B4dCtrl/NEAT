@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 	_refresh_left = 0.5
 	var s: Dictionary = Game.state
 	var st: Dictionary = s["stats"]
-	var lines := ["Lifetime damage:"]
+	var lines := [Loc.t("Lifetime damage:")]
 	for hero in s["heroes"]:
 		lines.append("  %s: %s" % [hero["name"], UiUtil.num(float(st["damage_by_hero"].get(hero["id"], 0.0)))])
 	_totals.text = "\n".join(lines)

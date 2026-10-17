@@ -30,7 +30,7 @@ static func kind_name(key: String) -> String:
 	var slot := key.get_slice("/", 0)
 	var cls := key.get_slice("/", 1)
 	if cls != "":
-		return "%s (%s)" % [Loc.t(slot.capitalize()), DataDB.classes().get(cls, {}).get("name", cls.capitalize())]
+		return Loc.t("{class} {slot}").format({"slot": Loc.t(slot.capitalize()), "class": DataDB.classes().get(cls, {}).get("name", cls.capitalize())})
 	return Loc.t(slot.capitalize())
 
 

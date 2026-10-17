@@ -88,5 +88,6 @@ static func status_text() -> String:
 	if _steam != null:
 		return Loc.t("Steam connected (app %d)") % app_id()
 	if app_id() <= 0:
-		return Loc.t("Steam not configured: set steam_app_id in data/platform.json and install GodotSteam")
+		# Players never need to know about app ids: this build is not on Steam yet.
+		return Loc.t("The Steam Market opens when Stairborn launches on Steam.")
 	return Loc.t("Steam not running: start Steam to trade on the Community Market")

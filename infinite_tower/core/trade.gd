@@ -29,7 +29,7 @@ static func lock_reason(state: Dictionary) -> String:
 	if int(state.get("best_floor_ever", 1)) < need_floor:
 		miss.append(Loc.t("reach floor %d") % need_floor)
 	if hours < need_hours:
-		miss.append(Loc.t("play %d hours (%.1f so far)") % [int(need_hours), hours])
+		miss.append(Loc.t("play %d hours (%s h so far)") % [int(need_hours), String.num(hours, 1)])
 	return "" if miss.is_empty() else Loc.t("Trading opens when you %s.") % Loc.t(" and ").join(miss)
 
 

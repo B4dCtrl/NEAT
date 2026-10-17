@@ -277,13 +277,13 @@ func _refresh_merge(sel: Variant) -> void:
 	var pick := 0
 	var sets := DataDB.sets()
 	for g in Forge.groups(Game.state):
-		_merge_opt.add_item(Loc.t("Refine %s %s  %d/%d") % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), g["have"], g["need"]])
+		_merge_opt.add_item(Loc.t("Refine %s  %d/%d") % [UiUtil.rarity_kind(g["rarity"], Forge.kind_name(g["key"])), g["have"], g["need"]])
 		var id: String = "R|%s|%s" % [g["rarity"], g["key"]]
 		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id)
 		if id == want:
 			pick = _merge_opt.item_count - 1
 	for g in Forge.evolve_groups(Game.state):
-		_merge_opt.add_item(Loc.t("Evolve %s %s (%s→)  %d/%d") % [DataDB.rarities()[g["rarity"]]["name"], Forge.kind_name(g["key"]), sets[g["set"]]["name"], g["have"], g["need"]])
+		_merge_opt.add_item(Loc.t("Evolve %s (%s→)  %d/%d") % [UiUtil.rarity_kind(g["rarity"], Forge.kind_name(g["key"])), sets[g["set"]]["name"], g["have"], g["need"]])
 		var id2: String = "E|%s|%s|%s" % [g["set"], g["rarity"], g["key"]]
 		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id2)
 		if id2 == want:
@@ -306,11 +306,11 @@ func _refresh_merge(sel: Variant) -> void:
 		var q := Forge.quote(Game.state, r, key)
 		_merge_btn.text = Loc.t("Refine %d→1") % q["count"]
 		_merge_btn.disabled = not q["ok"]
-		_merge_btn.tooltip_text = Loc.t("REFINE: fuses the %d weakest %s %s items in the bag (you have %d)\ninto ONE random %s %s (item level %d), keeping the best set among them.\nCost: %s gold%s. The merged items are destroyed for good.") % [
-			q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), q["have"], DataDB.rarities()[q["to"]]["name"], Forge.kind_name(key), q["ilvl"],
+		_merge_btn.tooltip_text = Loc.t("REFINE: fuses the %d weakest %s items in the bag (you have %d)\ninto ONE random %s (item level %d), keeping the best set among them.\nCost: %s gold%s. The merged items are destroyed for good.") % [
+			q["count"], UiUtil.rarity_kind(r, Forge.kind_name(key)), q["have"], UiUtil.rarity_kind(q["to"], Forge.kind_name(key)), q["ilvl"],
 			UiUtil.num(q["gold"]), (Loc.t(" + %d crystals") % q["crystals"]) if int(q["crystals"]) > 0 else ""]
 		if sel == null:
-			_info.text = Loc.t("Refine %d %s %s → 1 %s · %s gold") % [q["count"], DataDB.rarities()[r]["name"], Forge.kind_name(key), DataDB.rarities()[q["to"]]["name"], UiUtil.num(q["gold"])]
+			_info.text = Loc.t("Refine %d × %s → 1 %s · %s gold") % [q["count"], UiUtil.rarity_kind(r, Forge.kind_name(key)), DataDB.rarities()[q["to"]]["name"], UiUtil.num(q["gold"])]
 	else:
 		var set_id: String = parts[1]
 		var rr: String = parts[2]
@@ -319,12 +319,12 @@ func _refresh_merge(sel: Variant) -> void:
 		var to_name: String = sets[qe["to_set"]]["name"] if qe["to_set"] != "" else "—"
 		_merge_btn.text = Loc.t("Evolve %d→1") % qe["count"]
 		_merge_btn.disabled = not qe["ok"]
-		_merge_btn.tooltip_text = Loc.t("EVOLVE: burns the %d weakest %s %s items of the %s set (you have %d)\ninto ONE %s item of the %s set (item level %d).%s\nCost: %s gold%s.") % [
-			qe["count"], DataDB.rarities()[rr]["name"], Forge.kind_name(kk), sets[set_id]["name"], qe["have"], DataDB.rarities()[rr]["name"], to_name, qe["ilvl"],
+		_merge_btn.tooltip_text = Loc.t("EVOLVE: burns the %d weakest %s items of the %s set (you have %d)\ninto ONE %s item of the %s set (item level %d).%s\nCost: %s gold%s.") % [
+			qe["count"], UiUtil.rarity_kind(rr, Forge.kind_name(kk)), sets[set_id]["name"], qe["have"], DataDB.rarities()[rr]["name"], to_name, qe["ilvl"],
 			Loc.t("\nWeapons have a %d%% chance to come out as another class.") % int(Forge.evolve_rules()["class_change"] * 100.0) if kk.begins_with("weapon") else "",
 			UiUtil.num(qe["gold"]), (Loc.t(" + %d crystals") % qe["crystals"]) if int(qe["crystals"]) > 0 else ""]
 		if sel == null:
-			_info.text = Loc.t("Evolve %d %s %s: %s → %s · %s gold") % [qe["count"], DataDB.rarities()[rr]["name"], Forge.kind_name(kk), sets[set_id]["name"], to_name, UiUtil.num(qe["gold"])]
+			_info.text = Loc.t("Evolve %d × %s: %s → %s · %s gold") % [qe["count"], UiUtil.rarity_kind(rr, Forge.kind_name(kk)), sets[set_id]["name"], to_name, UiUtil.num(qe["gold"])]
 
 
 func _equip_selected() -> void:

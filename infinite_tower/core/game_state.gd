@@ -3,6 +3,7 @@ extends RefCounted
 ## without adapters. This script only builds and migrates that dictionary.
 
 const DataDB = preload("res://core/data_db.gd")
+const Loc = preload("res://core/loc.gd")
 const Heroes = preload("res://core/heroes.gd")
 
 const VERSION := 2
@@ -85,7 +86,8 @@ static func new_game(run_seed: int = 0) -> Dictionary:
 		"saved_at": 0,
 	}
 	# The first Stairborn climbs alone. Two more slots open for bought or minted heroes.
-	var founder := Heroes.make_hero(state, Heroes.FOUNDER_CLASS, DataDB.classes()[Heroes.FOUNDER_CLASS]["default_name"], "rare")
+	# Named in the player's language until they pick a name of their own.
+	var founder := Heroes.make_hero(state, Heroes.FOUNDER_CLASS, Loc.t("name.default"), "rare")
 	give_starter_weapon(state, founder)
 	state["heroes"].append(founder)
 	return state

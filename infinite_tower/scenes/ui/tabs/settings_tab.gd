@@ -161,6 +161,7 @@ func _check(grid: GridContainer, key: String, text: String) -> void:
 	_label(grid, text)
 	var c := CheckBox.new()
 	c.focus_mode = Control.FOCUS_NONE
+	c.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN    # just the box, not a full-width bar
 	c.toggled.connect(func(on): Game.set_setting(key, on))
 	grid.add_child(c)
 	_controls[key] = c

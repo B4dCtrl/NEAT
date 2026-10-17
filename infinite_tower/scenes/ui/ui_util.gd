@@ -21,6 +21,18 @@ static func num(value: float) -> String:
 	return sign + String.num(scaled, digits) + SUFFIXES[tier]
 
 
+## "Uncommon Ring" in English, "Anel (Incomum)" in Portuguese: the rarity and
+## the kind of item in the order (and without the gender agreement) each
+## language needs. `kind` is already translated.
+static func rarity_kind(rarity: String, kind: String) -> String:
+	return Loc.t("{rarity} {kind}").format({"rarity": DataDB.rarities().get(rarity, {}).get("name", rarity), "kind": kind})
+
+
+## "Lv 12" / "Nv 12".
+static func lv(level: int) -> String:
+	return Loc.t("Lv %d") % level
+
+
 static func pct(value: float, digits: int = 0) -> String:
 	return String.num(value * 100.0, digits) + "%"
 

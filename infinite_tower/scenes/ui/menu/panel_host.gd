@@ -37,6 +37,21 @@ var _shown := true
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = Ornate.theme()
+	Game.language_changed.connect(_relocalize)
+
+
+## Pages write their text when built: reopen the open panels, in place, so a
+## language change shows up at once (the Settings panel is where it happens).
+func _relocalize() -> void:
+	var where := {}
+	for id in _open:
+		where[id] = _windows[id].position
+	for id in where:
+		close(id)
+	for id in where:
+		open(id)
+		if _windows.has(id):
+			_windows[id].position = where[id]
 
 
 func is_open(id: String) -> bool:

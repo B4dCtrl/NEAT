@@ -70,6 +70,7 @@ var _story_wait := 1.0
 
 func _ready() -> void:
 	process_priority = -10
+	_add_symbol_font()
 	# Nothing is loaded until a player logs in: a blank placeholder state keeps
 	# the views happy behind the login screen.
 	state = GameState.new_game()
@@ -104,6 +105,19 @@ func sign_in_steam() -> bool:
 var account := ""
 var _save_key := ""
 var _save_path := ""
+
+
+## Godot's built-in font has no arrows, stars, check marks or shapes. Without
+## a fallback they would depend on the fonts of the player's PC (and show as
+## boxes when missing), so the game ships its own small symbol font.
+func _add_symbol_font() -> void:
+	var sym := load("res://assets/fonts/stairborn_symbols.ttf") as Font
+	var base := ThemeDB.fallback_font
+	if sym == null or base == null or base.fallbacks.has(sym):
+		return
+	var fb := base.fallbacks
+	fb.append(sym)
+	base.fallbacks = fb
 
 
 func logged_in() -> bool:
@@ -694,7 +708,7 @@ func claim_daily() -> Dictionary:
 func mint_hero() -> void:
 	var hero := Heroes.mint(state)
 	if not hero.is_empty():
-		GameState.add_history(state, "info", Loc.t("Minted %s the %s [%s]") % [hero["name"], DataDB.classes()[hero["class"]]["name"], hero["rarity"]])
+		GameState.add_history(state, "info", Loc.t("Minted %s the %s [%s]") % [hero["name"], DataDB.classes()[hero["class"]]["name"], DataDB.rarities()[hero["rarity"]]["name"]])
 		notified.emit("milestone", Loc.t("Minted %s the %s") % [hero["name"], DataDB.classes()[hero["class"]]["name"]])
 		party_changed.emit()
 		state_changed.emit()

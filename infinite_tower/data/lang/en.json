@@ -69,7 +69,7 @@
 	"manga.c1.p4": "Until one stormy night...",
 	"manga.c1.p4a": "...I made it... back...",
 	"manga.c1.p5a": "They're still up there. All of them. Still... climbing.",
-	"manga.c1.p6": "She lived just long enough to give birth on the first step.",
+	"manga.c1.p6": "She lived just long enough to give birth on the first step, and to leave her pendant with the baby.",
 	"manga.c1.p6a": "Don't climb for the wish, little one... Climb to bring them home.",
 	"manga.c1.p7a": "Born on the stairs... a Stairborn.",
 	"manga.c1.p8": "Years later.",
@@ -83,7 +83,7 @@
 	"manga.c2.p3a": "Up again, little Stairborn?",
 	"manga.c2.p4a": "Who... are you?",
 	"manga.c2.p4b": "Every bonfire is the last warmth of a fallen climber. I am one of them.",
-	"manga.c2.p5": "MINT, in the Heroes panel.",
+	"manga.c2.p5": "Recruit heroes with MINT, in the Heroes panel.",
 	"manga.c2.p5a": "Their echoes sleep in the ash. Offer gold, and one will rise to climb beside you.",
 	"manga.c2.p6": "Equip gear by hand. Merge weak pieces into better ones.",
 	"manga.c2.p6a": "And the armor that falls... wear it. They'd want it to climb again.",
@@ -117,7 +117,7 @@
 	"manga.unlocked": "New manga chapter: %s",
 	"menu.manga": "Manga: the story of the Stairborn (new chapters unlock as you climb)",
 	"manga.skip": "Close ✕",
-	"manga.c3.p6": "Inside the colossus there was nothing but old armor... and a pendant shaped like a stair.",
+	"manga.c3.p6": "Inside the colossus: only old armor... and a pendant. The same as the one {hero} has worn since the cradle.",
 	"manga.c3.p6a": "We left her in the storm... forgive us... Aria...",
 	"manga.c3.p7a": "Aria... So that was her name.",
 	"manga.c5.title": "Chapter 5 — The Name in the Stone",
@@ -127,5 +127,7 @@
 	"manga.c5.p4a": "Every hundred years I need a climber who never stops. Whoever reaches me... BECOMES me.",
 	"manga.c5.p5": "The Tower was a climber once. The first one who ever made a wish.",
 	"manga.c5.p6a": "Then I'll reach you... and say NO!",
-	"manga.sfx.skrrk": "SKRRK"
+	"manga.sfx.skrrk": "SKRRK",
+	"manga.hint": "TIP",
+	"manga.c4.p1a": "...{hero}..."
 }

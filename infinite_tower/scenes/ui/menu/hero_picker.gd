@@ -54,7 +54,7 @@ func rebuild() -> void:
 		t.fill = Color("#2e1f19")
 		t.rim = UiUtil.rarity_color(h.get("rarity", "common")).darkened(0.2)
 		t.highlight = i == selected
-		t.rank_text = "Lv%d" % int(h["level"])
+		t.rank_text = Loc.t("Lv%d") % int(h["level"])
 		var extra := ""
 		if badge.is_valid():
 			extra = str(badge.call(h))

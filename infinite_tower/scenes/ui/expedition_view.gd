@@ -16,6 +16,8 @@ const Loc = preload("res://core/loc.gd")
 
 var _currency_labels := {}
 var _camp_btn: Button
+var _help_btn: Button
+var _currency_boxes := {}
 
 
 ## Texts that live in the scene file or are named after nodes.
@@ -23,11 +25,34 @@ func _apply_texts() -> void:
 	%Subtitle.text = Loc.t("The Infinite Tower")
 	%CollapseButton.text = "  " + Loc.t("Taskbar Mode") + "  "
 	%CollapseButton.tooltip_text = Loc.t("Back to the taskbar (Esc / Tab)")
+	if _help_btn != null:
+		_help_btn.tooltip_text = Loc.t("How to play")
+	var tips := {"floor": "Max floor", "coin": "Gold", "soul": "Souls", "crystal": "Crystals"}
+	for c in _currency_boxes:
+		_currency_boxes[c].tooltip_text = Loc.t(tips[c])
 	offline_dialog.title = Loc.t("While you were away...")
 	offline_dialog.ok_button_text = Loc.t("Keep climbing")
 	var tabs: TabContainer = $Margin/VBox/Tabs
 	for i in tabs.get_child_count():
 		tabs.set_tab_title(i, Loc.t(tabs.get_child(i).name))
+
+
+## Tabs write most of their text once, when they are built: after a language
+## change each one is rebuilt from its script so nothing stays in the old one.
+func _rebuild_tabs() -> void:
+	var tabs: TabContainer = $Margin/VBox/Tabs
+	var current := tabs.current_tab
+	for i in tabs.get_child_count():
+		var old: Control = tabs.get_child(i)
+		var fresh := MarginContainer.new()
+		fresh.name = old.name
+		fresh.set_script(old.get_script())
+		tabs.remove_child(old)
+		old.queue_free()
+		tabs.add_child(fresh)
+		tabs.move_child(fresh, i)
+	tabs.current_tab = current
+	_apply_texts()
 
 
 func _ready() -> void:
@@ -36,16 +61,16 @@ func _ready() -> void:
 	var help := Button.new()
 	help.text = " ? "
 	help.focus_mode = Control.FOCUS_NONE
-	help.tooltip_text = Loc.t("How to play")
+	_help_btn = help
 	help.pressed.connect(func(): Game.story_requested.emit("tutorial"))
 	%CollapseButton.get_parent().add_child(help)
 	%CollapseButton.get_parent().move_child(help, %CollapseButton.get_index())
-	for c in [["floor", Loc.t("Max floor")], ["coin", Loc.t("Gold")], ["soul", Loc.t("Souls")], ["crystal", Loc.t("Crystals")]]:
+	for c in ["floor", "coin", "soul", "crystal"]:
 		var box := HBoxContainer.new()
 		box.add_theme_constant_override("separation", 4)
-		box.tooltip_text = c[1]
+		_currency_boxes[c] = box
 		var icon := TextureRect.new()
-		icon.texture = PixelArt.icon(c[0])
+		icon.texture = PixelArt.icon(c)
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		icon.custom_minimum_size = Vector2(16, 16)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -55,7 +80,7 @@ func _ready() -> void:
 		box.add_child(icon)
 		box.add_child(lbl)
 		currencies.add_child(box)
-		_currency_labels[c[0]] = lbl
+		_currency_labels[c] = lbl
 	# Bonfire camping: stop at the next bonfire to rearrange gear, then move on.
 	_camp_btn = Button.new()
 	_camp_btn.focus_mode = Control.FOCUS_NONE
@@ -67,7 +92,7 @@ func _ready() -> void:
 		_refresh())
 	%StatusLabel.get_parent().add_child(_camp_btn)
 	Game.state_changed.connect(_refresh)
-	Game.language_changed.connect(_apply_texts)
+	Game.language_changed.connect(_rebuild_tabs)
 	_apply_texts()
 	_refresh()
 

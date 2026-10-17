@@ -114,7 +114,7 @@ func _rebuild() -> void:
 	var offers := Game.market_offers()
 	_rotation = int(Game.state["market"]["rotation"])
 	var lock := Trade.lock_reason(Game.state)
-	_steam_status.text = PlatformServices.status_text() + ".\n" + Loc.t("Tradeable on Steam: every look (tower skins, pets, auras), Lord's Sigils and never-equipped Legendary gear. Mythic gear and gems stay bound to you.") + ("\n" + lock if lock != "" else "")
+	_steam_status.text = PlatformServices.status_text().trim_suffix(".") + ".\n" + Loc.t("Tradeable on Steam: every look (tower skins, pets, auras), Lord's Sigils and never-equipped Legendary gear. Mythic gear and gems stay bound to you.") + ("\n" + lock if lock != "" else "")
 	for c in _grid.get_children():
 		c.queue_free()
 	for i in offers.size():
@@ -137,7 +137,7 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 		cell.mouse_filter = Control.MOUSE_FILTER_PASS
 		h.add_child(cell)
 		title = offer["item"]["name"]
-		sub = Loc.t("%s %s · iLvl %d") % [DataDB.rarities()[offer["item"]["rarity"]]["name"], Loc.t(offer["item"]["slot"].capitalize()), offer["item"]["ilvl"]]
+		sub = Loc.t("%s · iLvl %d") % [UiUtil.rarity_kind(offer["item"]["rarity"], Loc.t(offer["item"]["slot"].capitalize())), offer["item"]["ilvl"]]
 		color = UiUtil.rarity_color(offer["item"]["rarity"])
 		panel.tooltip_text = PartyTab.item_tooltip(offer["item"])
 	elif offer.has("consumable"):
@@ -182,8 +182,12 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 	if offer["sold"]:
 		buy.text = Loc.t("Sold")
 	else:
-		buy.text = "%s %s" % [UiUtil.num(offer["price"]), "gold" if offer["currency"] == "gold" else "crystals"]
+		# The coin / crystal icon says the currency; the label is just the price.
+		buy.text = UiUtil.num(offer["price"])
+		buy.tooltip_text = Loc.t("%s gold") % UiUtil.num(offer["price"]) if offer["currency"] == "gold" else Loc.t("%d crystals") % int(offer["price"])
 		buy.icon = PixelArt.icon("coin" if offer["currency"] == "gold" else "crystal")
+		buy.expand_icon = true
+		buy.add_theme_constant_override("icon_max_width", 16)
 	buy.pressed.connect(func(): Game.market_buy(i); _dirty = true)
 	h.add_child(buy)
 	panel.set_meta("buy_button", buy)

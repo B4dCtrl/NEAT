@@ -132,7 +132,7 @@ func _refresh() -> void:
 				reqs.append("%s %d" % [nodes[req]["name"], nodes[id]["requires"][req]])
 			c["meta"].text = Loc.t("Not learned") + (Loc.t(" · needs ") + ", ".join(reqs) if not reqs.is_empty() else Loc.t(" · learn it in TALENTS"))
 		c["toggle"].disabled = not learned
-		c["toggle"].text = "ON" if on and learned else (Loc.t("OFF") if learned else "—")
+		c["toggle"].text = Loc.t("ON") if on and learned else (Loc.t("OFF") if learned else "—")
 		c["toggle"].tooltip_text = Loc.t("Auto-cast on/off")
 		c["toggle"].add_theme_color_override("font_color", Ornate.GOOD if on and learned else Ornate.TEXT_DIM)
 

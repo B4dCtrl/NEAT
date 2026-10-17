@@ -142,8 +142,8 @@
 							{
 								"text": "manga.c1.p6a",
 								"at": [
-									0.6,
-									0.62
+									0.62,
+									0.5
 								],
 								"tail": [
 									0.3,
@@ -240,7 +240,8 @@
 								],
 								"w": 0.9
 							}
-						]
+						],
+						"hint": true
 					}
 				],
 				[
@@ -254,7 +255,8 @@
 						],
 						"title": "manga.c1.title",
 						"caption": "manga.c1.p10",
-						"caption_bottom": true
+						"caption_bottom": true,
+						"hint": true
 					}
 				]
 			]
@@ -308,7 +310,8 @@
 								"size": 0.2,
 								"rot": -0.1
 							}
-						]
+						],
+						"hint": true
 					},
 					{
 						"scene": "bonfire_eyes",
@@ -393,7 +396,8 @@
 								],
 								"w": 0.9
 							}
-						]
+						],
+						"hint": true
 					},
 					{
 						"scene": "armor_rain",
@@ -419,7 +423,8 @@
 								],
 								"w": 0.9
 							}
-						]
+						],
+						"hint": true
 					}
 				],
 				[
@@ -568,11 +573,11 @@
 								"text": "manga.c3.p7a",
 								"at": [
 									0.5,
-									0.18
+									0.84
 								],
 								"tail": [
 									0.55,
-									0.4
+									0.5
 								],
 								"w": 0.8
 							}
@@ -597,7 +602,7 @@
 								],
 								"tail": [
 									0.5,
-									0.4
+									0.8
 								],
 								"w": 0.9
 							}
@@ -613,7 +618,8 @@
 						],
 						"title": "manga.c3.title",
 						"caption": "manga.c3.p5",
-						"caption_bottom": true
+						"caption_bottom": true,
+						"hint": true
 					}
 				]
 			]
@@ -646,6 +652,21 @@
 								"size": 0.2,
 								"rot": 0.1
 							}
+						],
+						"bubbles": [
+							{
+								"text": "manga.c4.p1a",
+								"at": [
+									0.2,
+									0.62
+								],
+								"tail": [
+									0.42,
+									0.3
+								],
+								"w": 0.25,
+								"style": "whisper"
+							}
 						]
 					},
 					{
@@ -669,7 +690,8 @@
 								"size": 0.18,
 								"rot": 0.25
 							}
-						]
+						],
+						"hint": true
 					},
 					{
 						"scene": "gilt_laughs",

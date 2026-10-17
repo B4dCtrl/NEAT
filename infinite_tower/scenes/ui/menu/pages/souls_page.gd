@@ -134,6 +134,6 @@ func _refresh() -> void:
 		for req in n["requires"]:
 			reqs.append("%s %d" % [nodes[req]["name"], n["requires"][req]])
 		t.tooltip_text = "%s  [%d/%d]\n%s\n%s" % [n["name"], lvl, n["max"], n["text"],
-			Loc.t("MAX") if t.maxed else (Loc.t("Cost: %d Souls") % cost if unlocked else Loc.t("Requires ") + ", ".join(reqs))]
+			Loc.t("MAX") if t.maxed else ((Loc.t("Cost: 1 Soul") if cost == 1 else Loc.t("Cost: %d Souls") % cost) if unlocked else Loc.t("Requires ") + ", ".join(reqs))]
 		t.queue_redraw()
 	_grid.queue_redraw()

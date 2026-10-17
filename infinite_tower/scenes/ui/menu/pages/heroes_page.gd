@@ -159,7 +159,7 @@ func _hero_row(h: Dictionary, idx: int, in_party: bool) -> Control:
 	name_l.clip_text = true
 	info.add_child(name_l)
 	var st := StatCalc.hero_stats(Game.state, h)
-	var l1 := Ornate.small_label("%s · %s · Lv %d" % [cdef["name"], Loc.t(String(h.get("rarity", "common")).capitalize()), h["level"]], Ornate.TEXT_DIM, 11)
+	var l1 := Ornate.small_label("%s · %s · %s" % [cdef["name"], Loc.t(String(h.get("rarity", "common")).capitalize()), UiUtil.lv(int(h["level"]))], Ornate.TEXT_DIM, 11)
 	l1.clip_text = true
 	info.add_child(l1)
 	var l2 := Ornate.small_label(Loc.t("Power %s") % UiUtil.num(StatCalc.power_rating(st)), Ornate.TEXT_DIM, 11)
@@ -214,7 +214,9 @@ func _refresh_mint() -> void:
 	var why := Heroes.mint_blocker(Game.state)
 	_mint_btn.disabled = why != ""
 	if _last_minted == "":
-		_mint_info.text = Loc.t("You have %s gold. Hero #%d costs more than the last (%s).") % [UiUtil.num(Game.state["gold"]), Heroes.total_heroes(Game.state) + 1, why if why != "" else "ready"]
+		_mint_info.text = Loc.t("You have %s gold. Each new hero costs more than the last.") % UiUtil.num(Game.state["gold"])
+		if why != "":
+			_mint_info.text += "  " + why + "."
 
 
 func _mint() -> void:

@@ -33,19 +33,23 @@ func setup(panel: Dictionary, name_of_hero: String) -> void:
 	clip_contents = true
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tone = _make_tone()
+	var hint: bool = spec.get("hint", false)
 	if spec.has("caption") and not spec.get("caption_bottom", false):
-		_texts.append({"kind": "caption", "text": _t(spec["caption"])})
+		_texts.append({"kind": "caption", "text": _t(spec["caption"]), "hint": hint})
 	for b in spec.get("bubbles", []):
 		_texts.append({"kind": "bubble", "text": _t(b["text"]), "data": b})
 	if spec.has("caption") and spec.get("caption_bottom", false):
-		_texts.append({"kind": "caption", "text": _t(spec["caption"]), "bottom": true})
+		_texts.append({"kind": "caption", "text": _t(spec["caption"]), "bottom": true, "hint": hint})
 	_total = 0
 	for x in _texts:
 		_total += String(x["text"]).length()
 
 
 func _t(key: String) -> String:
-	return Loc.t(key).replace("{hero}", hero_name)
+	var s := Loc.t(key).replace("{hero}", hero_name)
+	# Non-breaking hyphens: "perdoe-nos" never splits across two lines.
+	var re := RegEx.create_from_string("(\\w)-(\\w)")
+	return re.sub(s, "$1\u2011$2", true)
 
 
 func text_done() -> bool:
@@ -308,18 +312,28 @@ func _draw_texts() -> void:
 		var shown := full.substr(0, int(minf(left, full.length())))
 		left -= full.length()
 		if x["kind"] == "caption":
-			_caption(full, shown, x.get("bottom", false))
+			_caption(full, shown, x.get("bottom", false), x.get("hint", false))
 		else:
 			_bubble(x["data"], full, shown)
 
 
-func _caption(full: String, shown: String, bottom: bool) -> void:
+## Story captions are cream boxes; game tips (hint) get a gold frame and a
+## "TIP" tab so the player can tell the tutorial from the story.
+func _caption(full: String, shown: String, bottom: bool, hint: bool = false) -> void:
 	var fs := _fs()
 	var w := minf(size.x - 20.0, maxf(160.0, size.x * 0.62))
 	var sz := _font().get_multiline_string_size(full, HORIZONTAL_ALIGNMENT_LEFT, w - 16.0, fs)
-	var box := Rect2(Vector2(10, size.y - sz.y - 26.0) if bottom else Vector2(10, 10), Vector2(w, sz.y + 14.0))
-	draw_rect(box.grow(2.0), INK)
-	draw_rect(box, Color("#fbf6e6"))
+	var tab := fs + 6.0 if hint else 0.0
+	var box := Rect2(Vector2(10, size.y - sz.y - 26.0) if bottom else Vector2(10, 10 + tab), Vector2(w, sz.y + 14.0))
+	if hint:
+		var label := Loc.t("manga.hint")
+		var lw := _font().get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 3).x + 16.0
+		var tr := Rect2(box.position + Vector2(0, -tab), Vector2(lw, tab + 2.0))
+		draw_rect(tr.grow(2.0), INK)
+		draw_rect(tr, GOLD)
+		draw_string(_font(), tr.position + Vector2(8, tab - 5.0), label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 3, INK)
+	draw_rect(box.grow(3.0 if hint else 2.0), GOLD.darkened(0.25) if hint else INK)
+	draw_rect(box, Color("#fff4d0") if hint else Color("#fbf6e6"))
 	draw_multiline_string(_font(), box.position + Vector2(8, 6 + fs), shown, HORIZONTAL_ALIGNMENT_LEFT, w - 16.0, fs, -1, INK)
 
 
@@ -343,7 +357,8 @@ func _bubble(b: Dictionary, full: String, shown: String) -> void:
 	var dir := (tail - c).normalized()
 	var base := c + Vector2(dir.x * rx, dir.y * ry) * 0.8
 	var side := Vector2(-dir.y, dir.x) * 9.0
-	var tip := base + (tail - base) * 0.6
+	# Short, pointed tails: they show who speaks without crossing the panel.
+	var tip := base + ((tail - base) * 0.6).limit_length(maxf(40.0, ry * 1.1))
 	var pts := PackedVector2Array()
 	var n := 40
 	for i in n:
@@ -478,6 +493,7 @@ func _s_birth_bonfire() -> void:
 	_fire(Vector2(size.x * 0.78, g), size.y / 220.0)
 	_figure(Vector2(size.x * 0.12, g - 18), size.y * 0.42, "woman", INK, -1.45)
 	_bundle(Vector2(size.x * 0.32, g - 30), size.y * 0.05)
+	_pendant(Vector2(size.x * 0.32, g - 30), size.y * 0.035)
 
 
 func _s_elder_baby() -> void:
@@ -490,6 +506,7 @@ func _s_elder_baby() -> void:
 	_ground(size.y * 0.88)
 	_figure(Vector2(size.x * 0.48, size.y * 0.88), size.y * 0.6, "elder")
 	_bundle(Vector2(size.x * 0.51, size.y * 0.3), size.y * 0.06)
+	_pendant(Vector2(size.x * 0.51, size.y * 0.3 + size.y * 0.13), size.y * 0.03)
 
 
 func _s_grown_hero() -> void:
@@ -624,6 +641,7 @@ func _s_souls_rise() -> void:
 	_ground(g)
 	for i in 3:
 		_figure(Vector2(size.x * (0.2 + i * 0.3), g), size.y * 0.18, "adult", Color("#2a2832"), 1.4)
+	_fire(Vector2(size.x * 0.5, g), size.y / 330.0, true)
 	var soul := PixelArt.icon("soul")
 	for i in 9:
 		var ph := fmod(t * 0.25 + i * 0.11, 1.0)

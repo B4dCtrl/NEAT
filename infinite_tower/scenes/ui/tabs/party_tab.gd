@@ -40,7 +40,8 @@ func _ready() -> void:
 
 	var train_panel := PanelContainer.new()
 	root.add_child(train_panel)
-	var train_row := HBoxContainer.new()
+	# Flows onto a second line instead of widening the window (long labels in pt/es).
+	var train_row := HFlowContainer.new()
 	train_panel.add_child(train_row)
 	var tl := Label.new()
 	tl.text = Loc.t("Training (party-wide):")
@@ -117,8 +118,10 @@ func _build_card(i: int) -> Control:
 	var name_lbl := Label.new()
 	name_lbl.text = "%s · %s" % [hero["name"], cdef["name"]]
 	name_lbl.add_theme_color_override("font_color", UiUtil.rarity_color(hero.get("rarity", "common")))
+	name_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_box.add_child(name_lbl)
 	var level_lbl := Label.new()
+	level_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	level_lbl.add_theme_color_override("font_color", Color("#9a96a8"))
 	level_lbl.add_theme_font_size_override("font_size", 12)
 	name_box.add_child(level_lbl)
@@ -186,7 +189,7 @@ func _rebuild_recruit() -> void:
 		var hero: Dictionary = Game.state["bench"][b]
 		var row := HBoxContainer.new()
 		var l := Label.new()
-		l.text = "%s · %s · Lv %d" % [hero["name"], DataDB.classes()[hero["class"]]["name"], hero["level"]]
+		l.text = "%s · %s · %s" % [hero["name"], DataDB.classes()[hero["class"]]["name"], UiUtil.lv(int(hero["level"]))]
 		l.add_theme_color_override("font_color", UiUtil.rarity_color(hero.get("rarity", "common")))
 		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(l)
@@ -283,7 +286,7 @@ static func item_tooltip(item: Dictionary) -> String:
 	var lines := []
 	var rarity_name: String = DataDB.rarities()[item["rarity"]]["name"]
 	lines.append(item["name"])
-	lines.append(Loc.t("%s %s  ·  Item Level %d") % [rarity_name, Loc.t(item["slot"].capitalize()), item["ilvl"]])
+	lines.append(Loc.t("%s  ·  Item Level %d") % [UiUtil.rarity_kind(item["rarity"], Loc.t(item["slot"].capitalize())), item["ilvl"]])
 	lines.append(Loc.t("Usable by: ") + users_text(item))
 	lines.append(Trade.item_note(item))
 	var base_keys := []

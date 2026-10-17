@@ -39,6 +39,7 @@ static func table(table_name: String) -> Dictionary:
 static func reload_language() -> void:
 	for n in LOCALIZED:
 		_cache.erase(n)
+	_cache.erase("_all_skill_nodes")    # built from "skills": same language as it
 	_base_by_id = {}
 
 

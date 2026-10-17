@@ -9,6 +9,7 @@ const Ornate = preload("res://scenes/ui/menu/ornate.gd")
 const IconTile = preload("res://scenes/ui/menu/icon_tile.gd")
 const HeroPicker = preload("res://scenes/ui/menu/hero_picker.gd")
 const Loc = preload("res://core/loc.gd")
+const UiUtil = preload("res://scenes/ui/ui_util.gd")
 
 const PASSIVE := Color("#3a3024")
 const ACTIVE := Color("#6a2c24")
@@ -158,7 +159,7 @@ func _refresh() -> void:
 	if _built_class != hero["class"]:
 		_build(hero["class"])
 	var free := Heroes.skill_points_free(hero)
-	_job.text = "%s · Lv %d" % [DataDB.classes()[hero["class"]]["name"], hero["level"]]
+	_job.text = "%s · %s" % [DataDB.classes()[hero["class"]]["name"], UiUtil.lv(int(hero["level"]))]
 	_points.text = Loc.t("Skill points: %d   (1 per level)") % free
 	_auto.set_pressed_no_signal(Game.state["settings"].get("auto_skills", true))
 	var nodes := DataDB.skill_nodes(hero["class"])
@@ -174,7 +175,7 @@ func _refresh() -> void:
 		var reqs := []
 		for req in n["requires"]:
 			reqs.append("%s %d" % [nodes[req]["name"], n["requires"][req]])
-		var lines := ["%s  (Lv %d/%d)%s" % [n["name"], rank, n["max"], Loc.t("  · ACTIVE, auto-cast") if n.get("kind", "") == "active" else ""]]
+		var lines := ["%s  (%s/%d)%s" % [n["name"], UiUtil.lv(rank), n["max"], Loc.t("  · ACTIVE, auto-cast") if n.get("kind", "") == "active" else ""]]
 		if rank > 0:
 			lines.append(Loc.t("Now: ") + Heroes.describe(id, rank))
 		if rank < int(n["max"]):
