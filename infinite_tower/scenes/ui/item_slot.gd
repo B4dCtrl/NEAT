@@ -13,21 +13,63 @@ const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const UiUtil = preload("res://scenes/ui/ui_util.gd")
 const PartyTab = preload("res://scenes/ui/tabs/party_tab.gd")
 const Loc = preload("res://core/loc.gd")
+const Upgrades = preload("res://core/upgrades.gd")
+
+const GLOW_ME := Color("#7dff8a")      # best choice for the hero being viewed
+const GLOW_OTHER := Color("#7fc4ff")   # best choice for another hero of the party
 
 var item = null              # Dictionary or null
 var hero_idx := -1
 var slot_name := ""          # equipment slot this cell represents ("" for bag cells)
 var is_selected := false
+## 0 = nothing to say, 1 = an upgrade for another hero, 2 = an upgrade for the
+## hero being viewed (or for anyone, in the market).
+var upgrade := 0
 var _hover := false
+var _t := 0.0
 
 
-func setup(item_: Variant, hero_idx_: int, slot_name_: String, cell: float = 48.0) -> void:
+## `viewing_hero` turns on the upgrade hints for a bag / shop cell: the index of
+## the hero whose gear is on screen, or -1 for "any hero" (the shop). Equipped
+## cells (and the default, -2) show no hints.
+func setup(item_: Variant, hero_idx_: int, slot_name_: String, cell: float = 48.0, viewing_hero: int = -2) -> void:
 	item = item_
 	hero_idx = hero_idx_
 	slot_name = slot_name_
 	custom_minimum_size = Vector2(cell, cell)
-	tooltip_text = PartyTab.item_tooltip(item) if item != null else (Loc.t("%s (empty)") % Loc.t(slot_name.capitalize()) if slot_name != "" else "")
+	var hints := []
+	upgrade = 0
+	if item != null and viewing_hero > -2 and hero_idx_ < 0 and slot_name_ == "":
+		hints = _upgrade_hints(viewing_hero)
+	tooltip_text = PartyTab.item_tooltip(item, hints) if item != null else (Loc.t("%s (empty)") % Loc.t(slot_name.capitalize()) if slot_name != "" else "")
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	clip_contents = true
+	set_process(upgrade > 0)
+	queue_redraw()
+
+
+## Fills `upgrade` and returns the tooltip lines saying who gains what.
+func _upgrade_hints(viewing_hero: int) -> Array:
+	var scan: Dictionary = Game.upgrades()["items"]
+	var uid := int(item["uid"])
+	if scan.has(uid):
+		var info: Dictionary = scan[uid]
+		if viewing_hero in info["top_for"]:
+			upgrade = 2
+		elif not info["top_for"].is_empty():
+			upgrade = 1
+		return Upgrades.hint_lines(Game.state, item, info["gains"])
+	if viewing_hero == -1:
+		# Not in the bag (a shop offer): work it out directly.
+		var g := Upgrades.gains(Game.state, item)
+		if not g.is_empty():
+			upgrade = 2
+			return Upgrades.hint_lines(Game.state, item, g)
+	return []
+
+
+func _process(delta: float) -> void:
+	_t += delta
 	queue_redraw()
 
 
@@ -77,6 +119,36 @@ func _draw() -> void:
 		if not ghost.is_empty():
 			draw_texture_rect(ghost[0], r.grow(-size.x * 0.2), false, Color(1, 1, 1, 0.18))
 	draw_rect(r, border, false, 3.0 if is_selected else 1.5)
+	if upgrade > 0 and item != null:
+		_draw_upgrade(r)
+
+
+## A pulsing green frame, a light sweep and an arrow: "this beats what you wear".
+func _draw_upgrade(r: Rect2) -> void:
+	var col := GLOW_ME if upgrade == 2 else GLOW_OTHER
+	var pulse := 0.5 + 0.5 * sin(_t * 4.2)
+	# Inside the rarity border, so the item's rarity colour stays readable.
+	for k in 3:
+		var a := (0.75 - k * 0.2) * (0.45 + 0.55 * pulse)
+		draw_rect(r.grow(-2.4 - k * 1.3), Color(col.r, col.g, col.b, a), false, 1.5)
+	var tint := col
+	tint.a = 0.07 + 0.07 * pulse
+	draw_rect(r.grow(-2), tint)
+	if upgrade == 2:
+		# A diagonal sheen sweeps across every couple of seconds.
+		var sweep := fposmod(_t * 0.55, 2.4) - 0.7
+		if sweep > -0.3 and sweep < 1.3:
+			var c := sweep * (size.x + size.y)
+			var w := size.x * 0.16
+			var band := PackedVector2Array([Vector2(c - w, 0), Vector2(c + w, 0), Vector2(c + w - size.y, size.y), Vector2(c - w - size.y, size.y)])
+			draw_colored_polygon(band, Color(1, 1, 1, 0.3))
+	# Arrow badge, top-left.
+	var s := maxf(7.0, size.x * 0.2)
+	var o := Vector2(3, 3)
+	var tri := PackedVector2Array([o + Vector2(s * 0.5, 0), o + Vector2(s, s), o + Vector2(0, s)])
+	var bg := PackedVector2Array([tri[0] + Vector2(0, -1.5), tri[1] + Vector2(1.5, 1.2), tri[2] + Vector2(-1.5, 1.2)])
+	draw_colored_polygon(bg, Color(0.04, 0.08, 0.04, 0.95))
+	draw_colored_polygon(tri, col)
 
 
 # ------------------------------------------------------------ drag & drop

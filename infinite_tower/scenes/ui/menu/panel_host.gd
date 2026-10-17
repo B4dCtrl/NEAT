@@ -90,7 +90,8 @@ func open(id: String) -> void:
 	w.theme = Ornate.theme()
 	w.visible = false
 	w.add_child(p)
-	# Tooltips are native popups; without this they open BEHIND an always-on-top panel.
+	# Tooltips and drop-downs are native popups: WindowManager keeps them in
+	# front of an always-on-top panel (child_entered_tree covers direct children).
 	w.child_entered_tree.connect(func(n): _raise_popup(n))
 	add_child(w)
 	_panels[id] = p

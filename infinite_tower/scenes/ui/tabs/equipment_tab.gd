@@ -215,7 +215,7 @@ func _rebuild() -> void:
 		return ra > rb if ra != rb else int(a["ilvl"]) > int(b["ilvl"]))
 	for it in items:
 		var cell = ItemSlot.new()
-		cell.setup(it, -1, "", 48.0)
+		cell.setup(it, -1, "", 48.0, hero_idx)
 		cell.is_selected = int(it["uid"]) == _selected_uid
 		cell.selected.connect(_on_cell_selected)
 		cell.activated.connect(func(c): Game.equip(hero_idx, int(c.item["uid"])))

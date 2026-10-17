@@ -133,7 +133,7 @@ func _offer_row(i: int, offer: Dictionary) -> Control:
 	var color := Color.WHITE
 	if offer.has("item"):
 		var cell = ItemSlot.new()
-		cell.setup(offer["item"], -1, "", 44.0)
+		cell.setup(offer["item"], -1, "", 44.0, -1)
 		cell.mouse_filter = Control.MOUSE_FILTER_PASS
 		h.add_child(cell)
 		title = offer["item"]["name"]

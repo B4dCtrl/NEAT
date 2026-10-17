@@ -25,10 +25,28 @@ var _passthrough := PackedVector2Array()
 
 
 func _ready() -> void:
+	get_tree().node_added.connect(_on_node_added)
 	Game.settings_changed.connect(_on_settings_changed)
 	get_window().min_size = Vector2i(BAR_MIN_WIDTH, 32)
 	var first := "story" if not Game.state.get("intro_seen", false) or not Game.state.get("tutorial_seen", false) else "taskbar"
 	apply_mode.call_deferred(first, false)
+
+
+## Drop-down menus (OptionButton, context menus) are native popup windows. Next
+## to an always-on-top panel or tower window they would open BEHIND it, so a
+## popup of such a window is always on top too (and no longer "owned" by it:
+## an owned window sits in the owner's z-order band, not above it).
+func _on_node_added(n: Node) -> void:
+	if not n is Popup or n.has_meta("raise_hooked"):
+		return
+	n.set_meta("raise_hooked", true)
+	var raise := func():
+		var host := n.get_parent().get_window() if n.get_parent() != null else null
+		if host != null and host != n and host.always_on_top:
+			n.always_on_top = true
+			n.transient = false
+	n.about_to_popup.connect(raise)
+	raise.call()
 
 
 func is_headless() -> bool:

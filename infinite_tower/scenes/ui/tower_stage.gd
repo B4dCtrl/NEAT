@@ -17,6 +17,7 @@ const EnemySprite = preload("res://scenes/entities/enemy_sprite.tscn")
 const UiNum = preload("res://scenes/ui/ui_util.gd")
 const PixelArt = preload("res://scenes/entities/pixel_art.gd")
 const CombatFx = preload("res://scenes/ui/combat_fx.gd")
+const UnitSprite = preload("res://scenes/entities/unit_sprite.gd")
 const Loc = preload("res://core/loc.gd")
 const Cosmetics = preload("res://core/cosmetics.gd")
 const CosmeticArt = preload("res://scenes/entities/cosmetic_art.gd")
@@ -70,6 +71,8 @@ var _pet_sprite: Node2D
 var _pet_id := ""
 var _imp_sprite: Node2D
 var _imp_t := 0.0
+var _pending: Array = []   # [{t, fn}] visuals that wait for a blow to land
+var _boss_lag := 1.0       # the pale "recent damage" part of the boss bar
 
 
 func _ready() -> void:
@@ -110,6 +113,7 @@ func _rebuild_heroes() -> void:
 		var hero: Dictionary = Game.state["heroes"][i]
 		hero_sprites[i].configure(classes[hero["class"]]["sprite"], {}, px, false, is_mono(), hero["class"])
 		hero_sprites[i].unit_uid = "h%d" % i
+		hero_sprites[i].stand_pose = true
 
 
 # ------------------------------------------------------------------ geometry
@@ -204,10 +208,12 @@ func _process(delta: float) -> void:
 	_place_imp(delta)
 	_place_enemies(exp)
 	_consume_combat_events()
+	_run_pending(delta)
 	for d in _drops:
 		d["age"] += delta
 	_drops = _drops.filter(func(d): return d["age"] < DROP_LIFE)
 	_fx.update(delta)
+	_update_boss_lag(delta)
 	_fx_layer.queue_redraw()
 	for f in _floaters:
 		f["t"] += delta
@@ -386,6 +392,7 @@ func _sync_enemies(exp) -> void:
 	var cid: int = c.get_instance_id() if c != null else 0
 	if cid != _combat_id:
 		_combat_id = cid
+		_pending.clear()
 		for sp in enemy_sprites:
 			sp.queue_free()
 		enemy_sprites.clear()
@@ -403,6 +410,12 @@ func _sync_enemies(exp) -> void:
 			sp.set_meta("elite", true)
 		add_child(sp)
 		enemy_sprites.append(sp)
+		if u.is_boss:
+			# The guardian arrives with a tremor.
+			_after(0.3, func():
+				if is_instance_valid(sp) and sp.visible:
+					_fx.add_shake(0.6)
+					_fx.spawn("shockwave", _center(sp), _center(sp), Color("#e8d7b0"), 1.0, 0.7))
 
 
 func _place_enemies(exp) -> void:
@@ -438,6 +451,26 @@ func _place_enemies(exp) -> void:
 		sp.walking = false
 
 
+## Runs `fn` after `seconds` (cleared when the fight changes).
+func _after(seconds: float, fn: Callable) -> void:
+	_pending.append({"t": seconds, "fn": fn})
+
+
+func _run_pending(delta: float) -> void:
+	if _pending.is_empty():
+		return
+	var due := []
+	for p in _pending:
+		p["t"] -= delta
+		if p["t"] <= 0.0:
+			due.append(p)
+	if due.is_empty():
+		return
+	_pending = _pending.filter(func(p): return p["t"] > 0.0)
+	for p in due:
+		p["fn"].call()
+
+
 func _sprite_for(uid: String):
 	if uid.begins_with("h"):
 		return hero_sprites[int(uid.substr(1))]
@@ -463,39 +496,36 @@ func _consume_combat_events() -> void:
 				var dst = _sprite_for(ev["dst"])
 				if dst == null:
 					continue
-				var b := _center(dst)
-				var a := _center(src) if src != null else b
-				dst.hurt()
-				var tag: String = ev["tag"]
-				if tag == "" and src != null and su != null:
-					src.lunge()
-					_attack_fx(su, a, b)
-				elif tag == "splash":
-					_fx.spawn("burst", a, b, Color("#ff9d4a"), 0.6, 0.25)
-				elif tag == "chain":
-					_fx.spawn("lightning", a, b, Color.WHITE, 1.0, 0.25)
-				elif tag == "thorns":
-					_fx.spawn("claw", a, b, Color("#5fd35f"), 0.7, 0.25)
-				elif tag == "bomb":
-					_fx.spawn("burst", a, b, Color("#ff6a1a"), 1.6, 0.45, 0.3)
-					_fx.burst_particles(b, Color("#ffb13d"), 10, 60.0 * px, 1.0, 40.0 * px)
-				elif tag == "burn" and randf() < 0.25:
-					_fx.burst_particles(b, Color("#ff6a1a"), 2, 12.0 * px, 0.8, -20.0 * px, 0.4)
-				_fx.spawn("spark", b, b, Color("#fff1a8") if ev["crit"] else Color.WHITE, 0.8, 0.18)
-				if ev["crit"]:
-					_fx.spawn("crit", b, b, Color("#ffd23f"), 1.0, 0.35)
-					_fx.add_shake(0.35)
-					_float_text(dst, Loc.t("CRIT!"), Color("#ffd23f"), true, true)
-				if numbers:
-					_float_at(dst, UiNum.num(ev["dmg"]), Color("#ffd23f") if ev["crit"] else Color.WHITE, ev["crit"])
-				Game.sfx_requested.emit("crit" if ev["crit"] else ("hit" if tag == "" else ""))
+				var delay := 0.0
+				if ev["tag"] == "" and src != null and su != null:
+					# A basic attack: wind up and dash now, land the blow when the dash arrives.
+					var a0 := _center(src)
+					var b0 := _center(dst)
+					var melee := _is_melee(su)
+					src.attack(absf(b0.x - a0.x) * 0.45, melee)
+					delay = _attack_fx(su, a0, b0, melee)
+				if delay > 0.0:
+					_after(delay, _land_hit.bind(ev, src, dst, numbers))
+				else:
+					_land_hit(ev, src, dst, numbers)
 			"miss":
 				var dst = _sprite_for(ev["dst"])
-				if dst != null:
+				if dst == null:
+					continue
+				var delay := 0.1
+				if src != null and su != null:
+					var a0 := _center(src)
+					var b0 := _center(dst)
+					var melee := _is_melee(su)
+					src.attack(absf(b0.x - a0.x) * 0.45, melee)
+					delay = _attack_fx(su, a0, b0, melee)
+				_after(delay, func():
+					if not is_instance_valid(dst):
+						return
 					dst.dodge()
 					_fx.spawn("whoosh", _center(dst), _center(dst), Color("#c9d1d9"), 1.0, 0.3)
 					_float_text(dst, Loc.t("MISS"), Color("#9aa4b2"), false, true)
-				Game.sfx_requested.emit("miss")
+					Game.sfx_requested.emit("miss"))
 			"skill":
 				if src != null:
 					src.cast(_cast_color(String(ev.get("kind", ""))))
@@ -525,8 +555,17 @@ func _consume_combat_events() -> void:
 				Game.sfx_requested.emit("bomb")
 			"death":
 				if src != null:
-					_fx.burst_particles(_center(src), Color("#d8d2c4"), 12, 35.0 * px, 1.2, 30.0 * px, 0.6)
-				Game.sfx_requested.emit("death")
+					_after(UnitSprite.DEATH_DELAY, func():
+						if not is_instance_valid(src):
+							return
+						var at := _center(src)
+						_fx.burst_particles(at, Color("#d8d2c4"), 14, 38.0 * px, 1.2, 30.0 * px, 0.6)
+						# Souls drift up and away.
+						_fx.burst_particles(at, Color("#bfe6ff"), 5, 7.0 * px, 1.0, -26.0 * px, 1.1)
+						_fx.spawn("burst", at, at, Color("#bfe6ff"), 1.1, 0.5)
+						Game.sfx_requested.emit("death"))
+				else:
+					Game.sfx_requested.emit("death")
 			"revive":
 				if src != null:
 					src.cast(Color("#ff9d2a"))
@@ -601,20 +640,79 @@ func _on_consumable_used(id: String, kind: String) -> void:
 
 
 ## Basic attack visuals depend on who swings: arrows, fireballs, orbs or blades.
-func _attack_fx(u, a: Vector2, b: Vector2) -> void:
+## Ranged attackers (arrows, bolts) shoot; everyone else dashes in.
+func _is_melee(u) -> bool:
+	if u.side == 0:
+		return not (u.def_id in ["ranger", "arcanist"])
+	return u.damage_type != "magic"
+
+
+## Spawns the attack's own effect timed to the sprite's attack timeline and
+## returns how long after the attack starts the blow lands.
+func _attack_fx(u, a: Vector2, b: Vector2, melee: bool) -> float:
+	var hit_at := UnitSprite.MELEE_IMPACT
+	var rel := UnitSprite.RELEASE
 	if u.side == 0:
 		match u.def_id:
 			"ranger":
-				_fx.spawn("arrow", a, b, Color.WHITE, 1.0, 0.16)
+				_fx.spawn("arrow", a, b, Color.WHITE, 1.0, 0.16, rel)
+				return rel + 0.16
 			"arcanist":
-				_fx.spawn("bolt", a, b, Color("#ff7a1a"), 1.0, 0.22)
-				_fx.spawn("burst", b, b, Color("#ff9d4a"), 0.8, 0.25, 0.2)
+				_fx.spawn("bolt", a, b, Color("#ff7a1a"), 1.0, 0.22, rel)
+				_fx.spawn("burst", b, b, Color("#ff9d4a"), 0.8, 0.25, rel + 0.2)
+				return rel + 0.22
 			_:
-				_fx.spawn("slash", a, b, Color("#f2f5ff"), 1.0, 0.2)
-	elif u.damage_type == "magic":
-		_fx.spawn("bolt", a, b, Color("#b35cff"), 0.9, 0.24)
-	else:
-		_fx.spawn("claw", a, b, Color("#ff6b6b"), 1.0, 0.22)
+				_fx.spawn("slash", a, b, Color("#f2f5ff"), 1.0, 0.2, hit_at - 0.03)
+				return hit_at
+	elif not melee:
+		_fx.spawn("bolt", a, b, Color("#b35cff"), 0.9, 0.24, rel)
+		return rel + 0.24
+	_fx.spawn("claw", a, b, Color("#ff6b6b"), 1.0, 0.22, hit_at - 0.04)
+	return hit_at
+
+
+## The moment a blow connects: reaction, hit-stop, sparks, numbers and sound.
+func _land_hit(ev: Dictionary, src, dst, numbers: bool) -> void:
+	if not is_instance_valid(dst):
+		return
+	var b := _center(dst)
+	var a := _center(src) if src != null and is_instance_valid(src) else b
+	var tag: String = ev["tag"]
+	var crit: bool = ev["crit"]
+	var killed := false
+	if Game.expedition != null and Game.expedition.combat != null:
+		var du = Game.expedition.combat.unit_by_uid(ev["dst"])
+		killed = du != null and not du.alive
+	dst.hurt(2.0 if crit else 1.0)
+	if tag == "splash":
+		_fx.spawn("burst", a, b, Color("#ff9d4a"), 0.6, 0.25)
+	elif tag == "chain":
+		_fx.spawn("lightning", a, b, Color.WHITE, 1.0, 0.25)
+	elif tag == "thorns":
+		_fx.spawn("claw", a, b, Color("#5fd35f"), 0.7, 0.25)
+	elif tag == "bomb":
+		_fx.spawn("burst", a, b, Color("#ff6a1a"), 1.6, 0.45, 0.3)
+		_fx.burst_particles(b, Color("#ffb13d"), 10, 60.0 * px, 1.0, 40.0 * px)
+	elif tag == "burn" and randf() < 0.25:
+		_fx.burst_particles(b, Color("#ff6a1a"), 2, 12.0 * px, 0.8, -20.0 * px, 0.4)
+	# The impact itself: a white flash frame, sparks and debris flying off.
+	_fx.spawn("flash", b, b, Color.WHITE, 1.5 if crit else 0.9, 0.09)
+	_fx.spawn("spark", b, b, Color("#fff1a8") if crit else Color.WHITE, 0.8, 0.18)
+	if tag == "" or tag == "chain":
+		_fx.burst_particles(b, Color("#fff1a8") if crit else Color("#e8e4d4"), 9 if crit else 3, 34.0 * px, 0.8, 70.0 * px, 0.35)
+	var stop := 0.11 if killed else (0.075 if crit else 0.028)
+	dst.hitstop(stop)
+	if (crit or killed) and src != null and is_instance_valid(src):
+		src.hitstop(stop)
+	if crit:
+		_fx.spawn("crit", b, b, Color("#ffd23f"), 1.0, 0.35)
+		_fx.add_shake(0.35)
+		_float_text(dst, Loc.t("CRIT!"), Color("#ffd23f"), true, true)
+	if killed:
+		_fx.add_shake(0.25)
+	if numbers:
+		_float_at(dst, UiNum.num(ev["dmg"]), Color("#ffd23f") if crit else Color.WHITE, crit)
+	Game.sfx_requested.emit("crit" if crit else ("hit" if tag == "" else ""))
 
 
 func _enemy_center() -> Vector2:
@@ -701,7 +799,7 @@ func _skill_fx(ev: Dictionary, src, su) -> void:
 ## Short floating word ("MISS", "CRIT!") shown even in the small taskbar tower.
 func _float_text(sp, text: String, color: Color, big: bool, always: bool) -> void:
 	var top: Vector2 = sp.position - Vector2(0, sp.size_px().y)
-	_floaters.append({"pos": top + Vector2(randf_range(-4, 4), -4), "text": text, "color": color, "t": 0.0, "big": big, "always": always})
+	_floaters.append({"pos": top + Vector2(randf_range(-4, 4), -4), "text": text, "color": color, "t": 0.0, "big": big, "always": always, "drift": randf_range(-5.0, 5.0)})
 
 
 ## Flickering pixel campfire on every bonfire landing in view.
@@ -810,7 +908,7 @@ func _float_at(sp, text: String, color: Color, big: bool) -> void:
 	if not show_numbers:
 		return
 	var top: Vector2 = sp.position - Vector2(0, sp.size_px().y)
-	_floaters.append({"pos": top + Vector2(randf_range(-4, 4), 0), "text": text, "color": color, "t": 0.0, "big": big})
+	_floaters.append({"pos": top + Vector2(randf_range(-4, 4), 0), "text": text, "color": color, "t": 0.0, "big": big, "drift": randf_range(-7.0, 7.0)})
 
 
 # ------------------------------------------------------------------ drawing
@@ -966,6 +1064,55 @@ func _draw_tower() -> void:
 func _draw_fx_layer() -> void:
 	_fx.draw(_fx_layer, px)
 	_draw_floaters(_fx_layer)
+	_draw_boss_bar(_fx_layer)
+
+
+## The living boss of the fight, if any.
+func _boss_unit():
+	var exp = Game.expedition
+	if exp == null or exp.phase != "combat" or exp.combat == null:
+		return null
+	for u in exp.combat.enemies:
+		if u.is_boss and u.alive:
+			return u
+	return null
+
+
+func _update_boss_lag(delta: float) -> void:
+	var u = _boss_unit()
+	if u == null:
+		_boss_lag = 1.0
+		return
+	var r: float = u.hp_ratio()
+	_boss_lag = r if r >= _boss_lag else maxf(r, _boss_lag - delta * 0.35)
+
+
+## A wide health bar for guardians, with a tick at the enrage threshold.
+func _draw_boss_bar(ci: CanvasItem) -> void:
+	var u = _boss_unit()
+	if u == null:
+		return
+	var w := minf(size.x * 0.8, 52.0 * px)
+	var h := maxf(4.0, px * 2.6)
+	var x := axis_x() - w * 0.5
+	var y := 3.0 * px
+	var ratio: float = u.hp_ratio()
+	var font := get_theme_default_font()
+	var fs := int(maxf(10.0, px * 4.0))
+	var title: String = DataDB.unit_def(u.def_id).get("name", u.name)
+	var pulse: float = (0.5 + 0.5 * sin(_time * 7.0)) if u.enraged else 0.0
+	var name_col := Color("#ff6b6b").lerp(Color("#ffd23f"), pulse)
+	ci.draw_string_outline(font, Vector2(x, y + fs), title, HORIZONTAL_ALIGNMENT_CENTER, w, fs, 4, Color(0, 0, 0, 0.9))
+	ci.draw_string(font, Vector2(x, y + fs), title, HORIZONTAL_ALIGNMENT_CENTER, w, fs, name_col)
+	var by := y + fs + 3.0
+	ci.draw_rect(Rect2(x - 2, by - 2, w + 4, h + 4), Color(0.05, 0.02, 0.03, 0.9))
+	ci.draw_rect(Rect2(x, by, w, h), Color("#3a1216"))
+	if _boss_lag > ratio:
+		ci.draw_rect(Rect2(x, by, w * _boss_lag, h), Color(1.0, 0.92, 0.7, 0.9))
+	var fill := Color("#d8362f").lerp(Color("#ff9d2a"), pulse)
+	ci.draw_rect(Rect2(x, by, w * ratio, h), fill)
+	ci.draw_rect(Rect2(x, by, w * ratio, maxf(1.0, h * 0.3)), Color(1, 1, 1, 0.22))
+	ci.draw_rect(Rect2(x + w * 0.5 - 0.5, by, 1.0, h), Color(0, 0, 0, 0.6))
 
 
 func _draw_floaters(ci: CanvasItem) -> void:
@@ -973,8 +1120,13 @@ func _draw_floaters(ci: CanvasItem) -> void:
 	for f in _floaters:
 		var t: float = f["t"]
 		var c: Color = f["color"]
-		c.a = 1.0 - t / 1.1
-		var fs := int(maxf(9.0, px * (5.0 if f["big"] else 4.0)))
-		var p: Vector2 = f["pos"] - Vector2(0, t * 10.0 * px)
-		ci.draw_string_outline(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, 3, Color(0, 0, 0, c.a))
+		# Fully visible for most of its life, then a quick fade.
+		c.a = clampf((1.1 - t) / 0.4, 0.0, 1.0)
+		# Pops in big and settles; bounces up on an arc and drifts sideways.
+		var pop := 1.0 + (0.7 if f["big"] else 0.35) * clampf(1.0 - t / 0.16, 0.0, 1.0)
+		var fs := int(maxf(9.0, px * (5.0 if f["big"] else 4.0)) * pop)
+		var rise := (1.0 - pow(1.0 - clampf(t / 1.1, 0.0, 1.0), 2.0)) * 11.0 * px
+		var p: Vector2 = f["pos"] + Vector2(float(f.get("drift", 0.0)) * t * px * 0.5, -rise)
+		var outline := Color(0.1, 0.04, 0.0, c.a) if f["big"] else Color(0, 0, 0, c.a)
+		ci.draw_string_outline(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, 4 if f["big"] else 3, outline)
 		ci.draw_string(font, p + Vector2(-60, 0), f["text"], HORIZONTAL_ALIGNMENT_CENTER, 120, fs, c)

@@ -282,12 +282,14 @@ func _rebuild_relics() -> void:
 		_relic_box.add_child(b)
 
 
-static func item_tooltip(item: Dictionary) -> String:
+## `hints` are extra lines (upgrade information) shown under the user line.
+static func item_tooltip(item: Dictionary, hints: Array = []) -> String:
 	var lines := []
 	var rarity_name: String = DataDB.rarities()[item["rarity"]]["name"]
 	lines.append(item["name"])
 	lines.append(Loc.t("%s  ·  Item Level %d") % [UiUtil.rarity_kind(item["rarity"], Loc.t(item["slot"].capitalize())), item["ilvl"]])
 	lines.append(Loc.t("Usable by: ") + users_text(item))
+	lines.append_array(hints)
 	lines.append(Trade.item_note(item))
 	var base_keys := []
 	for b in DataDB.items()["bases"]:

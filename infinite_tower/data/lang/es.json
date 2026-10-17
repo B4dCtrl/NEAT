@@ -1058,5 +1058,10 @@
 	"You have %s gold. Each new hero costs more than the last.": "Tienes %s de oro. Cada héroe nuevo cuesta más que el anterior.",
 	"{month}/{day} {time}": "{day}/{month} {time}",
 	"Fl. %d": "Piso %d",
-	"checkpoint": "hoguera"
+	"checkpoint": "hoguera",
+	"▲ +%s%% power for %s (empty slot)": "▲ +%s%% de poder para %s (espacio vacío)",
+	"▲ +%s%% power for %s (vs. %s)": "▲ +%s%% de poder para %s (vs. %s)",
+	"▲ %d upgrade in the bag": "▲ %d mejora en la mochila",
+	"▲ %d upgrades in the bag": "▲ %d mejoras en la mochila",
+	"▲ Upgrade for %s: %s (+%s%%)": "▲ Mejora para %s: %s (+%s%%)"
 }

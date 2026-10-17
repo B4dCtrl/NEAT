@@ -20,6 +20,9 @@ const COLS := 7
 const LEFT_SLOTS := ["helm", "chest", "boots"]
 const RIGHT_SLOTS := ["weapon", "gloves", "ring"]
 
+## Most Refine / Evolve groups listed in the drop-down (closest to ready first).
+const MERGE_LIST_MAX := 8
+
 var host
 var hero_idx := 0
 var _picker
@@ -46,6 +49,14 @@ func _ready() -> void:
 	if host != null:
 		hero_idx = host.hero_idx
 	_picker = HeroPicker.new()
+	# A pulsing portrait: this hero has better gear waiting in the bag.
+	_picker.badge = func(h: Dictionary) -> String:
+		var idx: int = Game.state["heroes"].find(h)
+		var per: Array = Game.upgrades()["per_hero"]
+		var n: int = int(per[idx]) if idx >= 0 and idx < per.size() else 0
+		if n <= 0:
+			return ""
+		return Loc.t("▲ %d upgrade in the bag") % n if n == 1 else Loc.t("▲ %d upgrades in the bag") % n
 	_picker.picked.connect(func(i):
 		hero_idx = i
 		if host != null:
@@ -171,7 +182,7 @@ func _rebuild() -> void:
 		return int(a["ilvl"]) > int(b["ilvl"]))
 	for it in items:
 		var cell = ItemSlot.new()
-		cell.setup(it, -1, "", CELL)
+		cell.setup(it, -1, "", CELL, hero_idx)
 		cell.is_selected = int(it["uid"]) == _selected_uid
 		cell.selected.connect(_on_selected)
 		cell.activated.connect(func(c): Game.equip(hero_idx, int(c.item["uid"])))
@@ -276,15 +287,26 @@ func _refresh_merge(sel: Variant) -> void:
 	_merge_opt.clear()
 	var pick := 0
 	var sets := DataDB.sets()
+	# The groups come closest-to-ready first. A bag can hold dozens of them: the
+	# list keeps the closest few of each kind (plus the selected one), so it
+	# stays a short menu instead of a screen-tall wall.
+	var shown := 0
 	for g in Forge.groups(Game.state):
-		_merge_opt.add_item(Loc.t("Refine %s  %d/%d") % [UiUtil.rarity_kind(g["rarity"], Forge.kind_name(g["key"])), g["have"], g["need"]])
 		var id: String = "R|%s|%s" % [g["rarity"], g["key"]]
+		shown += 1
+		if shown > MERGE_LIST_MAX and id != want:
+			continue
+		_merge_opt.add_item(Loc.t("Refine %s  %d/%d") % [UiUtil.rarity_kind(g["rarity"], Forge.kind_name(g["key"])), g["have"], g["need"]])
 		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id)
 		if id == want:
 			pick = _merge_opt.item_count - 1
+	shown = 0
 	for g in Forge.evolve_groups(Game.state):
-		_merge_opt.add_item(Loc.t("Evolve %s (%s→)  %d/%d") % [UiUtil.rarity_kind(g["rarity"], Forge.kind_name(g["key"])), sets[g["set"]]["name"], g["have"], g["need"]])
 		var id2: String = "E|%s|%s|%s" % [g["set"], g["rarity"], g["key"]]
+		shown += 1
+		if shown > MERGE_LIST_MAX and id2 != want:
+			continue
+		_merge_opt.add_item(Loc.t("Evolve %s (%s→)  %d/%d") % [UiUtil.rarity_kind(g["rarity"], Forge.kind_name(g["key"])), sets[g["set"]]["name"], g["have"], g["need"]])
 		_merge_opt.set_item_metadata(_merge_opt.item_count - 1, id2)
 		if id2 == want:
 			pick = _merge_opt.item_count - 1

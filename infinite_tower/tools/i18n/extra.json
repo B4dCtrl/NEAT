@@ -574,5 +574,25 @@
 	"checkpoint": [
 		"fogueira",
 		"hoguera"
+	],
+	"▲ +%s%% power for %s (empty slot)": [
+		"▲ +%s%% de poder para %s (espaço vazio)",
+		"▲ +%s%% de poder para %s (espacio vacío)"
+	],
+	"▲ +%s%% power for %s (vs. %s)": [
+		"▲ +%s%% de poder para %s (vs. %s)",
+		"▲ +%s%% de poder para %s (vs. %s)"
+	],
+	"▲ %d upgrade in the bag": [
+		"▲ %d melhoria na bolsa",
+		"▲ %d mejora en la mochila"
+	],
+	"▲ %d upgrades in the bag": [
+		"▲ %d melhorias na bolsa",
+		"▲ %d mejoras en la mochila"
+	],
+	"▲ Upgrade for %s: %s (+%s%%)": [
+		"▲ Melhoria para %s: %s (+%s%%)",
+		"▲ Mejora para %s: %s (+%s%%)"
 	]
 }

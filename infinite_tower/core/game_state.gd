@@ -19,7 +19,8 @@ const DEFAULT_SETTINGS := {
 	"bar_opacity": 0.0,        # 0 = fully transparent, only the tower floats on the desktop
 	"bar_x": -1,               # legacy (the tower window now stores "win_pos")
 	"art_style": "mono",       # "mono" (1-bit) | "color" (biome palettes)
-	"fps_taskbar": 30,
+	"fps_taskbar": 60,
+	"fps_v": 2,                # 1 = the old 30 fps default (moved to 60 once)
 	"master_volume": 0.8,
 	"music_volume": 0.35,
 	"sfx_volume": 0.5,
@@ -122,6 +123,10 @@ static func migrate(state: Dictionary) -> Dictionary:
 		# v1 saves used the opaque 54px strip: move them to the floating tower layout.
 		for key in ["bar_width", "bar_height", "bar_opacity"]:
 			state["settings"][key] = DEFAULT_SETTINGS[key]
+	# The tower window used to default to 30 fps, which made fights look choppy.
+	if int(state["settings"].get("fps_v", 1)) < 2:
+		state["settings"]["fps_taskbar"] = 60
+		state["settings"]["fps_v"] = 2
 	for key in DEFAULT_SETTINGS:
 		if not state["settings"].has(key):
 			state["settings"][key] = DEFAULT_SETTINGS[key]

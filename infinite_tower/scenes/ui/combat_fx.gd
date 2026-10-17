@@ -139,6 +139,16 @@ func _draw_crit(ci: CanvasItem, f: Dictionary, k: float, u: float) -> void:
 	ci.draw_polyline(pts + PackedVector2Array([pts[0]]), _fade(Color.WHITE, k), maxf(1.0, u * 0.6))
 
 
+func _draw_flash(ci: CanvasItem, f: Dictionary, k: float, u: float) -> void:
+	# The white impact frame: a disc that snaps smaller while it fades.
+	var c: Color = f["color"]
+	c.a = 0.8 * (1.0 - k)
+	ci.draw_circle(f["b"], (4.5 - k * 2.0) * u, c)
+	var ring := c
+	ring.a *= 0.6
+	ci.draw_arc(f["b"], (5.0 + k * 9.0) * u, 0, TAU, 16, ring, maxf(1.0, u * 0.8))
+
+
 func _draw_whoosh(ci: CanvasItem, f: Dictionary, k: float, u: float) -> void:
 	var b: Vector2 = f["b"]
 	for i in 3:

@@ -31,6 +31,14 @@ const BUTTONS := [
 
 var open_ids: Array = []
 var _hover := -1
+var _t := 0.0
+
+
+## The Inventory button pulses while the bag holds a better item for somebody.
+func _process(delta: float) -> void:
+	if Game.logged_in() and int(Game.upgrades()["total"]) > 0:
+		_t += delta
+		queue_redraw()
 
 
 func _init() -> void:
@@ -103,3 +111,10 @@ func _draw() -> void:
 		draw_circle(c + Vector2(-2, -3), rad - 8.0, Color(1, 1, 1, 0.08))
 		var s := BUTTON - 10.0
 		draw_texture_rect(Glyphs.texture(BUTTONS[i][1]), Rect2(c - Vector2(s, s) * 0.5, Vector2(s, s)), false)
+		if BUTTONS[i][0] == "inventory" and not on and Game.logged_in() and int(Game.upgrades()["total"]) > 0:
+			var pulse := 0.5 + 0.5 * sin(_t * 5.0)
+			draw_arc(c, rad + 1.0, 0, TAU, 28, Color(0.49, 1.0, 0.54, 0.45 + 0.5 * pulse), 2.0)
+			# Little green arrow on the corner.
+			var o := c + Vector2(rad * 0.45, -rad * 0.95)
+			draw_colored_polygon(PackedVector2Array([o + Vector2(0, -4.5), o + Vector2(4.5, 3.0), o + Vector2(-4.5, 3.0)]), Color(0.04, 0.08, 0.04))
+			draw_colored_polygon(PackedVector2Array([o + Vector2(0, -3.2), o + Vector2(3.4, 2.2), o + Vector2(-3.4, 2.2)]), Color(0.49, 1.0, 0.54))

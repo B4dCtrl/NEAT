@@ -7,7 +7,7 @@
   2. `godot --headless --path . --export-release "Windows Desktop" export/windows/Stairborn.exe`
      (gera `Stairborn.exe` + `Stairborn.pck`; o ícone do .exe precisa do
      rcedit + wine configurados nas Editor Settings, em Export > Windows)
-  3. `makensis -DVERSION=<versão> tools/installer/stairborn.nsi`
+  3. `makensis -DVERSION=0.9.1 tools/installer/stairborn.nsi`
   4. Se houver certificado de assinatura real: `tools/installer/sign.sh game`
      antes do passo 3 e `tools/installer/sign.sh installer` depois
      (`SIGN_PFX`/`SIGN_PASS`). Sem assinatura, o Smart App Control do

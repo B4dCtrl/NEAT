@@ -21,6 +21,7 @@ const Quests = preload("res://core/quests.gd")
 const Loc = preload("res://core/loc.gd")
 const Torment = preload("res://core/torment.gd")
 const Cosmetics = preload("res://core/cosmetics.gd")
+const Upgrades = preload("res://core/upgrades.gd")
 const ShareCard = preload("res://scenes/ui/share_card.gd")
 const Story = preload("res://core/story.gd")
 
@@ -64,6 +65,9 @@ var _state_changed_left := 0.25
 var combat_events: Array = []
 ## Treasure Imp: seconds it stays clickable (0 = none) and until the next one.
 var imp_left := 0.0
+var _upg: Dictionary = {}
+var _upg_dirty := true
+var _upg_age := 0.0
 var _imp_next := -1.0
 var _story_wait := 1.0
 
@@ -75,8 +79,8 @@ func _ready() -> void:
 	# the views happy behind the login screen.
 	state = GameState.new_game()
 	expedition = Expedition.new(state)
-	party_changed.connect(func(): _danger_dirty = true)
-	inventory_changed.connect(func(): _danger_dirty = true)
+	party_changed.connect(func(): _danger_dirty = true; _upg_dirty = true)
+	inventory_changed.connect(func(): _danger_dirty = true; _upg_dirty = true)
 	PlatformServices.init()
 	# On Steam the Steam login IS the account; otherwise "remember me" logs in
 	# straight away, like a saved Steam login.
@@ -243,6 +247,7 @@ func _process(delta: float) -> void:
 	if not logged_in():
 		return
 	_update_danger(delta)
+	_upg_age += delta
 	var dt := delta * time_scale
 	# Hourglass of Haste: the climb runs faster for a while (real time).
 	var boost: Dictionary = state.get("time_boost", {})
@@ -299,6 +304,18 @@ func save() -> void:
 	SaveSystem.save_game(state, _save_path, _save_key)
 
 
+## A dropped item that is the best bag choice for some hero gets a green notice.
+func _announce_upgrade(item: Dictionary) -> void:
+	var info: Dictionary = upgrades()["items"].get(int(item["uid"]), {})
+	if info.is_empty() or info["top_for"].is_empty():
+		return
+	var best_hero: int = info["top_for"][0]
+	for i in info["top_for"]:
+		if info["gains"][i] > info["gains"][best_hero]:
+			best_hero = i
+	notified.emit("upgrade", Loc.t("▲ Upgrade for %s: %s (+%s%%)") % [state["heroes"][best_hero]["name"], item["name"], String.num(info["gains"][best_hero] * 100.0, 0)])
+
+
 func _drain_events() -> void:
 	if expedition.events.is_empty():
 		return
@@ -326,6 +343,7 @@ func _drain_events() -> void:
 				var item: Dictionary = ev["item"]
 				inventory_changed.emit()
 				loot_dropped.emit(item)
+				_announce_upgrade(item)
 				if DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("legendary"):
 					notified.emit("legendary", item["name"])
 				elif item.get("set", "") != "" and DataDB.rarity_order(item["rarity"]) >= DataDB.rarity_order("epic"):
@@ -582,6 +600,19 @@ func set_torment(level: int) -> bool:
 	notified.emit("info", Torment.name(level))
 	state_changed.emit()
 	return true
+
+
+## Which bag items would improve which heroes (see core/upgrades.gd). Cached:
+## recomputed when the bag or the party changes, and every few seconds (levels
+## and training change the maths too).
+func upgrades() -> Dictionary:
+	if not logged_in():
+		return {"items": {}, "per_hero": [], "total": 0}
+	if _upg_dirty or _upg.is_empty() or _upg_age > 5.0:
+		_upg = Upgrades.scan(state)
+		_upg_dirty = false
+		_upg_age = 0.0
+	return _upg
 
 
 func use_consumable(id: String) -> bool:

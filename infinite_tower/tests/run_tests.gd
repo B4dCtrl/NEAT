@@ -10,6 +10,7 @@ const CombatEngine = preload("res://core/combat_engine.gd")
 const StatCalc = preload("res://core/stat_calculator.gd")
 const Loot = preload("res://core/loot_calculator.gd")
 const Inventory = preload("res://core/inventory.gd")
+const Upgrades = preload("res://core/upgrades.gd")
 const Progression = preload("res://core/progression.gd")
 const Expedition = preload("res://core/expedition.gd")
 const SaveSystem = preload("res://core/save_system.gd")
@@ -47,6 +48,8 @@ func _init() -> void:
 	test_quests_and_languages()
 	test_torment_cosmetics_trade()
 	test_story()
+	test_upgrades()
+	test_fps_migration()
 	if "--balance" in OS.get_cmdline_user_args():
 		balance_report()
 	print("\n%d passed, %d failed (%d ms)" % [passes, failures, Time.get_ticks_msec() - t0])
@@ -613,3 +616,52 @@ func test_story() -> void:
 					print("  missing ", code, " ", k)
 	Loc.lang = "en"
 	check(missing == 0, "every manga line is translated (%d missing)" % missing)
+
+
+func _weapon_for(state: Dictionary, rng: RandomNumberGenerator, class_id: String, floor_num: int, rarity: String) -> Dictionary:
+	for i in 80:
+		var it: Dictionary = Loot.generate_item(rng, state, floor_num, rarity, "", func(b): return b["slot"] == "weapon")
+		if Loot.can_equip(it, class_id):
+			return it
+	return {}
+
+
+func test_upgrades() -> void:
+	var state := GameState.new_game(5)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 99
+	var hero: Dictionary = state["heroes"][0]
+	var cls: String = hero["class"]
+	var worn := _weapon_for(state, rng, cls, 1, "common")
+	var big := _weapon_for(state, rng, cls, 40, "epic")
+	var junk := _weapon_for(state, rng, cls, 1, "common")
+	check(not worn.is_empty() and not big.is_empty() and not junk.is_empty(), "test weapons generated")
+	hero["equipment"]["weapon"] = null
+	check(Upgrades.gain_for(state, 0, worn) > 0.0, "any weapon beats an empty slot")
+	hero["equipment"]["weapon"] = worn
+	state["inventory"].clear()
+	state["inventory"].append(big)
+	state["inventory"].append(junk)
+	var g := Upgrades.gains(state, big)
+	check(g.has(0) and g[0] > 0.2, "a much stronger weapon is a clear upgrade (+%.0f%%)" % (float(g.get(0, 0.0)) * 100.0))
+	var scan := Upgrades.scan(state)
+	check(scan["items"].has(int(big["uid"])) and 0 in scan["items"][int(big["uid"])]["top_for"], "the best weapon is flagged for the hero")
+	check(scan["per_hero"][0] >= 1 and scan["total"] >= 1, "the hero has an upgrade waiting")
+	if scan["items"].has(int(junk["uid"])):
+		check(not 0 in scan["items"][int(junk["uid"])]["top_for"], "a weaker weapon is never the highlighted one")
+	# After wearing the big one nothing in the bag improves it.
+	hero["equipment"]["weapon"] = big
+	state["inventory"].clear()
+	state["inventory"].append(worn)
+	check(Upgrades.gains(state, worn).is_empty(), "a weaker item is no upgrade")
+	check(Upgrades.hint_lines(state, worn).is_empty(), "no hint lines without an upgrade")
+
+
+func test_fps_migration() -> void:
+	var old := GameState.new_game(8)
+	old["settings"]["fps_taskbar"] = 30
+	old["settings"].erase("fps_v")
+	var fixed := GameState.migrate(old)
+	check(int(fixed["settings"]["fps_taskbar"]) == 60, "old 30 fps default moves to 60")
+	fixed["settings"]["fps_taskbar"] = 15
+	check(int(GameState.migrate(fixed)["settings"]["fps_taskbar"]) == 15, "a later choice (15 fps) is kept")

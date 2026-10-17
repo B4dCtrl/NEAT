@@ -20,7 +20,7 @@ const PanelHost = preload("res://scenes/ui/menu/panel_host.gd")
 
 const NOTIFY_COLORS := {
 	"legendary": Color("#ff9d2a"), "relic": Color("#b388ff"), "boss": Color("#ff4f4f"),
-	"fall": Color("#c9d1d9"), "milestone": Color("#7fe8ff"), "set": Color("#5fd35f"), "info": Color("#efe9d8"),
+	"fall": Color("#c9d1d9"), "milestone": Color("#7fe8ff"), "set": Color("#5fd35f"), "info": Color("#efe9d8"), "upgrade": Color("#7dff8a"),
 }
 const DRAG_THRESHOLD := 6.0
 const HUD_H := 40.0
@@ -203,7 +203,7 @@ func _on_notified(kind: String, text: String) -> void:
 	notify_icon.texture = PixelArt.icon(icon_id)
 	_notify_left = 8.0
 	notify_box.visible = true
-	if kind in ["relic", "legendary", "boss", "milestone"]:
+	if kind in ["relic", "legendary", "boss", "milestone", "upgrade"]:
 		_hud_hold = 4.0
 
 
