@@ -15,7 +15,8 @@ var _music: AudioStreamPlayer
 var _tracks := {}
 var _current_track := ""
 var _wanted_track := "climb"
-var _building := {}
+var _building := {}         # tracks being rendered
+var _abort := false         # set on exit: a running render stops early
 
 
 func _ready() -> void:
@@ -212,6 +213,10 @@ func _to_wav(samples: PackedFloat32Array, rate: int, loop: bool) -> AudioStreamW
 	bytes.resize(samples.size() * 2)
 	for i in samples.size():
 		bytes.encode_s16(i * 2, int(clampf(samples[i], -1.0, 1.0) * 32000.0))
+	return _wav_from_bytes(bytes, rate, loop)
+
+
+func _wav_from_bytes(bytes: PackedByteArray, rate: int, loop: bool) -> AudioStreamWAV:
 	var w := AudioStreamWAV.new()
 	w.format = AudioStreamWAV.FORMAT_16_BITS
 	w.mix_rate = rate
@@ -219,7 +224,7 @@ func _to_wav(samples: PackedFloat32Array, rate: int, loop: bool) -> AudioStreamW
 	w.data = bytes
 	if loop:
 		w.loop_mode = AudioStreamWAV.LOOP_FORWARD
-		w.loop_end = samples.size()
+		w.loop_end = bytes.size() / 2
 	return w
 
 
@@ -245,9 +250,14 @@ func _build_track_async(track: String) -> void:
 	if _building.has(track) or _tracks.has(track):
 		return
 	_building[track] = true
-	WorkerThreadPool.add_task(func():
-		var wav := _render_track(track)
-		call_deferred("_on_track_ready", track, wav))
+	_render_track(track)
+
+
+## Rendering runs on the main thread, a few notes per frame. (It used to run
+## on a worker thread, but GDScript there corrupted memory and crashed the
+## game on exit.)
+func _exit_tree() -> void:
+	_abort = true
 
 
 func _on_track_ready(track: String, wav: AudioStreamWAV) -> void:
@@ -259,7 +269,8 @@ func _on_track_ready(track: String, wav: AudioStreamWAV) -> void:
 
 ## A small chiptune loop: triangle bass, square arpeggios, a pulse melody and
 ## noise hats. "climb" is calm (A minor, 96 BPM); "boss" is tense (D minor, 132).
-func _render_track(track: String) -> AudioStreamWAV:
+## A coroutine: it yields every few 16th notes so the game never stutters.
+func _render_track(track: String) -> void:
 	var boss := track == "boss"
 	var bpm := 132.0 if boss else 96.0
 	var beat := 60.0 / bpm
@@ -276,6 +287,10 @@ func _render_track(track: String) -> AudioStreamWAV:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
 	for sidx in steps:
+		if sidx % 2 == 0:
+			await get_tree().process_frame
+			if _abort:
+				return
 		var bar: Array = bars[int(sidx / 16) % bars.size()]
 		var root: int = bar[0]
 		var third := 3 if bar[1] == "m" else 4
@@ -297,7 +312,15 @@ func _render_track(track: String) -> AudioStreamWAV:
 			_add_noise(out, t0, int(len * 0.35), 0.03 if sidx % 8 != 4 else 0.08, rng)
 		if boss and sidx % 8 == 0:
 			_add_note(out, t0, len, 55.0, "triangle", 0.2)
-	return _to_wav(out, MUSIC_RATE, true)
+	var bytes := PackedByteArray()
+	bytes.resize(out.size() * 2)
+	for i in out.size():
+		if i % 20000 == 0:
+			await get_tree().process_frame
+			if _abort:
+				return
+		bytes.encode_s16(i * 2, int(clampf(out[i], -1.0, 1.0) * 32000.0))
+	_on_track_ready(track, _wav_from_bytes(bytes, MUSIC_RATE, true))
 
 
 static func _midi(note: int) -> float:

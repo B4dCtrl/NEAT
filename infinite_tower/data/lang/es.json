@@ -1057,5 +1057,6 @@
 	"The Steam Market opens when Stairborn launches on Steam.": "El Mercado de Steam abre cuando Stairborn se lance en Steam.",
 	"You have %s gold. Each new hero costs more than the last.": "Tienes %s de oro. Cada héroe nuevo cuesta más que el anterior.",
 	"{month}/{day} {time}": "{day}/{month} {time}",
-	"Fl. %d": "Piso %d"
+	"Fl. %d": "Piso %d",
+	"checkpoint": "hoguera"
 }

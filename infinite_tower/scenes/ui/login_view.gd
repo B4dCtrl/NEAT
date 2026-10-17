@@ -24,6 +24,8 @@ var _lang: OptionButton
 var _note: Label
 var _user_label: Label
 var _pass_label: Label
+var _frame: Control
+var _frame_body: MarginContainer
 
 
 static func t(key: String) -> String:
@@ -64,7 +66,9 @@ func _ready() -> void:
 	var frame := _Frame.new()
 	frame.custom_minimum_size = Vector2(380, 360)
 	col.add_child(frame)
+	_frame = frame
 	var margin := MarginContainer.new()
+	_frame_body = margin
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 26)
@@ -149,6 +153,9 @@ func _field(v: VBoxContainer, label: String, secret: bool) -> LineEdit:
 
 
 func _retranslate() -> void:
+	for i in _lang.item_count:
+		if _lang.get_item_metadata(i) == Loc.current():
+			_lang.select(i)
 	_user_label.text = t("user")
 	_pass_label.text = t("password")
 	_confirm_label.text = t("confirm")
@@ -174,6 +181,14 @@ func _set_creating(on: bool) -> void:
 	_switch.text = t("to_sign_in") if on else t("to_create")
 	_error.text = ""
 	queue_redraw()
+	_fit_frame.call_deferred()
+
+
+## The frame is drawn by hand, so it does not follow its content: size it to
+## the form (signing in has one field less than creating an account).
+func _fit_frame() -> void:
+	if _frame != null and _frame_body != null:
+		_frame.custom_minimum_size.y = _frame_body.get_combined_minimum_size().y
 
 
 func _submit() -> void:
@@ -190,6 +205,7 @@ func _submit() -> void:
 		if err == "no_account":
 			_set_creating(true)
 			_error.text = t(err)
+		_fit_frame.call_deferred()
 		Game.sfx_requested.emit("miss")
 		return
 	_pass.text = ""

@@ -570,5 +570,9 @@
 	"   |   Checkpoint: floor %d": [
 		"   |   Fogueira: andar %d",
 		"   |   Hoguera: piso %d"
+	],
+	"checkpoint": [
+		"fogueira",
+		"hoguera"
 	]
 }

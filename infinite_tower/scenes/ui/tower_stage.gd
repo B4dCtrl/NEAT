@@ -737,8 +737,9 @@ func _draw_bonfires() -> void:
 		if k == int(Game.state.get("checkpoint", 1)):
 			var font := get_theme_default_font()
 			var fs := int(maxf(8.0, px * 3.5))
-			draw_string_outline(font, base + Vector2(-30, 6 * px), "checkpoint", HORIZONTAL_ALIGNMENT_CENTER, 60, fs, 3, ink)
-			draw_string(font, base + Vector2(-30, 6 * px), "checkpoint", HORIZONTAL_ALIGNMENT_CENTER, 60, fs, Color("#ffb13d"))
+			var tag := Loc.t("checkpoint")
+			draw_string_outline(font, base + Vector2(-40, 6 * px), tag, HORIZONTAL_ALIGNMENT_CENTER, 80, fs, 3, ink)
+			draw_string(font, base + Vector2(-40, 6 * px), tag, HORIZONTAL_ALIGNMENT_CENTER, 80, fs, Color("#ffb13d"))
 
 
 const DROP_LIFE := 2.6
