@@ -131,8 +131,12 @@ ligado, o grupo ferido (abaixo do limite escolhido) volta sozinho à bonfire; ca
 simulação da próxima luta (`core/danger.gd`).
 
 ### Heróis e Souls
-O painel **HEROES** concentra a party (3 vagas), a reserva e o **mint** (com as chances
-de raridade à vista). O painel **SOULS** traz a Ascensão e a árvore permanente.
+O painel **HEROES** concentra a party (3 vagas), a reserva, o **mint** (com as chances
+de raridade à vista) e a **fusão**: 3 heróis da mesma raridade (menos o Stairborn) viram
+1 herói da raridade seguinte (`Heroes.fuse`). Você escolhe qual fica (com nível, itens e
+habilidades); os outros são consumidos e o equipamento deles volta para a mochila. A taxa
+em ouro fica em `balance.fusion` (`data/floor_rules.json`). O painel **SOULS** traz a
+Ascensão e a árvore permanente.
 
 ### Caminho até a Steam
 Veja `docs/STEAM_LAUNCH.md`: regras da Steam (reembolso de 2 h, taxa, página "Coming Soon"),
@@ -185,8 +189,14 @@ Configurações. As contas são locais (deste computador); contas online exigem 
 ### Itens: equipar à mão, merge e limites da economia
 - **Nada se equipa sozinho:** o jogador escolhe o que cada herói usa. Item equipado fica
   **vinculado** (não poderá ser negociado).
-- **Merge (`core/forge.gd`):** 4–5 itens da mesma raridade e do mesmo tipo (slot, e a
-  classe da arma) viram 1 item aleatório do mesmo tipo, uma raridade acima; custa ouro
+- **Equipamento por classe:** armas, capacete, peitoral, luvas, botas e anel são peças de
+  **Cavaleiro** (placas), **Arqueiro** (couro, arco) ou **Arcanista** (túnicas, cajado), e
+  cada classe só veste as suas (o Stairborn veste as do Cavaleiro e do Arqueiro). Na mochila
+  um emblema (escudo, arco, estrela) mostra a classe da peça e o que o herói em tela não
+  pode vestir fica escurecido. Os drops favorecem as classes que você tem no grupo. As
+  peças vêm de `tools/gen_item_data.py` (nomes e atributos) e `tools/gen_item_art.gd` (ícones).
+- **Merge (`core/forge.gd`):** 4–5 itens da mesma raridade e do mesmo tipo (slot e classe)
+  viram 1 item aleatório do mesmo tipo, uma raridade acima; custa ouro
   (e cristais nos tiers altos) que cresce com o nível do item.
 - **Drops escassos:** chance base de 3,5% por monstro e raridades altas mais raras. Depois
   de um Epic/Legendary/Mythic, o próximo da mesma raridade só cai 5/30/150 andares depois
@@ -208,8 +218,10 @@ ligado a party bebe poção abaixo de 30% de vida e joga bomba em chefes.
 Todos os efeitos são gerados em código: corte, garra, flecha, bola de fogo, faíscas,
 estrela de **CRIT**, esquiva com **MISS**, domo do Shield Wall, chuva do Volley, meteoro,
 cura, onda de choque, dreno, escudo hexagonal, raios e bombas, com tremor de tela nos
-golpes fortes. O áudio é sintetizado na hora (sem arquivos): SFX para cada evento e duas
-músicas chiptune em loop (subida e chefe). Volumes em Configurações.
+golpes fortes. O áudio é sintetizado na hora (sem arquivos): SFX para cada evento e sete
+músicas em loop que mudam conforme o momento (`Audio._pick_track`): subida, Guardian,
+Elite Guardian, Tower Lord, chefe enfurecido (rápida), derrota e fogueira, com crossfade.
+Volumes em Configurações.
 
 ### Torre helicoidal flutuando sobre a taskbar
 Inspirado em *A Fool's Errand* (Playdate) e *TBH: Task Bar Hero*. A janela da barra é
@@ -221,7 +233,8 @@ A escada é **helicoidal**: cada andar é uma volta completa ao redor da torre (
 28% patamar). O grupo fica na frente e a **torre gira** enquanto ele sobe. Os tijolos e
 as seteiras se deslocam lateralmente, os degraus de trás passam por trás do cilindro e a
 câmera olha levemente de cima. O combate acontece no patamar, e a câmera enquadra a luta.
-No Fall Back a torre "desenrosca" para baixo.
+No Fall Back os heróis viram **espíritos** (translúcidos, com halo) e descem **rolando**
+a escada até a fogueira, onde tomam forma de novo.
 
 Estilo padrão **1-bit** (tinta/papel com pontilhado ordenado Bayer, sprites quantizados
 em 3 tons). Em *Settings → Art style* há a opção de cores por bioma.
@@ -235,8 +248,8 @@ não abre janela: ele espera você abrir o Expedition Mode.
 ### Fogueiras e Fall Back (sem Game Over)
 Os andares 1, 11, 21… têm uma **fogueira**. Nela o grupo descansa (cura total), equipa o
 que houver de melhor na mochila, gasta pontos de habilidade e registra o **checkpoint**.
-Se o grupo inteiro cair, ele rola escada abaixo pela espiral até a última fogueira (morreu
-no 37 → volta ao 31) e continua farmando. O botão **"Camp at next bonfire"** faz o grupo
+Se o grupo inteiro cair, os heróis viram espíritos e rolam escada abaixo pela espiral até a
+última fogueira (morreu no 37 → volta ao 31), onde descansam e continuam farmando. O botão **"Camp at next bonfire"** faz o grupo
 parar na próxima fogueira e esperar enquanto você mexe nos equipamentos.
 
 ### Heróis: o fundador e os recrutas
